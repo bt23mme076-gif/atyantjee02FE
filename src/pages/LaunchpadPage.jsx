@@ -5,6 +5,7 @@ import ParticleClusterBackground from '../components/ParticleClusterBackground';
 import RegretSection from '../components/RegretSection';
 import WhatNobody from '../components/WhatNobody';
 import DecisionEngine from '../components/DecisionEngine';
+import AdmissionProgramsSection from '../components/AdmissionProgramsSection';
 import ComparisonSection from '../components/ComparisonSection';
 import AtyantFramework from '../components/AtyantFramework';
 import GamifiedBentoSection from '../components/GamifiedBentoSection';
@@ -594,6 +595,9 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
 
       {/* Bridge: seen the mistakes, now name your specific confusion */}
       <DecisionEngine />
+
+      {/* Admission Programs — three program cards with WhatsApp CTAs */}
+      <AdmissionProgramsSection />
 
       {/* 5. Pricing — lowest barrier first, integrated early bird */}
       <PricingSection user={user} />
