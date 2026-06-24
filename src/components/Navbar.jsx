@@ -85,7 +85,7 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
               )}
             </Link>
           ) : (
-            <Link to="/login" className="inline-flex items-center rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-[#FF6B2B]">
+            <Link to="/login" className="inline-flex items-center rounded-full border-2 border-[#FF6B2B] bg-white px-4 py-2 text-sm font-semibold text-[#FF6B2B] shadow-[0_0_12px_rgba(255,107,43,0.4)] transition hover:shadow-[0_0_20px_rgba(255,107,43,0.6)] hover:scale-[1.03]">
               Login
             </Link>
           )}
