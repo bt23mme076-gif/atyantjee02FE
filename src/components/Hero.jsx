@@ -56,20 +56,20 @@ export default function Hero({ activeTab, onTabChange }) {
             </p>
 
             {/* Buttons */}
-            <div className="mt-8 flex flex-col items-center gap-4 w-full max-w-sm">
+            <div className="mt-8 flex flex-col items-start gap-3 w-full max-w-sm">
               <a
                 href="#pricing"
-                className="w-full inline-flex items-center justify-center rounded-full border-2 border-[#FF6B2B] bg-white px-10 py-5 text-2xl font-black text-[#FF6B2B] shadow-[0_0_28px_rgba(255,107,43,0.4)] ring-2 ring-[#FF6B2B]/20 transition duration-300 hover:bg-[#FF6B2B] hover:text-white hover:shadow-[0_0_40px_rgba(255,107,43,0.65)] hover:scale-105 tracking-wide"
+                className="w-full inline-flex items-center justify-center rounded-full border-2 border-[#FF6B2B] bg-white px-7 py-3.5 text-sm font-black text-[#FF6B2B] shadow-[0_0_28px_rgba(255,107,43,0.4)] ring-2 ring-[#FF6B2B]/20 transition duration-300 hover:bg-[#FF6B2B] hover:text-white hover:scale-[1.03]"
               >
                 See counselling plans
               </a>
 
               <button
                 onClick={() => navigate('/mentors')}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FF6B2B]/80 px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-[#FF6B2B]/20 transition duration-300 hover:bg-[#ff7a42] hover:shadow-[0_0_16px_rgba(255,107,43,0.35)] hover:scale-105"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#FF6B2B] px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#FF6B2B]/30 transition duration-300 hover:bg-[#e05a1f] hover:scale-[1.03]"
               >
                 Find my mentor
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </motion.div>
