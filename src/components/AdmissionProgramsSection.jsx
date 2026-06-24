@@ -74,8 +74,8 @@ export const ADMISSION_PROGRAMS = [
     badgeFloating: true,
     shortDesc: 'Full handholding from admission to career success.',
     discount: '20% OFF',
-    price: '3,999',
-    oldPrice: '5,000',
+    price: '4,999',
+    oldPrice: '7,000',
     bestFor: 'Students & parents who want complete handholding.',
     features: [
       'Everything in Admission Success',
