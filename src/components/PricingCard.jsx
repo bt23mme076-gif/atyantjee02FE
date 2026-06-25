@@ -6,7 +6,7 @@ import { getWhatsAppLink } from '../utils/whatsapp';
 import { createPaymentOrder, getUserMe } from '../utils/api';
 
 // Map frontend plan titles → backend planId
-const PLAN_ID_MAP = {
+export const PLAN_ID_MAP = {
   'Starter Clarity': 'starter-clarity',
   'Complete Guidance': 'complete-guidance',
   'Complete Round Support': 'complete-round',

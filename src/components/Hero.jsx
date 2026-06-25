@@ -57,12 +57,13 @@ export default function Hero({ activeTab, onTabChange }) {
 
             {/* Buttons */}
             <div className="mt-8 flex flex-col items-center gap-4 w-full max-w-sm">
-              <a
-                href="#pricing"
+              <button
+                type="button"
+                onClick={() => navigate('/programs')}
                 className="w-full inline-flex items-center justify-center rounded-full border-2 border-[#FF6B2B] bg-white px-10 py-5 text-2xl font-black text-[#FF6B2B] shadow-[0_0_28px_rgba(255,107,43,0.4)] ring-2 ring-[#FF6B2B]/20 transition duration-300 hover:bg-[#FF6B2B] hover:text-white hover:shadow-[0_0_40px_rgba(255,107,43,0.65)] hover:scale-105 tracking-wide"
               >
                 See counselling plans
-              </a>
+              </button>
 
               <button
                 onClick={() => navigate('/mentors')}

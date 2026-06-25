@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
 import ParticleClusterBackground from '../components/ParticleClusterBackground';
 import RegretSection from '../components/RegretSection';
@@ -8,7 +10,6 @@ import DecisionEngine from '../components/DecisionEngine';
 import ComparisonSection from '../components/ComparisonSection';
 import AtyantFramework from '../components/AtyantFramework';
 import GamifiedBentoSection from '../components/GamifiedBentoSection';
-import PricingCard from '../components/PricingCard';
 import TestimonialCard from '../components/TestimonialCard';
 import FAQItem from '../components/FAQItem';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -20,7 +21,6 @@ import {
   freeGroupBullets,
   howItWorksSteps,
   pillars,
-  pricingPlans,
   testimonials,
 } from '../data/siteContent';
 
@@ -401,97 +401,38 @@ function StoriesSection() {
   );
 }
 
-// ─── SECTION 6: Pricing — simple, clear, lowest barrier first ────────────────
-function PricingSection({ user }) {
+// ─── Explore Counselling Plans teaser ────────────────────────────────────────
+function ProgramsTeaserSection() {
+  const navigate = useNavigate();
+
   return (
     <motion.section
       id="pricing"
-      className="bg-[#f6f7fb] px-4 py-12 sm:px-6 lg:px-8 overflow-x-hidden relative"
+      className="relative overflow-hidden bg-[#f6f7fb] px-4 py-20 sm:px-6 lg:px-8"
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.05 }}
+      viewport={{ once: true, amount: 0.2 }}
     >
-      {/* Background Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-blue-500/10 to-transparent blur-[100px] pointer-events-none" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 bg-gradient-to-b from-orange-500/10 to-transparent blur-[100px]" />
 
-      <div className="mx-auto max-w-7xl relative z-10">
-        <div className="max-w-3xl mx-auto text-center mb-10">
-
-          {/* Stunning Integrated Early Bird Badge */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="inline-flex items-center gap-3 rounded-full bg-white border border-slate-200 px-2 py-1.5 pr-5 mb-5 shadow-sm cursor-pointer"
-          >
-            <div className="flex items-center justify-center bg-[#0B0F2E] rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md">
-              <span className="mr-1.5 animate-pulse">🔥</span> Early Bird
-            </div>
-            <span className="text-xs font-bold text-slate-700">Join now for personalized college matching</span>
-          </motion.div>
-
-          <h2 className="text-4xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl lg:text-6xl">
-            Pick the Clarity <br className="hidden sm:block" />
-            You Actually Need.
-          </h2>
-          <p className="mt-4 text-lg leading-relaxed text-slate-500 max-w-xl mx-auto font-medium">
-            Plans are designed to be simple and transparent. Built to help students and parents make the right decision faster, without the confusion.
-          </p>
-        </div>
-
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 relative z-20">
-          {pricingPlans.map((plan) => (
-            <PricingCard key={plan.title} {...plan} />
-          ))}
-        </div>
-        {user?.plan && (
-          <div className="flex justify-center mt-8">
-            <button
-              onClick={() =>
-                window.open(
-                  "https://wa.me/919579040183?text=Hi%2C%20I%20have%20already%20purchased%20a%20plan%20and%20would%20like%20to%20upgrade.%20Please%20guide%20me.",
-                  "_blank"
-               )
-              }
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition"
-            >
-              Upgrade Plan
-            </button>
-          </div>
-        )}
-        {/* Why Choose Atyant Section */}
-        <div className="mt-20 max-w-4xl mx-auto bg-[#0B0F2E] rounded-[2.5rem] p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl shadow-[#0B0F2E]/20 border border-white/5">
-          <div className="absolute right-0 top-0 w-72 h-72 bg-gradient-to-br from-orange-500/10 to-transparent blur-3xl" />
-          <div className="relative z-10">
-            <h3 className="text-2xl sm:text-3xl font-black text-center mb-10 tracking-tight uppercase">
-              ✨ Why Students Choose Atyant
-            </h3>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {[
-                'Talk to seniors with ranks like yours',
-                'Real JoSAA experience from recent seniors',
-                'Honest advice, not sugarcoating',
-                'Affordable guidance starting at just ₹99',
-                'Support from choice filling till allotment',
-                'No bots. Only real seniors.',
-              ].map((point) => (
-                <div key={point} className="flex items-center gap-4 bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-all hover:scale-[1.02]">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/25 text-emerald-400 text-sm font-black">
-                    ✓
-                  </div>
-                  <span className="text-sm sm:text-base font-bold text-white/90">
-                    {point}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom trust line */}
-        <div className="mt-16 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">🔥 Limited Time Early Launch Offer</p>
-          <p className="mt-2 text-base font-semibold text-slate-600">Trusted Seniors. Real Insights. Better Decisions.</p>
-        </div>
+      <div className="relative z-10 mx-auto max-w-3xl text-center">
+        <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">Counselling Plans</div>
+        <h2 className="mt-3 text-3xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl">
+          Explore Counselling Plans
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-lg font-medium leading-relaxed text-slate-500">
+          Find the perfect mentorship program for your goals.
+        </p>
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => navigate('/programs')}
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#FF6B2B] px-8 py-4 text-sm font-black text-white shadow-2xl shadow-[#FF6B2B]/25 transition hover:bg-[#ff7a42]"
+        >
+          View All Programs
+          <ArrowRight className="h-4 w-4" />
+        </motion.button>
       </div>
     </motion.section>
   );
@@ -595,8 +536,8 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
       {/* Bridge: seen the mistakes, now name your specific confusion */}
       <DecisionEngine />
 
-      {/* 5. Pricing — lowest barrier first, integrated early bird */}
-      <PricingSection user={user} />
+      {/* Counselling plans teaser — full plans live on /programs */}
+      <ProgramsTeaserSection />
       <WhatNobody />
 
       {/* 3. The Gamified Launchpad Bento Grid (Replaces 5 long sections) */}

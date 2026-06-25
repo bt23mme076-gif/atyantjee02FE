@@ -13,6 +13,7 @@ import MentorsPage from './pages/MentorsPage';
 import RankRadarPage from './pages/RankRadarPage';
 import AuthPage from './pages/AuthPage';
 import ProfilePage from './pages/ProfilePage';
+import ProgramsPage from './pages/ProgramsPage';
 import WhatsAppFloatingButton from './components/WhatsAppFloatingButton';
 import { getUserMe } from './utils/api';
 
@@ -78,7 +79,7 @@ function AppContent() {
     link.href = canonicalUrl;
   }, []);
 
-  const activeTab = location.pathname === '/mentors' ? 'mentors' : location.pathname === '/predictor' ? 'predictor' : location.pathname === '/college' ? 'college' : location.pathname === '/finalyear' ? 'finalyear' : location.pathname === '/workingpro' ? 'workingpro' : 'after12th';
+  const activeTab = location.pathname === '/mentors' ? 'mentors' : location.pathname === '/predictor' ? 'predictor' : location.pathname === '/college' ? 'college' : location.pathname === '/finalyear' ? 'finalyear' : location.pathname === '/workingpro' ? 'workingpro' : location.pathname === '/programs' ? 'programs' : 'after12th';
 
   const handleTabChange = (tab) => {
     if (tab === 'after12th') navigate('/');
@@ -139,6 +140,11 @@ function AppContent() {
           <Route path="/profile" element={
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
               <ProfilePage user={user} setUser={setUser} />
+            </motion.div>
+          } />
+          <Route path="/programs" element={
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+              <ProgramsPage user={user} />
             </motion.div>
           } />
         </Routes>
