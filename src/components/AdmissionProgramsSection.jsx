@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { PaymentModal, PLAN_ID_MAP } from './PricingCard';
 import { pricingPlans, admissionPrograms } from '../data/siteContent';
 import { getWhatsAppLink } from '../utils/whatsapp';
+import { MessageCircle, ArrowRight } from "lucide-react";
 
 const COLLEGES = [
   'COEP Pune', 'VJTI Mumbai', 'SPIT Mumbai', 'PICT Pune',
@@ -503,7 +504,7 @@ export default function AdmissionProgramsSection({ user }) {
             viewport={{ once: true, margin: '-80px' }}
           >
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">
-              Admission Programs
+              MHT-CET Counselling Plans
             </p>
             <h2 className="mt-3 text-3xl font-black text-[#0B0F2E] sm:text-5xl">
               Get the Guidance Your Admission Deserves
@@ -531,6 +532,137 @@ export default function AdmissionProgramsSection({ user }) {
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">🔥 Limited Time Early Launch Offer</p>
           <p className="mt-2 text-base font-semibold text-slate-600">Trusted Seniors. Real Insights. Better Decisions.</p>
         </div>
+
+
+        {/* ─────────────── Other Counselling Section ─────────────── */}
+        <motion.div
+          className="mx-auto mt-16 max-w-5xl"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-emerald-200/60 bg-white/90 p-10 shadow-[0_35px_80px_rgba(16,185,129,0.15)] backdrop-blur-xl">
+
+            {/* Background Glow */}
+            <div className="absolute -left-16 -top-16 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" />
+            <div className="absolute -right-20 bottom-0 h-64 w-64 rounded-full bg-[#FF6B2B]/10 blur-3xl" />
+
+            <div className="relative z-10">
+
+              {/* Badge */}
+              <div className="mb-6 flex justify-center">
+                <span className="rounded-full bg-gradient-to-r from-emerald-500 to-green-600 px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
+                  OTHER COUNSELLING
+                </span>
+              </div>
+
+              {/* Heading */}
+              <h2 className="text-center text-3xl font-black text-[#0B0F2E] sm:text-5xl">
+                Looking for Counselling
+                <br />
+                Beyond These Plans?
+              </h2>
+
+              <p className="mx-auto mt-5 max-w-3xl text-center text-lg leading-relaxed text-slate-600">
+                We also provide personalized counselling for
+                <span className="font-bold text-[#0B0F2E]">
+                  {" "}other colleges, universities, admissions,
+                  branch selection, management quota,
+                  spot rounds, private colleges and much more.
+                </span>
+              </p>
+
+              {/* Pills */}
+
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
+
+                {[
+                  "Engineering",
+                  "Private Colleges",
+                  "Management Quota",
+                  "Spot Round",
+                  "College Selection",
+                  "Branch Guidance",
+                  "Career Advice"
+                ].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 transition-all duration-300 hover:scale-105 hover:bg-emerald-100"
+                  >
+                    {item}
+                  </span>
+                ))}
+
+              </div>
+
+              {/* CTA */}
+
+              <div className="mt-12 flex justify-center">
+
+                <motion.a
+                  href="https://wa.me/919753324876"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{
+                    scale: 1.05,
+                    y: -4,
+                  }}
+                  whileTap={{
+                    scale: 0.97,
+                  }}
+                  className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 px-8 py-6 text-white shadow-[0_20px_60px_rgba(16,185,129,0.35)] transition-all duration-300"
+                >
+
+                  <div className="absolute inset-0 bg-white/10 opacity-0 transition group-hover:opacity-100" />
+
+                  <div className="relative flex items-center gap-5">
+
+                    <motion.div
+                      animate={{
+                        y: [0, -4, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                      }}
+                    >
+                      <MessageCircle size={34} />
+                    </motion.div>
+
+                    <div className="text-left">
+
+                      <div className="text-xl font-black">
+                        Chat on WhatsApp
+                      </div>
+
+                      <div className="mt-1 text-sm text-white/90">
+                        Usually replies within a few minutes
+                      </div>
+
+                    </div>
+
+                    <ArrowRight
+                      size={24}
+                      className="transition-transform duration-300 group-hover:translate-x-2"
+                    />
+
+                  </div>
+
+                </motion.a>
+
+              </div>
+
+              {/* Footer */}
+
+              <p className="mt-6 text-center text-sm text-slate-500">
+                💬 Get one-to-one guidance from experienced mentors for admissions not listed above.
+              </p>
+
+            </div>
+
+          </div>
+        </motion.div>
       </div>
     </section>
   );
