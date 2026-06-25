@@ -376,7 +376,8 @@ export const admissionPrograms = _override?.admissionPrograms ?? [
     cta: 'Get Clarity →',
     footerNote: 'Quick clarity before your CAP round.',
     colorTheme: 'default',
-    whatsappText: "Hi, I'm interested in the College Clarity program",
+    isPaymentPlan: true,
+    planTitle: 'College Clarity',
   },
   {
     id: 'admission-success',
@@ -410,7 +411,8 @@ export const admissionPrograms = _override?.admissionPrograms ?? [
     cta: 'Get Full Support →',
     footerNote: 'Support till admission. Guidance beyond admission.',
     colorTheme: 'center',
-    whatsappText: "Hi, I'm interested in the Admission Success program",
+    isPaymentPlan: true,
+    planTitle: 'Admission Success',
   },
   {
     id: 'admission-career-growth',
@@ -440,7 +442,8 @@ export const admissionPrograms = _override?.admissionPrograms ?? [
     cta: 'Go Premium →',
     footerNote: 'From MHT-CET Admission to Career Success.',
     colorTheme: 'premium',
-    whatsappText: "Hi, I'm interested in the Admission + Career Growth program",
+    isPaymentPlan: true,
+    planTitle: 'Admission + Career Growth',
   },
 ];
 
