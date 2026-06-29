@@ -466,9 +466,6 @@ export default function AdmissionProgramsSection({ user }) {
             Pick the Clarity <br className="hidden sm:block" />
             You Actually Need.
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg font-medium leading-relaxed text-slate-500">
-            Plans are designed to be simple and transparent. Built to help students and parents make the right decision faster, without the confusion.
-          </p>
         </motion.div>
 
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-end gap-8 pb-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -509,11 +506,6 @@ export default function AdmissionProgramsSection({ user }) {
             <h2 className="mt-3 text-3xl font-black text-[#0B0F2E] sm:text-5xl">
               Get the Guidance Your Admission Deserves
             </h2>
-            <p className="mt-4 text-base font-normal leading-relaxed text-slate-600 sm:text-lg">
-              Your entrance exam rank is fixed. Your admission outcome isn&apos;t.
-              <br />
-              Get expert guidance before making the decisions that shape your next four years.
-            </p>
           </motion.div>
 
           <div className="mx-auto grid max-w-6xl grid-cols-1 items-end gap-8 pb-6 sm:grid-cols-2 lg:grid-cols-3">

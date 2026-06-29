@@ -517,6 +517,14 @@ function FinalCTA() {
               Get Clarity Now
             </a>
           </div>
+          <br />
+          <button
+            onClick={() => navigate('/mentors')}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FF6B2B]/80 px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-[#FF6B2B]/20 transition duration-300 hover:bg-[#ff7a42] hover:shadow-[0_0_16px_rgba(255,107,43,0.35)] hover:scale-105"
+          >
+            Find my mentor
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
         </div>
       </section>
     </div>
@@ -534,7 +542,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
       <RegretSection />
 
       {/* Bridge: seen the mistakes, now name your specific confusion */}
-      <DecisionEngine />
+      {/* <DecisionEngine /> */}
 
       {/* Counselling plans teaser — full plans live on /programs */}
       <ProgramsTeaserSection />

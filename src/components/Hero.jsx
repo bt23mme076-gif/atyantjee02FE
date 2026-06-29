@@ -26,7 +26,7 @@ export default function Hero({ activeTab, onTabChange }) {
           >
             {/* Exam Pills */}
             <div className="mb-6 flex flex-wrap gap-2.5">
-              {['JEE Main', 'JEE Advanced', 'BITSAT', 'MHT-CET', 'CSAB'].map((exam) => (
+              {['JoSAA + CSAB', 'MHT-CET', 'COMEDK', 'All India', 'Govt + Private'].map((exam) => (
                 <span
                   key={exam}
                   className="rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-white/80"
@@ -63,14 +63,6 @@ export default function Hero({ activeTab, onTabChange }) {
                 className="w-full inline-flex items-center justify-center rounded-full border-2 border-[#FF6B2B] bg-white px-10 py-5 text-2xl font-black text-[#FF6B2B] shadow-[0_0_28px_rgba(255,107,43,0.4)] ring-2 ring-[#FF6B2B]/20 transition duration-300 hover:bg-[#FF6B2B] hover:text-white hover:shadow-[0_0_40px_rgba(255,107,43,0.65)] hover:scale-105 tracking-wide"
               >
                 See counselling plans
-              </button>
-
-              <button
-                onClick={() => navigate('/mentors')}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#FF6B2B]/80 px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-[#FF6B2B]/20 transition duration-300 hover:bg-[#ff7a42] hover:shadow-[0_0_16px_rgba(255,107,43,0.35)] hover:scale-105"
-              >
-                Find my mentor
-                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </motion.div>

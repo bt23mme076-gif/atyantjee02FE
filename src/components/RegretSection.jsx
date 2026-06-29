@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Imported the router hook
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { AlertCircle, BookOpen, Building2, Users, Clock, ArrowRight, Sparkles, Quote } from 'lucide-react';
 
@@ -164,6 +165,8 @@ function InteractiveCard({ story, idx }) {
 }
 
 export default function RegretSection() {
+  const navigate = useNavigate(); // 2. Initialized the hook at the top of the component
+
   return (
     <section className="relative bg-slate-50 px-4 py-12 lg:py-16 sm:px-6 lg:px-8" style={{ overflow: 'hidden' }}>
       {/* Background Grid */}
@@ -231,7 +234,11 @@ export default function RegretSection() {
               </p>
             </div>
             
-            <button className="group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#FF6B2B] px-6 py-3 text-sm font-bold tracking-wide text-white transition-all hover:bg-[#ff7b48] hover:shadow-[0_0_20px_rgba(255,107,43,0.4)]">
+            {/* 3. Added the inline onClick handler here */}
+            <button 
+              onClick={() => navigate('/programs')}
+              className="group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#FF6B2B] px-6 py-3 text-sm font-bold tracking-wide text-white transition-all hover:bg-[#ff7b48] hover:shadow-[0_0_20px_rgba(255,107,43,0.4)]"
+            >
               Get Expert Guidance
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </button>

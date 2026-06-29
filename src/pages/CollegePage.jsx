@@ -81,7 +81,7 @@ export default function CollegePage({ activeTab, onTabChange }) {
         </div>
       </motion.section>
 
-      <DecisionEngine />
+      {/* <DecisionEngine /> */}
       <RegretSection />
 
       <motion.section className="bg-[#f6f7fb] px-4 py-20 sm:px-6 lg:px-8" variants={sectionVariants} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>

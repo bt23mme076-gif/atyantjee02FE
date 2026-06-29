@@ -96,28 +96,6 @@ function ProgramsHero() {
             Compare every counselling plan, understand the differences, and choose the one that best fits your college journey.
           </p>
         </motion.div>
-
-        <div className="relative z-10 mx-auto mt-14 grid max-w-4xl gap-5 sm:grid-cols-3">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              whileHover={{ y: -6, scale: 1.02 }}
-              className="rounded-[1.8rem] border border-white/10 bg-white/5 p-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)] backdrop-blur-xl"
-            >
-              <motion.p
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 4 + index, repeat: Infinity, ease: 'easeInOut' }}
-                className="text-3xl font-black text-white sm:text-4xl"
-              >
-                {stat.value}
-              </motion.p>
-              <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-white/60">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
       </section>
     </div>
   );
