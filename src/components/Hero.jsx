@@ -52,7 +52,7 @@ export default function Hero({ activeTab, onTabChange }) {
 
             {/* Description */}
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/80 lg:text-lg font-medium">
-              Talk to real IIT/NIT & top college seniors who recently went through JoSAA counselling themselves.
+              Talk to real IIT/NIT & top college seniors who recently went through CSAB Special Rounds and MHT-CET CAP counselling themselves.
             </p>
 
             {/* Buttons */}

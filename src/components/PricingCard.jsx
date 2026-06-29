@@ -7,12 +7,15 @@ import { createPaymentOrder, getUserMe } from '../utils/api';
 
 // Map frontend plan titles → backend planId
 export const PLAN_ID_MAP = {
-  // JEE Counselling Plans
+  // Legacy JEE plans (kept for existing orders)
   'Starter Clarity': 'starter-clarity',
   'Complete Guidance': 'complete-guidance',
   'Complete Round Support': 'complete-round',
   'Ultimate Peace of Mind': 'ultimate-peace',
-  // MHT-CET Counselling Plans
+  // CSAB Special Rounds
+  'Complete CSAB Support': 'csab-complete',
+  'Ultimate CSAB Mentorship': 'csab-ultimate',
+  // MHT-CET / All India Counselling
   'College Clarity': 'college-clarity',
   'Admission Success': 'admission-success',
   'Admission + Career Growth': 'admission-career-growth',

@@ -55,10 +55,10 @@ const programGuideCards = [
 
 const whyChoosePoints = [
   'Talk to seniors with ranks like yours',
-  'Real JoSAA experience from recent seniors',
+  'Real CSAB & MHT-CET experience from recent seniors',
   'Honest advice, not sugarcoating',
-  'Affordable guidance starting at just ₹99',
-  'Support from choice filling till allotment',
+  'Support from choice filling till final allotment',
+  'Covers CSAB, MHT-CET, COMEDK & more',
   'No bots. Only real seniors.',
 ];
 

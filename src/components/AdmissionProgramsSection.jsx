@@ -455,16 +455,16 @@ export default function AdmissionProgramsSection({ user }) {
             whileHover={{ scale: 1.05 }}
             className="mb-5 inline-flex cursor-pointer items-center gap-3 rounded-full border border-slate-200 bg-white px-2 py-1.5 pr-5 shadow-sm"
           >
-            <div className="flex items-center justify-center rounded-full bg-[#0B0F2E] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md">
-              <span className="mr-1.5 animate-pulse">🔥</span> Early Bird
+            <div className="flex items-center justify-center rounded-full bg-orange-500 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md">
+              <span className="mr-1.5 animate-pulse">🟧</span> Active Now
             </div>
-            <span className="text-xs font-bold text-slate-700">Join now for personalized college matching</span>
+            <span className="text-xs font-bold text-slate-700">CSAB Special Rounds are live — don&apos;t miss your last chance</span>
           </motion.div>
 
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">JEE Counselling Plans</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">CSAB Special Rounds</p>
           <h2 className="mt-3 text-4xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl lg:text-6xl">
-            Pick the Clarity <br className="hidden sm:block" />
-            You Actually Need.
+            Don&apos;t Lose Your <br className="hidden sm:block" />
+            Last Opportunity.
           </h2>
         </motion.div>
 
@@ -500,12 +500,15 @@ export default function AdmissionProgramsSection({ user }) {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             viewport={{ once: true, margin: '-80px' }}
           >
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">
-              MHT-CET Counselling Plans
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-600">
+              🔵 All India Counselling
             </p>
             <h2 className="mt-3 text-3xl font-black text-[#0B0F2E] sm:text-5xl">
               Get the Guidance Your Admission Deserves
             </h2>
+            <p className="mt-2 text-sm font-medium text-slate-500">
+              MHT-CET • COMEDK • State CETs • Govt &amp; Private Colleges
+            </p>
           </motion.div>
 
           <div className="mx-auto grid max-w-6xl grid-cols-1 items-end gap-8 pb-6 sm:grid-cols-2 lg:grid-cols-3">
