@@ -23,6 +23,7 @@ const THEME_MAP = {
   green: 'green',
   orange: 'default',
   'navy-glow': 'center',
+  'csab-popular': 'featured',
   purple: 'premium',
 };
 
@@ -42,8 +43,8 @@ function pricingPlanToFlipCard(plan) {
     price: plan.price,
     oldPrice: plan.originalPrice,
     shortDesc: plan.bestFor,
-    valueCallout: plan.colorTheme === 'navy-glow' ? '🏆 Best Choice' : undefined,
-    comparisonHint: plan.colorTheme === 'navy-glow' ? 'Most chosen by students & parents' : undefined,
+    valueCallout: ['navy-glow', 'csab-popular'].includes(plan.colorTheme) ? '🏆 Best Choice' : undefined,
+    comparisonHint: ['navy-glow', 'csab-popular'].includes(plan.colorTheme) ? 'Most chosen by students & parents' : undefined,
     features: plan.features,
     bonusLabel: plan.bonusLabel?.replace(/^🎁\s*/, '') || 'Bonus Guides',
     bonusItems: plan.bonus || [],
@@ -87,12 +88,14 @@ function FlipCard({ card, index }) {
   }, [card.isPaymentPlan, card.planTitle]);
 
   const isCenter = card.colorTheme === 'center';
+  const isFeatured = card.colorTheme === 'featured';
   const isPremium = card.colorTheme === 'premium';
   const isGreen = card.colorTheme === 'green';
+  const isOrange = isCenter || isFeatured;
 
   const cardH = isCenter ? 'h-[560px]' : 'h-[520px]';
 
-  const frontBorder = isCenter
+  const frontBorder = isOrange
     ? 'border-2 border-[#FF6B2B] shadow-[0_0_40px_6px_rgba(255,107,43,0.25)]'
     : isPremium
       ? 'border-2 border-[#6366f1] shadow-[0_0_20px_2px_rgba(99,102,241,0.15)]'
@@ -100,7 +103,7 @@ function FlipCard({ card, index }) {
         ? 'border border-emerald-200 shadow-[0_15px_50px_rgba(16,185,129,0.08)]'
         : 'border border-slate-200 shadow-lg';
 
-  const backBg = isCenter
+  const backBg = isOrange
     ? 'bg-gradient-to-br from-[#1c1200] to-[#3d2a00]'
     : isPremium
       ? 'bg-gradient-to-br from-[#1e1b4b] to-[#312e81]'
@@ -108,7 +111,7 @@ function FlipCard({ card, index }) {
         ? 'bg-gradient-to-br from-[#052e16] to-[#064e3b]'
         : 'bg-[#0B0F2E]';
 
-  const btnFront = isCenter
+  const btnFront = isOrange
     ? 'bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-white shadow-lg shadow-amber-500/30 hover:from-[#d97706] hover:to-[#f59e0b]'
     : isPremium
       ? 'bg-[#6366f1] text-white hover:bg-[#4f46e5]'
@@ -116,7 +119,7 @@ function FlipCard({ card, index }) {
         ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20'
         : 'bg-[#0B0F2E] text-white hover:bg-[#12183f]';
 
-  const btnBack = isCenter
+  const btnBack = isOrange
     ? 'bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-white shadow-lg shadow-amber-500/40'
     : isPremium
       ? 'bg-[#6366f1] text-white'
@@ -124,7 +127,7 @@ function FlipCard({ card, index }) {
         ? 'bg-emerald-500 text-white'
         : 'bg-white text-[#0B0F2E]';
 
-  const checkColor = isCenter
+  const checkColor = isOrange
     ? 'text-[#fbbf24]'
     : isPremium
       ? 'text-[#818cf8]'
@@ -185,7 +188,7 @@ function FlipCard({ card, index }) {
         {card.badgeFloating && (
           <div
             className={`absolute -top-5 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full px-5 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-white shadow-lg ${
-              isCenter
+              isOrange
                 ? 'bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] shadow-[#FF6B2B]/40'
                 : 'bg-gradient-to-r from-[#6366f1] to-[#818cf8] shadow-indigo-500/30'
             }`}
@@ -204,7 +207,7 @@ function FlipCard({ card, index }) {
           <motion.div
             className={`absolute inset-0 flex flex-col rounded-[2.2rem] bg-white p-6 sm:p-8 ${frontBorder}`}
             style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-            {...(isCenter && {
+            {...(isOrange && {
               animate: 'pulse',
               variants: pulseVariants,
               transition: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
@@ -218,7 +221,7 @@ function FlipCard({ card, index }) {
 
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <span className={`self-start rounded-full px-3 py-1 text-[10px] font-black ${
-                isCenter ? 'bg-amber-100 text-amber-700' : isGreen ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-500/10 text-orange-600'
+                isOrange ? 'bg-amber-100 text-amber-700' : isGreen ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-500/10 text-orange-600'
               }`}>
                 {card.discount}
               </span>
@@ -235,7 +238,7 @@ function FlipCard({ card, index }) {
               </span>
             )}
 
-            <h3 className={`font-black leading-tight tracking-tight text-[#0B0F2E] ${isCenter ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'}`}>
+            <h3 className={`font-black leading-tight tracking-tight text-[#0B0F2E] ${isOrange ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'}`}>
               {card.title}
             </h3>
 
@@ -254,7 +257,7 @@ function FlipCard({ card, index }) {
             )}
 
             <div className="mt-4 flex items-baseline gap-2">
-              <span className={`font-black text-[#0B0F2E] ${isCenter ? 'text-5xl' : 'text-4xl'}`}>
+              <span className={`font-black text-[#0B0F2E] ${isOrange ? 'text-5xl' : 'text-4xl'}`}>
                 ₹{card.price}
               </span>
               {card.oldPrice && (
@@ -288,7 +291,7 @@ function FlipCard({ card, index }) {
           >
             <div className="mb-4">
               <p className={`mb-1 text-xs font-black uppercase tracking-[0.2em] ${
-                isCenter ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-[#FF6B2B]'
+                isOrange ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-[#FF6B2B]'
               }`}>
                 What&apos;s included
               </p>
@@ -306,7 +309,7 @@ function FlipCard({ card, index }) {
 
             {card.bonusItems?.length > 0 && (
               <div className={`mt-4 rounded-2xl border p-4 ${
-                isCenter
+                isOrange
                   ? 'border-amber-700/40 bg-amber-900/30'
                   : isPremium
                     ? 'border-indigo-700/40 bg-indigo-900/40'
@@ -316,10 +319,10 @@ function FlipCard({ card, index }) {
               }`}>
                 <div className="mb-2 flex items-center gap-2">
                   <Sparkles className={`h-3.5 w-3.5 ${
-                    isCenter ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-400'
+                    isOrange ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-400'
                   }`} />
                   <p className={`text-[10px] font-black uppercase tracking-wider ${
-                    isCenter ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-300'
+                    isOrange ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-300'
                   }`}>
                     {card.bonusLabel}
                   </p>
@@ -328,7 +331,7 @@ function FlipCard({ card, index }) {
                   {card.bonusItems.map((item) => (
                     <div key={item} className="flex items-center gap-2">
                       <Star className={`h-3 w-3 shrink-0 fill-current ${
-                        isCenter ? 'text-amber-400' : isPremium ? 'text-indigo-400' : isGreen ? 'text-emerald-400' : 'text-amber-400'
+                        isOrange ? 'text-amber-400' : isPremium ? 'text-indigo-400' : isGreen ? 'text-emerald-400' : 'text-amber-400'
                       }`} />
                       <span className="text-xs font-medium text-white/75">{item}</span>
                     </div>
@@ -458,17 +461,17 @@ export default function AdmissionProgramsSection({ user }) {
             <div className="flex items-center justify-center rounded-full bg-orange-500 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md">
               <span className="mr-1.5 animate-pulse">🟧</span> Active Now
             </div>
-            <span className="text-xs font-bold text-slate-700">CSAB Special Rounds are live — don&apos;t miss your last chance</span>
+            <span className="text-xs font-bold text-slate-700">CSAB Special Rounds are live — don't miss your last chance</span>
           </motion.div>
 
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">CSAB Special Rounds</p>
           <h2 className="mt-3 text-4xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl lg:text-6xl">
-            Don&apos;t Lose Your <br className="hidden sm:block" />
+            Don't Lose Your <br className="hidden sm:block" />
             Last Opportunity.
           </h2>
         </motion.div>
 
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-end gap-8 pb-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-3xl grid-cols-1 items-center gap-8 pb-6 sm:grid-cols-2">
           {counsellingFlipCards.map((card, index) => (
             <FlipCard key={card.id} card={card} index={index} />
           ))}

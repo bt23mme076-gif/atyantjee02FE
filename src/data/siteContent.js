@@ -272,7 +272,7 @@ export const pricingPlans = _override?.pricingPlans ?? [
     cta: 'Get Full Support →',
     highlighted: true,
     badge: '⭐ MOST POPULAR',
-    colorTheme: 'navy-glow',
+    colorTheme: 'csab-popular',
     bottomText: 'Best for students who want maximum chances during CSAB.',
   },
   {
