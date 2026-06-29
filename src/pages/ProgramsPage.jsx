@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import AdmissionProgramsSection from '../components/AdmissionProgramsSection';
 import FAQItem from '../components/FAQItem';
 import { faqCategories } from '../data/siteContent';
@@ -263,6 +264,19 @@ function ProgramsFinalCTA() {
 }
 
 export default function ProgramsPage({ user }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.replace('#', '');
+    // Wait a tick for the page (and its animated sections) to mount/settle.
+    const timer = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [location.hash]);
+
   return (
     <main>
       <ProgramsHero />

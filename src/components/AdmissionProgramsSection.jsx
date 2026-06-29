@@ -92,13 +92,13 @@ function FlipCard({ card, index }) {
 
   const cardH = isCenter ? 'h-[560px]' : 'h-[520px]';
 
-  const frontBorder = isCenter
-    ? 'border-2 border-[#FF6B2B] shadow-[0_0_40px_6px_rgba(255,107,43,0.25)]'
-    : isPremium
-      ? 'border-2 border-[#6366f1] shadow-[0_0_20px_2px_rgba(99,102,241,0.15)]'
-      : isGreen
-        ? 'border border-emerald-200 shadow-[0_15px_50px_rgba(16,185,129,0.08)]'
-        : 'border border-slate-200 shadow-lg';
+const frontBorder = isCenter
+  ? 'border-2 border-black shadow-[0_0_40px_6px_rgba(255,107,43,0.25)]'
+  : isPremium
+    ? 'border-2 border-black shadow-[0_0_20px_2px_rgba(99,102,241,0.15)]'
+    : isGreen
+      ? 'border-[1.5px] border-black shadow-[0_15px_50px_rgba(16,185,129,0.08)]'
+      : 'border-[1.5px] border-black shadow-lg';
 
   const backBg = isCenter
     ? 'bg-gradient-to-br from-[#1c1200] to-[#3d2a00]'
@@ -243,9 +243,24 @@ function FlipCard({ card, index }) {
               <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">{card.subtitle}</p>
             )}
 
-            <p className="mt-3 flex-1 text-base font-medium leading-relaxed text-slate-500">
+          <div className="mt-3 flex-1">
+            <p className="text-base font-medium leading-relaxed text-slate-500">
               {card.shortDesc}
             </p>
+
+            {!flipped && isTouchDevice && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFlipped(true);
+                }}
+                className="mt-2 text-sm font-semibold text-[#FF6B2B] underline underline-offset-4 hover:text-[#ff7b48]"
+              >
+                Read more...
+              </button>
+            )}
+          </div>
 
             {card.comparisonHint && (
               <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
@@ -269,10 +284,6 @@ function FlipCard({ card, index }) {
             >
               {card.cta}
             </button>
-
-            <p className="mt-3 text-center text-[10px] font-medium text-slate-400">
-              {flipped ? '' : isTouchDevice ? "Tap to see what's included →" : "Hover to see what's included →"}
-            </p>
           </motion.div>
 
           {/* BACK */}
@@ -445,7 +456,8 @@ export default function AdmissionProgramsSection({ user }) {
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* JEE Counselling Plans */}
         <motion.div
-          className="mx-auto mb-12 max-w-3xl text-center"
+          id="josaa"
+          className="mx-auto mb-12 max-w-3xl text-center scroll-mt-24"
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -461,7 +473,11 @@ export default function AdmissionProgramsSection({ user }) {
             <span className="text-xs font-bold text-slate-700">Join now for personalized college matching</span>
           </motion.div>
 
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">JEE Counselling Plans</p>
+          <div className="mb-5 flex justify-center">
+            <span className="rounded-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
+             JEE Counselling Plans
+            </span>
+          </div>
           <h2 className="mt-3 text-4xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl lg:text-6xl">
             Pick the Clarity <br className="hidden sm:block" />
             You Actually Need.
@@ -492,7 +508,7 @@ export default function AdmissionProgramsSection({ user }) {
         )}
 
         {/* MHT-CET Admission Programs */}
-        <div className="mt-24 border-t border-slate-200/80 pt-20">
+        <div id="mhtcet" className="mt-24 scroll-mt-24 border-t border-slate-200/80 pt-20">
           <motion.div
             className="mx-auto mb-16 max-w-3xl text-center"
             initial={{ opacity: 0, y: 28 }}
@@ -500,9 +516,11 @@ export default function AdmissionProgramsSection({ user }) {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             viewport={{ once: true, margin: '-80px' }}
           >
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">
+          <div className="mb-5 flex justify-center">
+            <span className="rounded-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
               MHT-CET Counselling Plans
-            </p>
+            </span>
+          </div>
             <h2 className="mt-3 text-3xl font-black text-[#0B0F2E] sm:text-5xl">
               Get the Guidance Your Admission Deserves
             </h2>
@@ -515,16 +533,7 @@ export default function AdmissionProgramsSection({ user }) {
               </div>
             ))}
           </div>
-
-          <TrustStrip />
-          <InfoBanner />
         </div>
-
-        <div className="mt-16 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">🔥 Limited Time Early Launch Offer</p>
-          <p className="mt-2 text-base font-semibold text-slate-600">Trusted Seniors. Real Insights. Better Decisions.</p>
-        </div>
-
 
         {/* ─────────────── Other Counselling Section ─────────────── */}
         <motion.div
@@ -551,36 +560,33 @@ export default function AdmissionProgramsSection({ user }) {
 
               {/* Heading */}
               <h2 className="text-center text-3xl font-black text-[#0B0F2E] sm:text-5xl">
-                Looking for Counselling
+                Need Guidance
                 <br />
                 Beyond These Plans?
               </h2>
 
-              <p className="mx-auto mt-5 max-w-3xl text-center text-lg leading-relaxed text-slate-600">
-                We also provide personalized counselling for
-                <span className="font-bold text-[#0B0F2E]">
-                  {" "}other colleges, universities, admissions,
-                  branch selection, management quota,
-                  spot rounds, private colleges and much more.
+              <p className="mx-auto mt-5 max-w-3xl text-center text-base sm:text-lg leading-relaxed text-slate-600">
+                We guide students for
+                <span>
+                  {" "}any college, any state,
+                  private universities,
+                  spot rounds, and more.
                 </span>
               </p>
 
               {/* Pills */}
 
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
 
                 {[
-                  "Engineering",
                   "Private Colleges",
-                  "Management Quota",
                   "Spot Round",
                   "College Selection",
-                  "Branch Guidance",
-                  "Career Advice"
+                  "Career Advice Plan"
                 ].map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 transition-all duration-300 hover:scale-105 hover:bg-emerald-100"
+                    className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs sm:text-sm font-semibold text-center text-emerald-700 transition-all duration-300 hover:scale-105 hover:bg-emerald-100"
                   >
                     {item}
                   </span>
@@ -603,12 +609,12 @@ export default function AdmissionProgramsSection({ user }) {
                   whileTap={{
                     scale: 0.97,
                   }}
-                  className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 px-8 py-6 text-white shadow-[0_20px_60px_rgba(16,185,129,0.35)] transition-all duration-300"
+                  className="group relative w-full max-w-sm sm:max-w-md overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 px-6 py-4 text-white shadow-[0_20px_60px_rgba(16,185,129,0.35)] transition-all duration-300"
                 >
 
                   <div className="absolute inset-0 bg-white/10 opacity-0 transition group-hover:opacity-100" />
 
-                  <div className="relative flex items-center gap-5">
+                  <div className="relative flex items-center justify-between gap-4">
 
                     <motion.div
                       animate={{
@@ -622,14 +628,14 @@ export default function AdmissionProgramsSection({ user }) {
                       <MessageCircle size={34} />
                     </motion.div>
 
-                    <div className="text-left">
+                    <div className="flex-1 text-left">
 
                       <div className="text-xl font-black">
                         Chat on WhatsApp
                       </div>
 
                       <div className="mt-1 text-sm text-white/90">
-                        Usually replies within a few minutes
+                        Replies within a few minutes
                       </div>
 
                     </div>
@@ -656,6 +662,13 @@ export default function AdmissionProgramsSection({ user }) {
           </div>
         </motion.div>
       </div>
+        <TrustStrip />
+        <InfoBanner />
+        <div className="mt-16 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">🔥 Limited Time Early Launch Offer</p>
+          <p className="mt-2 text-base font-semibold text-slate-600">Trusted Seniors. Real Insights. Better Decisions.</p>
+        </div>
     </section>
   );
 }
+

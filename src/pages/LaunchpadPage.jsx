@@ -11,6 +11,8 @@ import ComparisonSection from '../components/ComparisonSection';
 import AtyantFramework from '../components/AtyantFramework';
 import GamifiedBentoSection from '../components/GamifiedBentoSection';
 import TestimonialCard from '../components/TestimonialCard';
+import TestimonialVideoCard from '../components/TestimonialVideoCard';
+import LiveCounsellingBanner from '../components/LiveCounsellingBanner';
 import FAQItem from '../components/FAQItem';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -22,6 +24,7 @@ import {
   howItWorksSteps,
   pillars,
   testimonials,
+  testimonialVideos,
 } from '../data/siteContent';
 
 const sectionVariants = {
@@ -376,6 +379,16 @@ function StoriesSection() {
           <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">Success Stories</div>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-[#0B0F2E] sm:text-4xl">Students who found clarity.</h2>
         </div>
+
+        {/* Video testimonials */}
+        {testimonialVideos.length > 0 && (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {testimonialVideos.map((video, idx) => (
+              <TestimonialVideoCard key={video.src || idx} {...video} />
+            ))}
+          </div>
+        )}
+
         <div className="mt-10">
           <Swiper
             modules={[Autoplay, Pagination]}
@@ -498,14 +511,16 @@ function FAQSection() {
 
 // ─── SECTION 7: Final CTA — ONE action only ───────────────────────────────────
 function FinalCTA() {
+  const navigate = useNavigate();
   return (
     <div className="relative w-full">
       <ParticleClusterBackground particleCount={18} variant="dark" intensity="medium" />
       <section id="contact" className="relative bg-[#0B0F2E] px-4 py-20 text-white sm:px-6 lg:px-8 z-10">
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(255,107,43,0.16),rgba(255,255,255,0.04))] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.35)] sm:p-12">
-          <h2 className="text-3xl font-black tracking-tight sm:text-5xl">One Wrong Decision Costs 4 Years.</h2>
+          <h2 className="text-3xl font-black tracking-tight sm:text-5xl">Skip This, and It Could Cost You 4 Years.</h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-white/74 sm:text-lg">
-            One right decision changes everything. Get clarity on college, branch, and your future before you commit.
+            Every counselling round that passes without a clear strategy is a seat, a branch, or a college you can&apos;t get back.
+            Get clarity now — before the choice is made for you.
           </p>
           <div className="mt-8 flex items-center justify-center">
             <a
@@ -535,6 +550,9 @@ function FinalCTA() {
 export default function LaunchpadPage({ activeTab, onTabChange, user }) {
   return (
     <main>
+      {/* 0. Live counselling banner — shows whichever exam window is currently open */}
+      <LiveCounsellingBanner />
+
       {/* 1. Hero — speak their exact situation */}
       <Hero activeTab={activeTab} onTabChange={onTabChange} />
 

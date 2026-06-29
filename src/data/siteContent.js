@@ -180,6 +180,40 @@ export const ALL_INDIAN_STATES = [
   "Delhi", "Chandigarh", "Jammu and Kashmir", "Puducherry"
 ];
 
+// ─── Live Counselling Schedule ──────────────────────────────────────────────
+// Each entry is a real-world counselling window. Dates are inclusive.
+// To update for next year, just edit the start/end dates below —
+// the "live now" banner on the homepage will pick it up automatically.
+export const examSchedule = _override?.examSchedule ?? [
+  {
+    id: 'mhtcet',
+    label: 'MHT-CET',
+    fullName: 'MHT-CET',
+    start: '2026-06-15',
+    end: '2026-07-25',
+    anchor: '/programs#mhtcet',
+    colorTheme: 'orange',
+  },
+  {
+    id: 'josaa',
+    label: 'JoSAA / CSAB',
+    fullName: 'CSAB',
+    start: '2026-06-05',
+    end: '2026-07-20',
+    anchor: '/programs#josaa',
+    colorTheme: 'blue',
+  },
+  {
+    id: 'comedk',
+    label: 'COMEDK',
+    fullName: 'COMEDK',
+    start: '2026-06-10',
+    end: '2026-07-10',
+    anchor: '/programs#josaa',
+    colorTheme: 'green',
+  },
+];
+
 export const navLinks = _override?.navLinks ?? [
   { label: 'How it Works', href: '/#how-it-works' }, 
   { label: 'Pricing', href: '/#pricing' },           
@@ -457,6 +491,12 @@ export const testimonials = _override?.testimonials ?? [
   { name: 'Sneha Kulkarni', city: 'Pune', quote: 'I was confused between IIIT Pune and a lower branch in VNIT. The mentorship session helped me compare future opportunities instead of just college tags.', stars: 5 },
   { name: 'Aditya Verma', city: 'Kanpur', quote: 'Every counselling video online was giving different advice. Here I finally got a realistic roadmap based on my actual percentile and category.', stars: 5 },
   
+];
+
+export const testimonialVideos = _override?.testimonialVideos ?? [
+  { src: '/m1.mp4', name: 'Student Story', city: 'Atyant Mentee', poster: '' },
+  { src: '/m2.mp4', name: 'Student Story', city: 'Atyant Mentee', poster: '' },
+  { src: '/m3.mp4', name: 'Student Story', city: 'Atyant Mentee', poster: '' },
 ];
 
 export const faqCategories = _override?.faqCategories ?? [

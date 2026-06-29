@@ -226,11 +226,11 @@ export default function RegretSection() {
           <div className="relative z-10 flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
             <div>
               <h4 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-                Ready to make a better choice?
+                Skip this, and you risk the same regret.
               </h4>
               <p className="mt-2 flex items-center justify-center gap-2 text-sm text-slate-300 md:justify-start">
                 <Sparkles className="h-4 w-4 text-[#FF6B2B]" />
-                Join 12,000+ students who trusted Atyant
+                Join 12,000+ students who got it right the first time
               </p>
             </div>
             

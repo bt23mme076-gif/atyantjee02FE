@@ -52,18 +52,64 @@ export default function Hero({ activeTab, onTabChange }) {
 
             {/* Description */}
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/80 lg:text-lg font-medium">
-              Talk to real IIT/NIT & top college seniors who recently went through JoSAA counselling themselves.
-            </p>
+            Talk to real IIT/NIT & top college seniors who recently went through counselling themselves.
+            <br />
+            Don't waste 10-15 lakh on{" "}
+            <span className="font-bold text-[#FF6B2B]">
+              wrong college
+            </span>
+            {" "}and{" "}
+            <span className="font-bold text-[#FF6B2B]">
+              wrong branch
+            </span>
+            .
+          </p>
 
             {/* Buttons */}
-            <div className="mt-8 flex flex-col items-center gap-4 w-full max-w-sm">
-              <button
+            <div className="mt-8 flex flex-col gap-4 w-full max-w-md">
+              <motion.button
                 type="button"
-                onClick={() => navigate('/programs')}
-                className="w-full inline-flex items-center justify-center rounded-full border-2 border-[#FF6B2B] bg-white px-10 py-5 text-2xl font-black text-[#FF6B2B] shadow-[0_0_28px_rgba(255,107,43,0.4)] ring-2 ring-[#FF6B2B]/20 transition duration-300 hover:bg-[#FF6B2B] hover:text-white hover:shadow-[0_0_40px_rgba(255,107,43,0.65)] hover:scale-105 tracking-wide"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/programs#josaa')}
+                className="group flex w-full items-center justify-between gap-4 rounded-3xl bg-gradient-to-r from-[#FF6B2B] to-[#ff7f3f] px-6 py-5 text-left shadow-[0_18px_45px_rgba(255,107,43,0.35)] transition duration-300 hover:shadow-[0_22px_55px_rgba(255,107,43,0.5)]"
               >
-                See counselling plans
-              </button>
+                <div className="flex items-center gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl">
+                    🎓
+                  </span>
+                  <span>
+                    <span className="block text-lg font-black text-white leading-tight">JoSAA / CSAB</span>
+                    <span className="block text-sm font-medium text-white/85">Counselling Plans</span>
+                  </span>
+                </div>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 transition group-hover:translate-x-0.5">
+                  <ArrowRight className="h-4 w-4 text-white" />
+                </span>
+              </motion.button>
+
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/programs#mhtcet')}
+                className="group flex w-full items-center justify-between gap-4 rounded-3xl bg-gradient-to-r from-[#1d4ed8] to-[#3b82f6] px-6 py-5 text-left shadow-[0_18px_45px_rgba(59,130,246,0.3)] transition duration-300 hover:shadow-[0_22px_55px_rgba(59,130,246,0.45)]"
+              >
+                <div className="flex items-center gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl">
+                    🏛️
+                  </span>
+                  <span>
+                    <span className="block text-lg font-black text-white leading-tight">All India Counselling</span>
+                    <span className="block text-sm font-medium text-white/85">
+                      MHT-CET • COMEDK • State • Private • Govt Colleges
+                    </span>
+                  </span>
+                </div>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 transition group-hover:translate-x-0.5">
+                  <ArrowRight className="h-4 w-4 text-white" />
+                </span>
+              </motion.button>
             </div>
           </motion.div>
 
