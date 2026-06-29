@@ -401,9 +401,65 @@ function StoriesSection() {
   );
 }
 
-// ─── Explore Counselling Plans teaser ────────────────────────────────────────
+// ─── Counselling Plans teaser — 2 cards ──────────────────────────────────────
 function ProgramsTeaserSection() {
   const navigate = useNavigate();
+
+  function goTo(hash) {
+    navigate('/programs');
+    setTimeout(() => {
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  }
+
+  const cards = [
+    {
+      badge: '🟧 Active Now',
+      badgeBg: 'bg-orange-500',
+      title: 'CSAB Special Rounds',
+      subtitle: 'Last chance to get into NIT, IIIT & GFTI',
+      desc: 'Dedicated mentor support through every CSAB round — from choice filling to final allotment.',
+      plans: [
+        { name: 'Complete CSAB Support', price: '₹999', hot: true },
+        { name: 'Ultimate CSAB Mentorship', price: '₹1,599', hot: false },
+      ],
+      range: '₹999 – ₹1,599',
+      cta: 'View CSAB Plans',
+      hash: 'csab-section',
+      bg: 'from-[#fff7f0] to-[#fff1e6]',
+      border: 'border-orange-200',
+      glow: 'bg-orange-400/20',
+      accent: 'text-[#FF6B2B]',
+      btnBg: 'bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] shadow-[#FF6B2B]/30',
+      chipBg: 'bg-orange-100 text-orange-700',
+      hotChip: 'bg-[#FF6B2B] text-white',
+      icon: '🏆',
+    },
+    {
+      badge: '🔵 Now Open',
+      badgeBg: 'bg-blue-600',
+      title: 'All India Counselling',
+      subtitle: 'MHT-CET • COMEDK • State CETs • Govt & Private',
+      desc: 'End-to-end admission support for Maharashtra and all-India engineering counselling processes.',
+      plans: [
+        { name: 'College Clarity', price: '₹999', hot: false },
+        { name: 'Admission Success', price: '₹1,999', hot: true },
+        { name: 'Admission + Career Growth', price: '₹4,999', hot: false },
+      ],
+      range: '₹999 – ₹4,999',
+      cta: 'View MHT-CET Plans',
+      hash: 'mhtcet-section',
+      bg: 'from-[#f0f4ff] to-[#eaf0ff]',
+      border: 'border-blue-200',
+      glow: 'bg-blue-400/20',
+      accent: 'text-blue-600',
+      btnBg: 'bg-gradient-to-r from-blue-600 to-blue-500 shadow-blue-500/30',
+      chipBg: 'bg-blue-100 text-blue-700',
+      hotChip: 'bg-blue-600 text-white',
+      icon: '🎓',
+    },
+  ];
 
   return (
     <motion.section
@@ -412,27 +468,89 @@ function ProgramsTeaserSection() {
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.15 }}
     >
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 bg-gradient-to-b from-orange-500/10 to-transparent blur-[100px]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[900px] -translate-x-1/2 bg-gradient-to-b from-orange-400/8 to-transparent blur-[120px]" />
 
-      <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">Counselling Plans</div>
-        <h2 className="mt-3 text-3xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl">
-          Explore Counselling Plans
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-lg font-medium leading-relaxed text-slate-500">
-          Find the perfect mentorship program for your goals.
-        </p>
-        <motion.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => navigate('/programs')}
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#FF6B2B] px-8 py-4 text-sm font-black text-white shadow-2xl shadow-[#FF6B2B]/25 transition hover:bg-[#ff7a42]"
-        >
-          View All Programs
-          <ArrowRight className="h-4 w-4" />
-        </motion.button>
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <div className="mb-12 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">Counselling Plans</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl">
+            Choose Your Counselling Path
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-base font-medium text-slate-500">
+            Two active seasons, two sets of plans. Pick the one that fits your situation.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {cards.map((card) => (
+            <motion.div
+              key={card.hash}
+              whileHover={{ y: -8, scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              onClick={() => goTo(card.hash)}
+              className={`group relative cursor-pointer overflow-hidden rounded-[2rem] border ${card.border} bg-gradient-to-br ${card.bg} p-8 shadow-[0_20px_60px_rgba(0,0,0,0.07)] transition-shadow hover:shadow-[0_30px_80px_rgba(0,0,0,0.12)]`}
+            >
+              {/* glow blob */}
+              <div className={`pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full ${card.glow} blur-3xl`} />
+
+              <div className="relative z-10 flex h-full flex-col">
+                {/* top row */}
+                <div className="flex items-start justify-between gap-3">
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white shadow ${card.badgeBg}`}>
+                    {card.badge}
+                  </span>
+                  <span className="text-3xl">{card.icon}</span>
+                </div>
+
+                {/* title */}
+                <h3 className="mt-5 text-2xl font-black leading-tight text-[#0B0F2E] sm:text-3xl">
+                  {card.title}
+                </h3>
+                <p className={`mt-1 text-xs font-bold uppercase tracking-wider ${card.accent}`}>
+                  {card.subtitle}
+                </p>
+
+                {/* desc */}
+                <p className="mt-4 text-sm font-medium leading-relaxed text-slate-600">
+                  {card.desc}
+                </p>
+
+                {/* plan chips */}
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {card.plans.map((plan) => (
+                    <span
+                      key={plan.name}
+                      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${plan.hot ? card.hotChip : card.chipBg}`}
+                    >
+                      {plan.hot && <span className="text-[10px]">⭐</span>}
+                      {plan.name}
+                      <span className="font-black">{plan.price}</span>
+                    </span>
+                  ))}
+                </div>
+
+                {/* price range + CTA */}
+                <div className="mt-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Starting from</p>
+                    <p className={`text-xl font-black ${card.accent}`}>{card.range}</p>
+                  </div>
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.05 }}
+                    className={`inline-flex items-center gap-2 rounded-full ${card.btnBg} px-5 py-2.5 text-sm font-black text-white shadow-lg transition`}
+                  >
+                    {card.cta}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </motion.section>
   );

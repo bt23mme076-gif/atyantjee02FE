@@ -446,7 +446,8 @@ export default function AdmissionProgramsSection({ user }) {
       <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 bg-gradient-to-b from-blue-500/10 to-transparent blur-[100px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        {/* JEE Counselling Plans */}
+        {/* CSAB Special Rounds */}
+        <div id="csab-section" />
         <motion.div
           className="mx-auto mb-12 max-w-3xl text-center"
           initial={{ opacity: 0, y: 28 }}
@@ -494,7 +495,8 @@ export default function AdmissionProgramsSection({ user }) {
           </div>
         )}
 
-        {/* MHT-CET Admission Programs */}
+        {/* All India Counselling / MHT-CET */}
+        <div id="mhtcet-section" />
         <div className="mt-24 border-t border-slate-200/80 pt-20">
           <motion.div
             className="mx-auto mb-16 max-w-3xl text-center"
