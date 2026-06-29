@@ -424,7 +424,7 @@ function ProgramsTeaserSection() {
         { name: 'Complete CSAB Support', price: '₹999', hot: true },
         { name: 'Ultimate CSAB Mentorship', price: '₹1,599', hot: false },
       ],
-      range: '₹999 – ₹1,599',
+      startFrom: '₹999',
       cta: 'View CSAB Plans',
       hash: 'csab-section',
       bg: 'from-[#fff7f0] to-[#fff1e6]',
@@ -447,7 +447,7 @@ function ProgramsTeaserSection() {
         { name: 'Admission Success', price: '₹1,999', hot: true },
         { name: 'Admission + Career Growth', price: '₹4,999', hot: false },
       ],
-      range: '₹999 – ₹4,999',
+      startFrom: '₹999',
       cta: 'View MHT-CET Plans',
       hash: 'mhtcet-section',
       bg: 'from-[#f0f4ff] to-[#eaf0ff]',
@@ -536,7 +536,7 @@ function ProgramsTeaserSection() {
                 <div className="mt-6 flex items-center justify-between">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Starting from</p>
-                    <p className={`text-xl font-black ${card.accent}`}>{card.range}</p>
+                    <p className={`text-xl font-black ${card.accent}`}>{card.startFrom} only</p>
                   </div>
                   <motion.button
                     type="button"

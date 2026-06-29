@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Star, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PaymentModal, PLAN_ID_MAP } from './PricingCard';
@@ -58,17 +58,12 @@ function pricingPlanToFlipCard(plan) {
 
 const counsellingFlipCards = pricingPlans.map(pricingPlanToFlipCard);
 
-// ─── Flip Card ────────────────────────────────────────────────────────────────
+// ─── Plan Card (flat, with expandable details) ────────────────────────────────
 
 function FlipCard({ card, index }) {
   const navigate = useNavigate();
-  const [flipped, setFlipped] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [open, setOpen] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
-
-  useEffect(() => {
-    setIsTouchDevice(window.matchMedia('(hover: none)').matches);
-  }, []);
 
   useEffect(() => {
     if (!card.isPaymentPlan || !card.planTitle) return;
@@ -82,9 +77,7 @@ function FlipCard({ card, index }) {
         setShowPayment(true);
         localStorage.removeItem('atyant_pending_booking');
       }
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }, [card.isPaymentPlan, card.planTitle]);
 
   const isCenter = card.colorTheme === 'center';
@@ -93,72 +86,55 @@ function FlipCard({ card, index }) {
   const isGreen = card.colorTheme === 'green';
   const isOrange = isCenter || isFeatured;
 
-  const cardH = isCenter ? 'h-[560px]' : 'h-[520px]';
-
-  const frontBorder = isOrange
-    ? 'border-2 border-[#FF6B2B] shadow-[0_0_40px_6px_rgba(255,107,43,0.25)]'
+  const cardBorder = isOrange
+    ? 'border-2 border-[#FF6B2B] shadow-[0_0_32px_4px_rgba(255,107,43,0.18)]'
     : isPremium
-      ? 'border-2 border-[#6366f1] shadow-[0_0_20px_2px_rgba(99,102,241,0.15)]'
+      ? 'border-2 border-[#6366f1] shadow-[0_0_20px_2px_rgba(99,102,241,0.13)]'
       : isGreen
-        ? 'border border-emerald-200 shadow-[0_15px_50px_rgba(16,185,129,0.08)]'
+        ? 'border border-emerald-200 shadow-[0_8px_30px_rgba(16,185,129,0.07)]'
         : 'border border-slate-200 shadow-lg';
 
-  const backBg = isOrange
-    ? 'bg-gradient-to-br from-[#1c1200] to-[#3d2a00]'
-    : isPremium
-      ? 'bg-gradient-to-br from-[#1e1b4b] to-[#312e81]'
-      : isGreen
-        ? 'bg-gradient-to-br from-[#052e16] to-[#064e3b]'
-        : 'bg-[#0B0F2E]';
-
-  const btnFront = isOrange
+  const btnStyle = isOrange
     ? 'bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-white shadow-lg shadow-amber-500/30 hover:from-[#d97706] hover:to-[#f59e0b]'
     : isPremium
       ? 'bg-[#6366f1] text-white hover:bg-[#4f46e5]'
       : isGreen
-        ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20'
+        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
         : 'bg-[#0B0F2E] text-white hover:bg-[#12183f]';
 
-  const btnBack = isOrange
-    ? 'bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] text-white shadow-lg shadow-amber-500/40'
-    : isPremium
-      ? 'bg-[#6366f1] text-white'
-      : isGreen
-        ? 'bg-emerald-500 text-white'
-        : 'bg-white text-[#0B0F2E]';
-
   const checkColor = isOrange
-    ? 'text-[#fbbf24]'
-    : isPremium
-      ? 'text-[#818cf8]'
-      : isGreen
-        ? 'text-emerald-400'
-        : 'text-[#FF6B2B]';
+    ? 'text-[#f59e0b]'
+    : isPremium ? 'text-[#818cf8]'
+    : isGreen ? 'text-emerald-500'
+    : 'text-[#FF6B2B]';
 
-  const entryVariants = {
-    hidden: isCenter ? { opacity: 0, y: -32, scale: 0.96 } : { opacity: 0, y: 28 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { duration: 0.7, ease: 'easeOut', delay: index * 0.1 },
-    },
-  };
+  const bonusBg = isOrange
+    ? 'bg-amber-50 border-amber-200'
+    : isPremium ? 'bg-indigo-50 border-indigo-200'
+    : isGreen ? 'bg-emerald-50 border-emerald-200'
+    : 'bg-slate-50 border-slate-200';
 
-  const pulseVariants = {
-    idle: { boxShadow: '0 0 40px 6px rgba(255,107,43,0.25)' },
-    pulse: { boxShadow: '0 0 60px 14px rgba(255,107,43,0.45)' },
-  };
+  const bonusAccent = isOrange
+    ? 'text-amber-600'
+    : isPremium ? 'text-indigo-600'
+    : isGreen ? 'text-emerald-600'
+    : 'text-[#FF6B2B]';
+
+  const discountBg = isOrange
+    ? 'bg-amber-100 text-amber-700'
+    : isGreen ? 'bg-emerald-100 text-emerald-700'
+    : 'bg-orange-50 text-orange-600';
+
+  const toggleColor = isOrange
+    ? 'text-amber-600 hover:text-amber-700'
+    : isPremium ? 'text-indigo-500 hover:text-indigo-600'
+    : 'text-[#FF6B2B] hover:text-[#e55a1f]';
 
   function handleCTA(e) {
     e.stopPropagation();
-
     if (card.isPaymentPlan && card.planTitle) {
       const planId = PLAN_ID_MAP[card.planTitle];
-      if (!planId) {
-        window.open(getWhatsAppLink(card.planTitle), '_blank');
-        return;
-      }
+      if (!planId) { window.open(getWhatsAppLink(card.planTitle), '_blank'); return; }
       const token = localStorage.getItem('user_token');
       if (!token) {
         localStorage.setItem('atyant_pending_booking', JSON.stringify({ bundleId: planId }));
@@ -168,191 +144,134 @@ function FlipCard({ card, index }) {
       setShowPayment(true);
       return;
     }
-
     window.open(buildWhatsAppUrl(card.whatsappText), '_blank');
   }
 
   return (
     <>
       <motion.div
-        variants={entryVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-80px' }}
-        className={`relative w-full ${cardH} ${isCenter ? '-mt-6' : ''}`}
-        style={{ perspective: '1200px' }}
-        onHoverStart={() => { if (!isTouchDevice) setFlipped(true); }}
-        onHoverEnd={() => { if (!isTouchDevice) setFlipped(false); }}
-        onClick={() => setFlipped((v) => !v)}
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.55, ease: 'easeOut', delay: index * 0.08 }}
+        className={`relative w-full rounded-[2rem] bg-white p-6 sm:p-8 ${cardBorder}`}
       >
         {card.badgeFloating && (
-          <div
-            className={`absolute -top-5 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full px-5 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-white shadow-lg ${
-              isOrange
-                ? 'bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] shadow-[#FF6B2B]/40'
-                : 'bg-gradient-to-r from-[#6366f1] to-[#818cf8] shadow-indigo-500/30'
-            }`}
-          >
+          <div className={`absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-5 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-white shadow-lg z-10 ${
+            isOrange
+              ? 'bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57]'
+              : 'bg-gradient-to-r from-[#6366f1] to-[#818cf8]'
+          }`}>
             {card.badge}
           </div>
         )}
 
-        <motion.div
-          className="relative h-full w-full"
-          animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-          style={{ transformStyle: 'preserve-3d' }}
+        {/* discount row */}
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <span className={`rounded-full px-3 py-1 text-[10px] font-black ${discountBg}`}>
+            {card.discount}
+          </span>
+          {card.discountLabel && (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              • {card.discountLabel}
+            </span>
+          )}
+        </div>
+
+        {card.valueCallout && (
+          <span className="mb-2 inline-block rounded-lg bg-gradient-to-r from-[#d97706] to-[#f59e0b] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+            {card.valueCallout}
+          </span>
+        )}
+
+        <h3 className={`font-black leading-tight tracking-tight text-[#0B0F2E] ${isOrange ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'}`}>
+          {card.title}
+        </h3>
+
+        <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">{card.shortDesc}</p>
+
+        {card.comparisonHint && (
+          <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
+            ✦ {card.comparisonHint}
+          </p>
+        )}
+
+        {/* price */}
+        <div className="mt-4 flex items-baseline gap-2">
+          <span className={`font-black text-[#0B0F2E] ${isOrange ? 'text-4xl' : 'text-3xl'}`}>
+            ₹{card.price}
+          </span>
+          {card.oldPrice && (
+            <span className="text-sm font-bold line-through text-slate-400">₹{card.oldPrice}</span>
+          )}
+        </div>
+
+        {/* CTA */}
+        <button
+          type="button"
+          onClick={handleCTA}
+          className={`mt-4 inline-flex w-full cursor-pointer items-center justify-center rounded-full px-5 py-3.5 text-sm font-black transition-all duration-200 hover:scale-[1.02] ${btnStyle}`}
         >
-          {/* FRONT */}
-          <motion.div
-            className={`absolute inset-0 flex flex-col rounded-[2.2rem] bg-white p-6 sm:p-8 ${frontBorder}`}
-            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-            {...(isOrange && {
-              animate: 'pulse',
-              variants: pulseVariants,
-              transition: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
-            })}
-          >
-            {!card.badgeFloating && card.badge && (
-              <span className="mb-3 self-start rounded-full bg-orange-500/10 px-4 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-orange-600">
-                {card.badge}
-              </span>
-            )}
+          {card.cta}
+        </button>
 
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className={`self-start rounded-full px-3 py-1 text-[10px] font-black ${
-                isOrange ? 'bg-amber-100 text-amber-700' : isGreen ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-500/10 text-orange-600'
-              }`}>
-                {card.discount}
-              </span>
-              {card.discountLabel && (
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  • {card.discountLabel}
-                </span>
-              )}
-            </div>
+        {/* See more toggle */}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className={`mt-3 flex w-full items-center justify-center gap-1.5 text-xs font-bold transition-colors ${toggleColor}`}
+        >
+          {open ? 'Hide details ↑' : "See what's included ↓"}
+        </button>
 
-            {card.valueCallout && (
-              <span className="mb-2 self-start rounded-lg bg-gradient-to-r from-[#d97706] to-[#f59e0b] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
-                {card.valueCallout}
-              </span>
-            )}
-
-            <h3 className={`font-black leading-tight tracking-tight text-[#0B0F2E] ${isOrange ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'}`}>
-              {card.title}
-            </h3>
-
-            {card.subtitle && (
-              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">{card.subtitle}</p>
-            )}
-
-            <p className="mt-3 flex-1 text-base font-medium leading-relaxed text-slate-500">
-              {card.shortDesc}
-            </p>
-
-            {card.comparisonHint && (
-              <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
-                ✦ {card.comparisonHint}
-              </p>
-            )}
-
-            <div className="mt-4 flex items-baseline gap-2">
-              <span className={`font-black text-[#0B0F2E] ${isOrange ? 'text-5xl' : 'text-4xl'}`}>
-                ₹{card.price}
-              </span>
-              {card.oldPrice && (
-                <span className="text-base font-bold line-through text-slate-400">₹{card.oldPrice}</span>
-              )}
-            </div>
-
-            <button
-              type="button"
-              onClick={handleCTA}
-              className={`mt-5 inline-flex w-full cursor-pointer items-center justify-center rounded-full px-5 py-3.5 text-sm font-black transition-all duration-200 hover:scale-[1.03] ${btnFront}`}
+        {/* Expandable details */}
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              key="details"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="overflow-hidden"
             >
-              {card.cta}
-            </button>
+              <div className="mt-4 space-y-2 border-t border-slate-100 pt-4">
+                <p className={`mb-2 text-[10px] font-black uppercase tracking-[0.18em] ${
+                  isOrange ? 'text-amber-600' : isPremium ? 'text-indigo-500' : isGreen ? 'text-emerald-600' : 'text-[#FF6B2B]'
+                }`}>What's included</p>
+                {card.features.map((f) => (
+                  <div key={f} className="flex items-start gap-2.5">
+                    <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${checkColor}`} />
+                    <span className="text-sm font-medium leading-snug text-slate-700">{f}</span>
+                  </div>
+                ))}
 
-            <p className="mt-3 text-center text-[10px] font-medium text-slate-400">
-              {flipped ? '' : isTouchDevice ? "Tap to see what's included →" : "Hover to see what's included →"}
-            </p>
-          </motion.div>
-
-          {/* BACK */}
-          <div
-            className={`absolute inset-0 flex flex-col overflow-y-auto rounded-[2.2rem] p-6 sm:p-8 scrollbar-none ${backBg}`}
-            style={{
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-            }}
-          >
-            <div className="mb-4">
-              <p className={`mb-1 text-xs font-black uppercase tracking-[0.2em] ${
-                isOrange ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-[#FF6B2B]'
-              }`}>
-                What&apos;s included
-              </p>
-              <h4 className="text-lg font-black text-white">{card.title}</h4>
-            </div>
-
-            <div className="flex-1 space-y-2">
-              {card.features.map((f) => (
-                <div key={f} className="flex items-start gap-2.5">
-                  <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${checkColor}`} />
-                  <span className="text-sm font-medium leading-snug text-white/85">{f}</span>
-                </div>
-              ))}
-            </div>
-
-            {card.bonusItems?.length > 0 && (
-              <div className={`mt-4 rounded-2xl border p-4 ${
-                isOrange
-                  ? 'border-amber-700/40 bg-amber-900/30'
-                  : isPremium
-                    ? 'border-indigo-700/40 bg-indigo-900/40'
-                    : isGreen
-                      ? 'border-emerald-700/40 bg-emerald-900/30'
-                      : 'border-white/10 bg-white/5'
-              }`}>
-                <div className="mb-2 flex items-center gap-2">
-                  <Sparkles className={`h-3.5 w-3.5 ${
-                    isOrange ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-400'
-                  }`} />
-                  <p className={`text-[10px] font-black uppercase tracking-wider ${
-                    isOrange ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-300'
-                  }`}>
-                    {card.bonusLabel}
-                  </p>
-                </div>
-                <div className="space-y-1.5">
-                  {card.bonusItems.map((item) => (
-                    <div key={item} className="flex items-center gap-2">
-                      <Star className={`h-3 w-3 shrink-0 fill-current ${
-                        isOrange ? 'text-amber-400' : isPremium ? 'text-indigo-400' : isGreen ? 'text-emerald-400' : 'text-amber-400'
-                      }`} />
-                      <span className="text-xs font-medium text-white/75">{item}</span>
+                {card.bonusItems?.length > 0 && (
+                  <div className={`mt-3 rounded-xl border p-3.5 ${bonusBg}`}>
+                    <div className="mb-2 flex items-center gap-2">
+                      <Sparkles className={`h-3.5 w-3.5 ${bonusAccent}`} />
+                      <p className={`text-[10px] font-black uppercase tracking-wider ${bonusAccent}`}>
+                        {card.bonusLabel}
+                      </p>
                     </div>
-                  ))}
-                </div>
+                    <div className="space-y-1.5">
+                      {card.bonusItems.map((item) => (
+                        <div key={item} className="flex items-center gap-2">
+                          <Star className={`h-3 w-3 shrink-0 fill-current ${bonusAccent}`} />
+                          <span className="text-xs font-medium text-slate-600">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {card.footerNote && (
+                  <p className="pt-1 text-center text-[10px] italic text-slate-400">{card.footerNote}</p>
+                )}
               </div>
-            )}
-
-            {card.footerNote && (
-              <p className="mt-3 text-center text-xs italic text-white/40">{card.footerNote}</p>
-            )}
-
-            <button
-              type="button"
-              onClick={handleCTA}
-              className={`mt-4 inline-flex w-full cursor-pointer items-center justify-center rounded-full px-5 py-3.5 text-sm font-black transition-all duration-200 hover:scale-[1.03] ${btnBack}`}
-            >
-              {card.cta}
-            </button>
-          </div>
-        </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {showPayment && card.isPaymentPlan && (
@@ -472,7 +391,7 @@ export default function AdmissionProgramsSection({ user }) {
           </h2>
         </motion.div>
 
-        <div className="mx-auto grid max-w-3xl grid-cols-1 items-center gap-8 pb-6 sm:grid-cols-2">
+        <div className="mx-auto grid max-w-3xl grid-cols-1 items-start gap-8 pb-6 sm:grid-cols-2">
           {counsellingFlipCards.map((card, index) => (
             <FlipCard key={card.id} card={card} index={index} />
           ))}
@@ -516,7 +435,7 @@ export default function AdmissionProgramsSection({ user }) {
             </p>
           </motion.div>
 
-          <div className="mx-auto grid max-w-6xl grid-cols-1 items-end gap-8 pb-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-8 pb-6 sm:grid-cols-2 lg:grid-cols-3">
             {admissionPrograms.map((card, index) => (
               <div key={card.id} className={index === 1 ? 'sm:col-span-2 lg:col-span-1' : ''}>
                 <FlipCard card={card} index={index} />
