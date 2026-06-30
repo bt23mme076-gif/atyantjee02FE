@@ -286,7 +286,7 @@ export const pricingPlans = _override?.pricingPlans ?? [
     discountLabel: 'Best Choice for Most',
     bestFor: 'Full JoSAA + CSAB support till final allotment. Peace of mind during every counselling round.',
     features: [
-      'Round-by-round JoSAA + CSAB support',
+      'Complete CSAB support',
       'Dedicated mentor throughout',
       'Priority WhatsApp support',
       'Backup planning if allotment changes',
