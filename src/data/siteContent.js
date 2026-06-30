@@ -204,12 +204,12 @@ export const examSchedule = _override?.examSchedule ?? [
     colorTheme: 'blue',
   },
   {
-    id: 'comedk',
-    label: 'COMEDK',
-    fullName: 'COMEDK',
+    id: 'all-india',
+    label: 'All India',
+    fullName: 'All India',
     start: '2026-06-10',
     end: '2026-07-10',
-    anchor: '/programs#josaa',
+    anchor: '/programs#othercounselling',
     colorTheme: 'green',
   },
 ];

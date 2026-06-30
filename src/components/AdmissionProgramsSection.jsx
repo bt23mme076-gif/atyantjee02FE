@@ -543,7 +543,7 @@ export default function AdmissionProgramsSection({ user }) {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-emerald-200/60 bg-white/90 p-10 shadow-[0_35px_80px_rgba(16,185,129,0.15)] backdrop-blur-xl">
+          <div id="othercounselling" className="relative overflow-hidden rounded-[2.5rem] border border-emerald-200/60 bg-white/90 p-10 shadow-[0_35px_80px_rgba(16,185,129,0.15)] backdrop-blur-xl">
 
             {/* Background Glow */}
             <div className="absolute -left-16 -top-16 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" />
