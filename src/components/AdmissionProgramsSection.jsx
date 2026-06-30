@@ -42,7 +42,7 @@ function pricingPlanToFlipCard(plan) {
     price: plan.price,
     oldPrice: plan.originalPrice,
     shortDesc: plan.bestFor,
-    valueCallout: plan.colorTheme === 'navy-glow' ? '🏆 Best Choice' : undefined,
+    valueCallout: plan.valueCallout || (plan.colorTheme === 'navy-glow' ? '🏆 Best Choice' : undefined),
     comparisonHint: plan.colorTheme === 'navy-glow' ? 'Most chosen by students & parents' : undefined,
     features: plan.features,
     bonusLabel: plan.bonusLabel?.replace(/^🎁\s*/, '') || 'Bonus Guides',
@@ -90,12 +90,12 @@ function FlipCard({ card, index }) {
   const isPremium = card.colorTheme === 'premium';
   const isGreen = card.colorTheme === 'green';
 
-  const cardH = isCenter ? 'h-[560px]' : 'h-[520px]';
+  const cardH = (isCenter || isPremium) ? 'h-[560px]' : 'h-[520px]';
 
 const frontBorder = isCenter
   ? 'border-2 border-black shadow-[0_0_40px_6px_rgba(255,107,43,0.25)]'
   : isPremium
-    ? 'border-2 border-black shadow-[0_0_20px_2px_rgba(99,102,241,0.15)]'
+    ? 'border-2 border-black shadow-[0_0_40px_6px_rgba(99,102,241,0.3)]'
     : isGreen
       ? 'border-[1.5px] border-black shadow-[0_15px_50px_rgba(16,185,129,0.08)]'
       : 'border-[1.5px] border-black shadow-lg';
@@ -145,6 +145,11 @@ const frontBorder = isCenter
   const pulseVariants = {
     idle: { boxShadow: '0 0 40px 6px rgba(255,107,43,0.25)' },
     pulse: { boxShadow: '0 0 60px 14px rgba(255,107,43,0.45)' },
+  };
+
+  const pulseVariantsPremium = {
+    idle: { boxShadow: '0 0 40px 6px rgba(99,102,241,0.3)' },
+    pulse: { boxShadow: '0 0 60px 14px rgba(99,102,241,0.5)' },
   };
 
   function handleCTA(e) {
@@ -207,6 +212,11 @@ const frontBorder = isCenter
             {...(isCenter && {
               animate: 'pulse',
               variants: pulseVariants,
+              transition: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
+            })}
+            {...(isPremium && {
+              animate: 'pulse',
+              variants: pulseVariantsPremium,
               transition: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
             })}
           >
@@ -475,7 +485,7 @@ export default function AdmissionProgramsSection({ user }) {
 
           <div className="mb-5 flex justify-center">
             <span className="rounded-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
-             JEE Counselling Plans
+             CSAB Counselling Plans
             </span>
           </div>
           <h2 className="mt-3 text-4xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl lg:text-6xl">
@@ -484,7 +494,7 @@ export default function AdmissionProgramsSection({ user }) {
           </h2>
         </motion.div>
 
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-end gap-8 pb-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-3xl grid-cols-1 items-end gap-8 pb-6 sm:grid-cols-2">
           {counsellingFlipCards.map((card, index) => (
             <FlipCard key={card.id} card={card} index={index} />
           ))}

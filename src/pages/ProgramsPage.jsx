@@ -58,7 +58,7 @@ const whyChoosePoints = [
   'Talk to seniors with ranks like yours',
   'Real JoSAA experience from recent seniors',
   'Honest advice, not sugarcoating',
-  'Affordable guidance starting at just ₹99',
+  'Affordable guidance starting at just ₹999',
   'Support from choice filling till allotment',
   'No bots. Only real seniors.',
 ];
@@ -288,3 +288,4 @@ export default function ProgramsPage({ user }) {
     </main>
   );
 }
+

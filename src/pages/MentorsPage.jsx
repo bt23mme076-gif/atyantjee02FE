@@ -13,34 +13,12 @@ import { ALL_INDIAN_STATES, COLLEGES_BY_TYPE, DEPARTMENTS } from '../data/siteCo
 // ─── Bundle definitions ────────────────────────────────────────────────────
 const BUNDLES = [
   {
-    id: 'starter-clarity',
-    name: 'Starter Clarity',
-    sub: '10–15 min quick guidance call',
-    price: '₹99',
-    originalPrice: '₹399',
-    discount: '75% OFF',
-    color: '#1D9E75',
-    bg: '#E1F5EE',
-    wa: 'Hi+Atyant%2C+I+am+interested+in+Starter+Clarity.%0A%0AMy+exam%3A%0AMy+rank%2Fpercentile%3A%0AMy+main+confusion%3A%0A',
-  },
-  {
-    id: 'complete-guidance',
-    name: 'Complete Guidance',
-    sub: '2 strategy sessions + Insights Kit',
-    price: '₹399',
-    originalPrice: '₹999',
-    discount: '60% OFF',
-    color: '#FF6B2B',
-    bg: '#FFF3EE',
-    wa: 'Hi+Atyant%2C+I+am+interested+in+Complete+Guidance.%0A%0AMy+exam%3A%0AMy+rank%2Fpercentile%3A%0AMy+preferred+branch%3A%0AMy+main+confusion%3A%0A',
-  },
-  {
     id: 'complete-round',
     name: 'Complete Round Support',
     sub: 'Full JoSAA + CSAB support',
-    price: '₹899',
+    price: '₹999',
     originalPrice: '₹1,999',
-    discount: '55% OFF',
+    discount: '50% OFF',
     popular: true,
     color: '#E28743',
     bg: '#FFFBF5',
@@ -50,9 +28,9 @@ const BUNDLES = [
     id: 'ultimate-peace',
     name: 'Ultimate Peace of Mind',
     sub: '1-on-1 premium guidance from start to finish',
-    price: '₹1,299',
+    price: '₹1,999',
     originalPrice: '₹2,999',
-    discount: '56% OFF',
+    discount: '33% OFF',
     color: '#534AB7',
     bg: '#EEEDFE',
     wa: 'Hi+Atyant%2C+I+am+interested+in+Ultimate+Peace+of+Mind.%0A%0AMy+exam%3A%0AMy+rank%2Fpercentile%3A%0AMy+main+confusion%3A%0A',
@@ -61,8 +39,7 @@ const BUNDLES = [
 
 const BUNDLE_MAP = {
   ...Object.fromEntries(BUNDLES.map(b => [b.id, b])),
-  'quick-clarity': BUNDLES[0], // alias Starter Clarity
-  'dream-seat': BUNDLES[2],    // alias Complete Round Support
+  'dream-seat': BUNDLES[0],    // alias Complete Round Support
 };
 
 // ─── Normalise a bundle value (name or id) → canonical id ────────────────
@@ -199,17 +176,17 @@ function MentorCard({ mentor, index, defaultBundle }) {
   const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
   const navigate = useNavigate();
 
-  // FIX (Backend gap): normalise all bundle values to canonical IDs (excluding Starter Clarity)
+  // FIX (Backend gap): normalise all bundle values to canonical IDs
   const mentorBundles = useMemo(
     () => Array.isArray(mentor.bundles)
-      ? mentor.bundles.map(normaliseBundleId).filter(Boolean).filter(bid => bid !== 'starter-clarity')
+      ? mentor.bundles.map(normaliseBundleId).filter(Boolean)
       : [],
     [mentor.bundles]
   );
 
   const initialBundle = (defaultBundle && mentorBundles.includes(defaultBundle))
     ? defaultBundle
-    : (mentorBundles.includes('complete-guidance') ? 'complete-guidance' : mentorBundles[0]);
+    : (mentorBundles.includes('complete-round') ? 'complete-round' : mentorBundles[0]);
 
   const [selectedBundle, setSelectedBundle] = useState(initialBundle);
   const [showPayment, setShowPayment] = useState(false);
@@ -567,12 +544,8 @@ export default function MentorsPage() {
       if (validBundleParam) {
         matchBundleParam = Array.isArray(m.bundles) && m.bundles.some(b => {
           const normalized = normaliseBundleId(b);
-          const canonicalValid = (validBundleParam === 'quick-clarity') ? 'starter-clarity' :
-                                 (validBundleParam === 'dream-seat') ? 'complete-round' :
-                                 validBundleParam;
-          const canonicalNorm = (normalized === 'quick-clarity') ? 'starter-clarity' :
-                                (normalized === 'dream-seat') ? 'complete-round' :
-                                normalized;
+          const canonicalValid = (validBundleParam === 'dream-seat') ? 'complete-round' : validBundleParam;
+          const canonicalNorm = (normalized === 'dream-seat') ? 'complete-round' : normalized;
           return canonicalNorm === canonicalValid;
         });
       }

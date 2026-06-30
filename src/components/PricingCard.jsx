@@ -8,8 +8,6 @@ import { createPaymentOrder, getUserMe } from '../utils/api';
 // Map frontend plan titles → backend planId
 export const PLAN_ID_MAP = {
   // JEE Counselling Plans
-  'Starter Clarity': 'starter-clarity',
-  'Complete Guidance': 'complete-guidance',
   'Complete Round Support': 'complete-round',
   'Ultimate Peace of Mind': 'ultimate-peace',
   // MHT-CET Counselling Plans

@@ -7,34 +7,15 @@ import { getDetailedWhatsAppLink } from '../utils/whatsapp';
 
 const AVAILABLE_BUNDLES = [
   {
-    id: 'complete-guidance',
-    name: 'Complete Guidance',
-    price: 399,
-    originalPrice: 999,
-    discount: '60% OFF – JoSAA Launch Pricing',
-    icon: '🚀',
-    desc: 'Your complete JoSAA strategy partner. Structured guidance before choice filling.',
-    includes: [
-      '2 strategy sessions',
-      'Branch vs college analysis',
-      'Freeze / Float guidance',
-      'Preference order strategy',
-      '3–5 day WhatsApp support',
-      '🎁 Includes Senior Insights Kit',
-    ],
-    mentorNote: 'You commit to 2 strategy sessions, choice order strategy, and 3–5 day WhatsApp support + sharing the Insights Kit.',
-  },
-  {
     id: 'complete-round',
     name: 'Complete Round Support',
-    price: 899,
+    price: 999,
     originalPrice: 1999,
-    discount: '55% OFF – Most Popular Package',
+    discount: '50% OFF – Most Popular Package',
     badge: '⭐ Most Popular',
     icon: '🛡️',
     desc: 'Full JoSAA + CSAB support till final allotment. Peace of mind during every counselling round.',
     includes: [
-      'Everything in ₹399 package, plus:',
       'Round-by-round JoSAA + CSAB support',
       'Dedicated mentor throughout',
       'Priority WhatsApp support',
@@ -47,13 +28,13 @@ const AVAILABLE_BUNDLES = [
   {
     id: 'ultimate-peace',
     name: 'Ultimate Peace of Mind',
-    price: 1299,
+    price: 1999,
     originalPrice: 2999,
-    discount: '56% OFF – 1-on-1 Premium',
+    discount: '33% OFF – 1-on-1 Premium',
     icon: '👑',
     desc: 'Highest level of personal support. 1-on-1 premium guidance from start to finish.',
     includes: [
-      'Everything in ₹899 package, plus:',
+      'Everything in ₹999 package, plus:',
       'Personal 1-on-1 mentor',
       'Personalized preference review',
       'Final decision support calls',
@@ -219,10 +200,10 @@ export default function ProfilePage({ user, setUser }) {
         
         const mappedBundles = (user.bundles || []).map(b => {
           if (b === 'Quick Clarity' || b === 'quick-clarity' || b === 'Starter Clarity' || b === 'starter-clarity') {
-            return 'starter-clarity';
+            return null;
           }
           if (b === 'Complete Guidance' || b === 'complete-guidance') {
-            return 'complete-guidance';
+            return null;
           }
           if (b === 'Dream Seat Protection™' || b === 'dream-seat' || b === 'Complete Round Support' || b === 'complete-round') {
             return 'complete-round';
@@ -231,7 +212,7 @@ export default function ProfilePage({ user, setUser }) {
             return 'ultimate-peace';
           }
           return b;
-        });
+        }).filter(Boolean);
         setBundles(mappedBundles);
         setBio(user.bio || '');
         setProfilePhotoFilename(user.profilePhotoFilename || '');

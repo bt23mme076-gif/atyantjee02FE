@@ -16,33 +16,13 @@ export function getInclusions(planId, planTitle) {
       '🎁 Bonus: Extra mentor sessions (if needed)',
     ];
   }
-  if (normalizedId.includes('round') || normalizedTitle.includes('round') || normalizedId.includes('dream') || normalizedTitle.includes('dream')) {
-    return [
-      'Everything in Complete Guidance package',
-      'Round-by-round JoSAA + CSAB support',
-      'Dedicated mentor throughout',
-      'Priority WhatsApp support',
-      'Backup planning if allotment changes',
-      'Support till final rounds',
-      '🎁 Premium Advantage Pack included',
-    ];
-  }
-  if (normalizedId.includes('complete') || normalizedTitle.includes('complete')) {
-    return [
-      '2 strategy sessions',
-      'Branch vs college analysis',
-      'Freeze / Float guidance',
-      'Preference order strategy',
-      '3–5 day WhatsApp support',
-      '🎁 Includes Senior Insights Kit',
-    ];
-  }
   return [
-    '10–15 min quick guidance call',
-    'One major confusion solved',
-    'Quick JoSAA direction',
-    'Rank-based option clarity',
-    'Personalized mentor matching',
+    'Round-by-round JoSAA + CSAB support',
+    'Dedicated mentor throughout',
+    'Priority WhatsApp support',
+    'Backup planning if allotment changes',
+    'Support till final rounds',
+    '🎁 Premium Advantage Pack included',
   ];
 }
 

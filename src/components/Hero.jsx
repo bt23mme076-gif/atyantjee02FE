@@ -79,7 +79,7 @@ export default function Hero({ activeTab, onTabChange }) {
                     🎓
                   </span>
                   <span>
-                    <span className="block text-lg font-black text-white leading-tight">JoSAA / CSAB</span>
+                    <span className="block text-lg font-black text-white leading-tight">CSAB</span>
                     <span className="block text-sm font-medium text-white/85">Counselling Plans</span>
                   </span>
                 </div>
