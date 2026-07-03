@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { userLogin, userSignup, googleLogin, googleSignup } from '../utils/api';
 
 export default function AuthPage({ setUser }) {
-  const [isLogin, setIsLogin] = useState(true);
   const [role, setRole] = useState(''); // Empty string by default, forcing user to select one
 
   const [name, setName] = useState('');
@@ -22,6 +21,8 @@ export default function AuthPage({ setUser }) {
   const location = useLocation();
   const customMessage = location.state?.message;
   const referralCode = new URLSearchParams(location.search).get('ref') || undefined;
+
+  const [isLogin, setIsLogin] = useState(!referralCode); // auto-switch to signup if referral link
 
   const completeAuthRedirect = (userObj) => {
     const pendingBooking = localStorage.getItem('atyant_pending_booking');
