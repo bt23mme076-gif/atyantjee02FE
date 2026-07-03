@@ -196,8 +196,8 @@ function AppContent() {
     else navigate(`/${tab}`);
   };
 
-  const isDarkPage = location.pathname === '/' || location.pathname === '/atyantlogin';
-  const bgClass = isDarkPage ? 'bg-[#0B0F2E]' : 'bg-white';
+  const isDarkPage = true;
+  const bgClass = 'bg-[#0B0F2E]';
 
   return (
     <div className={`min-h-screen ${bgClass} font-sans antialiased`} style={{ overflowX: 'clip' }}>

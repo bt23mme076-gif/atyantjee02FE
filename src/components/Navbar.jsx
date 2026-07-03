@@ -22,34 +22,45 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
   return (
     <header className="sticky top-0 z-50 w-full px-4 pt-3 sm:px-6 lg:px-8 pointer-events-none">
       <div
-        className={`mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-3 transition-all duration-300 rounded-full border pointer-events-auto ${scrolled || menuOpen
+        className={`mx-auto flex w-full max-w-7xl items-center justify-between px-4 lg:px-6 py-2.5 lg:py-3 transition-all duration-300 rounded-full border pointer-events-auto ${scrolled || menuOpen
           ? 'border-white/10 bg-[#0B0F2E]/80 shadow-[0_12px_40px_rgba(0,0,0,0.3)] backdrop-blur-xl'
           : 'border-white/5 bg-[#0B0F2E]/65 shadow-[0_8px_30px_rgba(0,0,0,0.15)] backdrop-blur-lg'
           }`}
       >
 
-        {/* Logo - Left */}
-        <div className="flex items-center">
+        {/* Logo - Left (Grows to push center item) */}
+        <div className="flex-1 flex items-center justify-start">
           <button
             onClick={() => { onTabChange && onTabChange('after12th'); closeMenu(); }}
-            className="inline-flex items-center gap-3 text-white outline-none group text-left"
+            className="inline-flex items-center gap-2 text-white outline-none group text-left"
           >
             {/* Indian language emblem styled beautifully */}
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF6B2B] to-[#FF8E53] shadow-md shadow-[#FF6B2B]/20 transition-all duration-300 group-hover:scale-105 group-hover:rotate-6">
               <span className="text-[13px] font-bold text-white leading-none">अत्यंत</span>
             </div>
-            <div className="text-xl font-bold tracking-tight text-white group-hover:text-[#FFB38E] transition duration-200">
+            <div className="text-xl font-bold tracking-tight text-white group-hover:text-[#FFB38E] transition duration-200 hidden sm:inline-block">
               Atyant
             </div>
           </button>
         </div>
 
-        {/* Nav Links - Center (desktop only) */}
-        <nav className="hidden lg:flex items-center justify-center gap-1">
+        {/* Mobile College Guide button - Standalone centered child */}
+        <div className="lg:hidden flex-shrink-0 flex items-center justify-center">
+          <button
+            onClick={() => { onTabChange && onTabChange('roadmap'); closeMenu(); }}
+            className="flex items-center justify-center gap-1.5 rounded-full px-3.5 py-2 text-[10px] font-bold text-white bg-gradient-to-r from-[#FF6B2B] to-[#8B5CF6] shadow-md shadow-[#8B5CF6]/20 transition active:scale-95 shrink-0"
+          >
+            <Sparkles className="h-2.5 w-2.5 text-[#FFB38E]" />
+            <span>College Guide</span>
+          </button>
+        </div>
+
+        {/* Nav Links - Center (desktop only, grows to fill center) */}
+        <nav className="hidden lg:flex flex-shrink-0 items-center justify-center gap-1">
           <button
             onClick={() => onTabChange && onTabChange('after12th')}
-            className={`text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200 ${activeTab === 'after12th'
-              ? 'bg-white/10 text-[#FF6B2B]'
+            className={`text-xs font-semibold px-4 py-2 rounded-full transition ${activeTab === 'after12th'
+              ? 'bg-white/10 text-white'
               : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
           >
@@ -58,13 +69,13 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
 
           <button
             onClick={() => onTabChange && onTabChange('mentors')}
-            className={`text-xs font-semibold px-4 py-2 rounded-full transition-all duration-200 flex items-center gap-1.5 ${activeTab === 'mentors'
-              ? 'bg-white/10 text-blue-400'
+            className={`text-xs font-semibold px-4 py-2 rounded-full transition flex items-center gap-1.5 ${activeTab === 'mentors'
+              ? 'bg-white/10 text-white'
               : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
           >
-            Find Mentors
-            <span className="flex h-3.5 w-6 items-center justify-center rounded bg-blue-500/20 text-[7px] font-black text-blue-400 ring-1 ring-blue-500/40">NEW</span>
+            <span>Find Mentors</span>
+            <span className="flex h-3 w-5 items-center justify-center rounded bg-blue-500/20 text-[6px] font-black text-blue-400 ring-1 ring-blue-500/30">NEW</span>
           </button>
 
           <Link
@@ -90,8 +101,8 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
           </button>
         </nav>
 
-        {/* Right side: Action buttons */}
-        <div className="flex items-center gap-3">
+        {/* Right side: Action buttons (Grows to push center item) */}
+        <div className="flex-1 flex items-center justify-end gap-3">
           {/* Desktop Auth & Lead Button */}
           <div className="hidden lg:flex items-center gap-2">
             {user ? (
@@ -176,16 +187,6 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
             <span className="text-[7px] font-black text-[#1a1814] bg-[#c9a84c] px-1.5 py-0.5 rounded tracking-wide">PRO</span>
           </Link>
 
-          <button
-            onClick={() => { onTabChange && onTabChange('roadmap'); closeMenu(); }}
-            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-white transition ${activeTab === 'roadmap'
-              ? 'bg-gradient-to-r from-[#FF6B2B] to-[#8B5CF6]'
-              : 'bg-white/5 border border-white/5'
-              }`}
-          >
-            <Sparkles className="h-3.5 w-3.5 text-[#FFB38E]" />
-            Explore College Guide
-          </button>
 
           <div className="border-t border-white/5 pt-4 flex flex-col gap-3">
             {user ? (

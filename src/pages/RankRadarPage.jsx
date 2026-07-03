@@ -511,16 +511,31 @@ function ResultCard({ r, rank }) {
 // ─── Scoped styles (ported from the original RankRadar design) ───
 const RR_STYLES = `
 .rr-scope{
-  --rr-bg:#ffffff;--rr-bg2:#f5f4f1;--rr-bg3:#ede9e3;--rr-border:#ddd9d0;--rr-border2:#e8e4dc;
-  --rr-text:#1a1814;--rr-text2:#5a5650;--rr-text3:#9a9590;--rr-accent:#1a1814;
-  --rr-gold-light:#fdf4e3;--rr-blue:#2563eb;--rr-blue-light:#eff6ff;--rr-green:#16a34a;--rr-green-light:#f0fdf4;
-  --rr-orange:#ea580c;--rr-orange-light:#fff7ed;--rr-red:#dc2626;--rr-red-light:#fef2f2;
-  --rr-radius:10px;--rr-shadow:0 1px 3px rgba(0,0,0,0.06),0 2px 8px rgba(0,0,0,0.04);
-  --rr-shadow-lg:0 4px 16px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);
-  font-family:'DM Sans',system-ui,sans-serif;color:var(--rr-text);background:var(--rr-bg);
+  --rr-bg:#0B0F2E;
+  --rr-bg2:rgba(255,255,255,0.04);
+  --rr-bg3:rgba(255,255,255,0.08);
+  --rr-border:rgba(255,255,255,0.1);
+  --rr-border2:rgba(255,255,255,0.06);
+  --rr-text:#ffffff;
+  --rr-text2:#94a3b8;
+  --rr-text3:#64748b;
+  --rr-accent:#ffffff;
+  --rr-gold-light:rgba(255,107,43,0.15);
+  --rr-blue:#3b82f6;
+  --rr-blue-light:rgba(59,130,246,0.1);
+  --rr-green:#10b981;
+  --rr-green-light:rgba(16,185,129,0.1);
+  --rr-orange:#ff6b2b;
+  --rr-orange-light:rgba(255,107,43,0.1);
+  --rr-red:#ef4444;
+  --rr-red-light:rgba(239,68,68,0.1);
+  --rr-radius:12px;
+  --rr-shadow:0 10px 30px rgba(0,0,0,0.3);
+  --rr-shadow-lg:0 15px 40px rgba(0,0,0,0.5);
+  font-family:'Inter',system-ui,sans-serif;color:var(--rr-text);background:var(--rr-bg);
 }
 .rr-scope *{box-sizing:border-box}
-.rr-app{display:flex;flex-direction:column;min-height:70vh}
+.rr-app{display:flex;flex-direction:column;min-height:70vh;background:var(--rr-bg)}
 .rr-topbar{background:var(--rr-bg);border-bottom:1px solid var(--rr-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
 .rr-brand{display:flex;align-items:center;gap:10px}
 .rr-logo{width:32px;height:32px;background:var(--rr-accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
