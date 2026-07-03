@@ -48,7 +48,7 @@ export default function LiveCounsellingBanner() {
   return (
     <section className="relative bg-[#0B0F2E] px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+        <div className="flex flex-row overflow-x-auto gap-2 py-1 scrollbar-none sm:flex-wrap sm:items-center sm:gap-3">
           {liveExams.map((exam) => {
             const theme = THEME[exam.colorTheme] || THEME.orange;
             return (
@@ -57,7 +57,7 @@ export default function LiveCounsellingBanner() {
                 onClick={() => navigate(exam.anchor)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`group flex w-full items-center justify-between gap-3 rounded-2xl border ${theme.border} bg-gradient-to-r ${theme.bg} px-4 py-1 text-left backdrop-blur sm:w-auto`}
+                className={`group flex shrink-0 items-center justify-between gap-3 rounded-2xl border ${theme.border} bg-gradient-to-r ${theme.bg} px-4 py-1 text-left backdrop-blur`}
               >
                 <div className="flex items-center gap-3">
                   <span className="relative flex h-2.5 w-2.5 shrink-0">
