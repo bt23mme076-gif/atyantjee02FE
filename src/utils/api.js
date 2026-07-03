@@ -229,6 +229,24 @@ export const userLogin = async (payload) => {
   return data;
 };
 
+export const googleLogin = async (credential) => {
+  const data = await request('/api/users/google-auth', {
+    method: 'POST',
+    body: JSON.stringify({ credential }),
+  });
+  if (data.token) localStorage.setItem('user_token', data.token);
+  return data;
+};
+
+export const googleSignup = async (payload) => {
+  const data = await request('/api/users/google-signup', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  if (data.token) localStorage.setItem('user_token', data.token);
+  return data;
+};
+
 export const getUserMe = () => {
   const token = localStorage.getItem('user_token');
   return request('/api/users/me', { 
