@@ -656,16 +656,16 @@ export default function AtyantLoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="w-full max-w-5xl mx-auto rounded-2xl bg-white p-6 shadow-xl border border-slate-100">
+      <div className="w-full max-w-5xl mx-auto rounded-2xl bg-white p-4 sm:p-6 shadow-xl border border-slate-100">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 border-b border-slate-100 pb-4">
           <div>
             <h3 className="text-xl font-bold text-[#0B0F2E]">Atyant Admin Dashboard</h3>
             {adminInfo && (
               <p className="text-sm text-gray-500 mt-1">{adminInfo.email}</p>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 justify-end sm:justify-start">
             {authed && (
               <button onClick={handleLogout} className="text-sm font-semibold text-red-500 hover:text-red-600 transition">Log out</button>
             )}
@@ -721,13 +721,13 @@ export default function AtyantLoginPage() {
           </div>
         ) : (
           <>
-            {/* Tabs */}
-            <div className="flex gap-2 mt-2 border-b border-slate-200">
+            {/* Tabs (Responsive Horizontal Scroll Ribbon) */}
+            <div className="flex gap-2 mt-2 border-b border-slate-200 overflow-x-auto scrollbar-none pb-1 whitespace-nowrap">
               {TABS.map((t) => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`px-6 py-3 text-sm font-bold capitalize transition-colors border-b-2 ${
+                  className={`px-6 py-3 text-sm font-bold capitalize transition-colors border-b-2 shrink-0 ${
                     tab === t
                       ? 'border-[#FF6B2B] text-[#FF6B2B]'
                       : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'

@@ -370,12 +370,12 @@ export default function RoadmapContentTab() {
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-6 flex gap-2 overflow-x-auto scrollbar-none pb-1 whitespace-nowrap">
         {SUB_TABS.map((t) => (
           <button
             key={t}
             onClick={() => setSubTab(t)}
-            className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
+            className={`rounded-full px-4 py-1.5 text-xs font-bold transition shrink-0 ${
               subTab === t ? 'bg-[#0B0F2E] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
