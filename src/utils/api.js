@@ -34,11 +34,26 @@ async function request(endpoint, options = {}) {
     const err = new Error(message);
     err.status = res.status;
     err.data = data;
+
+    // Single-device login: the backend rejects a token once a newer login
+    // has replaced it. Clear local state and let the app show a "logged out
+    // elsewhere" notice instead of a raw error.
+    if (data?.code === 'SESSION_INVALIDATED') {
+      localStorage.removeItem('user_token');
+      window.dispatchEvent(new CustomEvent('sessionInvalidated', { detail: { message } }));
+    }
+
     throw err;
   }
 
   return data;
 }
+
+// Helper for user auth header (kept alongside adminAuthHeader for consistency)
+const userAuthHeader = () => {
+  const token = localStorage.getItem('user_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 // Helper for admin auth header
 const adminAuthHeader = () => {
@@ -76,6 +91,20 @@ export const listMentorsAdmin = () =>
 /** Admin: delete any user or mentor account by ID */
 export const deleteUserAdmin = (id) =>
   request(`/api/admin/users/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+/**
+ * Admin: replace a mentor's bundles wholesale. Bundles are no longer
+ * mentor-self-service (see PATCH /api/users/me) — this is now the only way
+ * to change what packages a mentor offers.
+ * @param {string} mentorId
+ * @param {string[]} bundles
+ */
+export const adminUpdateMentorBundles = (mentorId, bundles) =>
+  request(`/api/admin/mentors/${mentorId}/bundles`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify({ bundles }),
+  });
 
 /** Admin: export leads CSV — returns raw text, not JSON */
 export const exportLeadsCSV = async () => {
@@ -301,3 +330,99 @@ export const rejectIdDocAdmin = (mentorId) =>
 export const healthCheck = () => request('/health');
 
 export default API_BASE;
+
+
+// ─── Roadmap (progress, streaks, batch/cohort, pillars & content) ───────
+
+export const getRoadmapPillars = () =>
+  request('/api/roadmap/pillars', { headers: userAuthHeader() });
+
+export const completeRoadmapItem = (itemId) =>
+  request(`/api/roadmap/items/${itemId}/complete`, {
+    method: 'POST',
+    headers: userAuthHeader(),
+  });
+
+export const roadmapCheckIn = () =>
+  request('/api/roadmap/checkin', { method: 'POST', headers: userAuthHeader() });
+
+export const getStreak = () =>
+  request('/api/roadmap/streak', { headers: userAuthHeader() });
+
+export const getMyBatch = () =>
+  request('/api/roadmap/batch/me', { headers: userAuthHeader() });
+
+// ─── Session ────────────────────────────────────────────────────────────
+
+export const logoutUser = async () => {
+  try {
+    await request('/api/users/logout', { method: 'POST', headers: userAuthHeader() });
+  } finally {
+    localStorage.removeItem('user_token');
+  }
+};
+
+
+export const getCareerPaths = () => request('/api/roadmap/career-paths');
+
+
+// ─── Referral & FAQ videos (public + student) ────────────────────────────
+
+export const getFaqVideos = () => request('/api/roadmap/faq-videos');
+
+export const getReferralStatus = () =>
+  request('/api/roadmap/referral', { headers: userAuthHeader() });
+
+// ─── Admin: Roadmap content management ──────────────────────────────────
+
+export const adminListPillars = () => request('/api/admin/roadmap/pillars', { headers: adminAuthHeader() });
+export const adminCreatePillar = (payload) =>
+  request('/api/admin/roadmap/pillars', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdatePillar = (id, payload) =>
+  request(`/api/admin/roadmap/pillars/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeletePillar = (id) =>
+  request(`/api/admin/roadmap/pillars/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+export const adminListItems = (pillarId) =>
+  request(`/api/admin/roadmap/items${pillarId ? `?pillar=${pillarId}` : ''}`, { headers: adminAuthHeader() });
+export const adminCreateItem = (payload) =>
+  request('/api/admin/roadmap/items', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateItem = (id, payload) =>
+  request(`/api/admin/roadmap/items/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteItem = (id) =>
+  request(`/api/admin/roadmap/items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+export const adminListCareerPaths = () => request('/api/admin/career-paths', { headers: adminAuthHeader() });
+export const adminCreateCareerPath = (payload) =>
+  request('/api/admin/career-paths', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateCareerPath = (id, payload) =>
+  request(`/api/admin/career-paths/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteCareerPath = (id) =>
+  request(`/api/admin/career-paths/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+export const adminListFaqVideos = () => request('/api/admin/faq-videos', { headers: adminAuthHeader() });
+export const adminCreateFaqVideo = (payload) =>
+  request('/api/admin/faq-videos', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateFaqVideo = (id, payload) =>
+  request(`/api/admin/faq-videos/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteFaqVideo = (id) =>
+  request(`/api/admin/faq-videos/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+// Admin uploads a document/video file and gets back a URL to attach to a
+// RoadmapItem or FaqVideo via the CRUD calls above.
+export const uploadRoadmapContent = async (file) => {
+  const token = localStorage.getItem('admin_token');
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(`${API_BASE}/api/upload/roadmap-content`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  let data;
+  try { data = await res.json(); } catch { data = {}; }
+  if (!res.ok) throw new Error(data.error || 'Upload failed');
+  return data;
+};

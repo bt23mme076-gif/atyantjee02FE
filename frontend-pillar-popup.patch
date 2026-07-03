@@ -1,0 +1,480 @@
+diff --git a/src/components/roadmap/PillarModal.jsx b/src/components/roadmap/PillarModal.jsx
+new file mode 100644
+index 0000000..b0f0504
+--- /dev/null
++++ b/src/components/roadmap/PillarModal.jsx
+@@ -0,0 +1,115 @@
++import React, { useEffect } from 'react';
++import { motion, AnimatePresence } from 'framer-motion';
++import { X } from 'lucide-react';
++import { getPillarIcon } from './icons';
++import ProgressBar from './ProgressBar';
++import RoadmapItemRow from './RoadmapItemRow';
++
++// Popup shown when a pillar tab is clicked (per the "College Arrival Guide
++// → creates another pop up → has PDFs, videos and all things" flow).
++// Replaces the old always-visible inline section below the tabs.
++export default function PillarModal({ pillar, isLoggedIn, openingItemId, onOpenItem, onClose }) {
++  useEffect(() => {
++    if (!pillar) return;
++    const onKeyDown = (e) => {
++      if (e.key === 'Escape') onClose();
++    };
++    window.addEventListener('keydown', onKeyDown);
++    document.body.style.overflow = 'hidden';
++    return () => {
++      window.removeEventListener('keydown', onKeyDown);
++      document.body.style.overflow = '';
++    };
++  }, [pillar, onClose]);
++
++  const Icon = pillar ? getPillarIcon(pillar.icon) : null;
++  const completedIds = new Set(pillar?.progress?.completedItemIds || []);
++
++  return (
++    <AnimatePresence>
++      {pillar && (
++        <motion.div
++          key="backdrop"
++          initial={{ opacity: 0 }}
++          animate={{ opacity: 1 }}
++          exit={{ opacity: 0 }}
++          className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm"
++          onClick={onClose}
++        >
++          <motion.div
++            key="panel"
++            initial={{ opacity: 0, y: 16, scale: 0.98 }}
++            animate={{ opacity: 1, y: 0, scale: 1 }}
++            exit={{ opacity: 0, y: 10, scale: 0.98 }}
++            transition={{ duration: 0.25, ease: 'easeOut' }}
++            onClick={(e) => e.stopPropagation()}
++            className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-[#0B0F2E] p-6 shadow-2xl sm:p-8"
++          >
++            <button
++              onClick={onClose}
++              aria-label="Close"
++              className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white/60 transition hover:bg-white/10 hover:text-white"
++            >
++              <X className="h-5 w-5" />
++            </button>
++
++            <div className="flex items-start gap-4 pr-10">
++              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF6B2B]/15 text-[#FF6B2B]">
++                {Icon && <Icon className="h-6 w-6" />}
++              </div>
++              <div>
++                <div className="flex flex-wrap items-center gap-2">
++                  <h3 className="text-xl font-bold text-white sm:text-2xl">{pillar.title}</h3>
++                  {pillar.isFlagship && (
++                    <span className="rounded-full bg-[#8B5CF6]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#C4B5FD]">
++                      Flagship
++                    </span>
++                  )}
++                </div>
++                <p className="mt-1 text-sm text-white/60">{pillar.tagline}</p>
++              </div>
++            </div>
++
++            {isLoggedIn && (
++              <div className="mt-6">
++                <ProgressBar percent={pillar.progress?.percent || 0} label="Your progress" />
++              </div>
++            )}
++
++            <div className="mt-6 space-y-3">
++              {pillar.items?.length ? (
++                pillar.items.map((item) => (
++                  <RoadmapItemRow
++                    key={item.id}
++                    item={item}
++                    isLoggedIn={isLoggedIn}
++                    isCompleted={completedIds.has(item.id)}
++                    isOpening={openingItemId === item.id}
++                    onOpen={onOpenItem}
++                  />
++                ))
++              ) : (
++                <p className="rounded-2xl border border-dashed border-white/10 px-5 py-8 text-center text-sm text-white/40">
++                  Content for this section is on its way — check back soon.
++                </p>
++              )}
++            </div>
++
++            {!isLoggedIn ? (
++              <p className="mt-6 text-center text-sm text-white/50">
++                <a href="/login" className="font-semibold text-[#FF6B2B] hover:underline">
++                  Log in
++                </a>{' '}
++                to open resources and track your progress automatically.
++              </p>
++            ) : (
++              <p className="mt-6 text-center text-xs text-white/35">
++                Opening a video or document marks it complete automatically — no extra steps.
++              </p>
++            )}
++          </motion.div>
++        </motion.div>
++      )}
++    </AnimatePresence>
++  );
++}
+diff --git a/src/components/roadmap/PillarSection.jsx b/src/components/roadmap/PillarSection.jsx
+deleted file mode 100644
+index 0a13fb0..0000000
+--- a/src/components/roadmap/PillarSection.jsx
++++ /dev/null
+@@ -1,67 +0,0 @@
+-import React from 'react';
+-import { motion } from 'framer-motion';
+-import { getPillarIcon } from './icons';
+-import ProgressBar from './ProgressBar';
+-import RoadmapItemCard from './RoadmapItemCard';
+-
+-// Renders the active pillar's tagline, progress, and its list of
+-// documents/videos/tasks. `savingId` disables the "mark complete" button on
+-// the specific item currently being saved.
+-export default function PillarSection({ pillar, isLoggedIn, onCompleteItem, savingId }) {
+-  const Icon = getPillarIcon(pillar.icon);
+-  const completedIds = new Set(pillar.progress?.completedItemIds || []);
+-
+-  return (
+-    <motion.div
+-      key={pillar.key}
+-      initial={{ opacity: 0, y: 12 }}
+-      animate={{ opacity: 1, y: 0 }}
+-      transition={{ duration: 0.35, ease: 'easeOut' }}
+-      className="rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-8"
+-    >
+-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+-        <div className="flex items-start gap-4">
+-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF6B2B]/15 text-[#FF6B2B]">
+-            <Icon className="h-6 w-6" />
+-          </div>
+-          <div>
+-            <div className="flex items-center gap-2">
+-              <h3 className="text-xl font-bold text-white sm:text-2xl">{pillar.title}</h3>
+-              {pillar.isFlagship && (
+-                <span className="rounded-full bg-[#8B5CF6]/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#C4B5FD]">
+-                  Flagship
+-                </span>
+-              )}
+-            </div>
+-            <p className="mt-1 max-w-xl text-sm text-white/60">{pillar.tagline}</p>
+-          </div>
+-        </div>
+-
+-        {isLoggedIn && (
+-          <div className="w-full sm:w-48">
+-            <ProgressBar percent={pillar.progress?.percent || 0} label="Your progress" />
+-          </div>
+-        )}
+-      </div>
+-
+-      {pillar.items?.length ? (
+-        <div className="grid gap-3 sm:grid-cols-2">
+-          {pillar.items.map((item) => (
+-            <RoadmapItemCard
+-              key={item.id}
+-              item={item}
+-              isLoggedIn={isLoggedIn}
+-              isCompleted={completedIds.has(item.id)}
+-              isSaving={savingId === item.id}
+-              onComplete={onCompleteItem}
+-            />
+-          ))}
+-        </div>
+-      ) : (
+-        <p className="rounded-2xl border border-dashed border-white/10 px-5 py-8 text-center text-sm text-white/40">
+-          Content for this section is on its way — check back soon.
+-        </p>
+-      )}
+-    </motion.div>
+-  );
+-}
+diff --git a/src/components/roadmap/RoadmapItemCard.jsx b/src/components/roadmap/RoadmapItemCard.jsx
+deleted file mode 100644
+index cb50f80..0000000
+--- a/src/components/roadmap/RoadmapItemCard.jsx
++++ /dev/null
+@@ -1,69 +0,0 @@
+-import React from 'react';
+-import { PlayCircle, FileText, ClipboardCheck, HelpCircle, CheckCircle2, Circle, Lock } from 'lucide-react';
+-
+-const typeIconMap = {
+-  video: PlayCircle,
+-  document: FileText,
+-  article: FileText,
+-  task: ClipboardCheck,
+-  quiz: HelpCircle,
+-};
+-
+-// A single video/document/task row inside a pillar section. Logged-out
+-// visitors see everything but content is locked; logged-in students can
+-// mark items complete which drives the streak + progress bar.
+-export default function RoadmapItemCard({ item, isLoggedIn, isCompleted, onComplete, isSaving }) {
+-  const TypeIcon = typeIconMap[item.type] || FileText;
+-
+-  return (
+-    <div
+-      className={`flex items-center justify-between gap-4 rounded-2xl border px-5 py-4 transition ${
+-        isCompleted
+-          ? 'border-emerald-400/30 bg-emerald-500/5'
+-          : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+-      }`}
+-    >
+-      <div className="flex items-center gap-3 min-w-0">
+-        <div
+-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+-            isCompleted ? 'bg-emerald-500/15 text-emerald-400' : 'bg-white/5 text-[#FF9E6B]'
+-          }`}
+-        >
+-          <TypeIcon className="h-5 w-5" />
+-        </div>
+-        <div className="min-w-0">
+-          <p className="truncate text-sm font-semibold text-white">{item.title}</p>
+-          <p className="text-xs text-white/45">
+-            {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+-            {item.durationLabel ? ` · ${item.durationLabel}` : ''}
+-          </p>
+-        </div>
+-      </div>
+-
+-      {!isLoggedIn ? (
+-        <Lock className="h-4 w-4 shrink-0 text-white/30" />
+-      ) : (
+-        <button
+-          type="button"
+-          disabled={isCompleted || isSaving}
+-          onClick={() => onComplete && onComplete(item.id)}
+-          className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+-            isCompleted
+-              ? 'cursor-default bg-emerald-500/15 text-emerald-400'
+-              : 'bg-white/10 text-white hover:bg-[#FF6B2B] hover:text-white disabled:opacity-50'
+-          }`}
+-        >
+-          {isCompleted ? (
+-            <>
+-              <CheckCircle2 className="h-3.5 w-3.5" /> Done
+-            </>
+-          ) : (
+-            <>
+-              <Circle className="h-3.5 w-3.5" /> {isSaving ? 'Saving…' : 'Mark complete'}
+-            </>
+-          )}
+-        </button>
+-      )}
+-    </div>
+-  );
+-}
+diff --git a/src/components/roadmap/RoadmapItemRow.jsx b/src/components/roadmap/RoadmapItemRow.jsx
+new file mode 100644
+index 0000000..16f523a
+--- /dev/null
++++ b/src/components/roadmap/RoadmapItemRow.jsx
+@@ -0,0 +1,60 @@
++import React from 'react';
++import { PlayCircle, FileText, ClipboardCheck, HelpCircle, CheckCircle2, Lock, ExternalLink, Loader2 } from 'lucide-react';
++
++const typeIconMap = {
++  video: PlayCircle,
++  document: FileText,
++  article: FileText,
++  task: ClipboardCheck,
++  quiz: HelpCircle,
++};
++
++// A single resource row inside the pillar popup. There is no manual "mark
++// complete" control — clicking the row opens the video/PDF/article (in a
++// new tab, once Phase 2's admin uploads add real files) and that click
++// itself marks the item complete for logged-in students.
++export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpening, onOpen }) {
++  const TypeIcon = typeIconMap[item.type] || FileText;
++
++  return (
++    <button
++      type="button"
++      disabled={!isLoggedIn || isOpening}
++      onClick={() => onOpen(item)}
++      className={`flex w-full items-center justify-between gap-4 rounded-2xl border px-5 py-4 text-left transition ${
++        isCompleted
++          ? 'border-emerald-400/30 bg-emerald-500/5'
++          : 'border-white/10 bg-white/[0.03] hover:border-white/20'
++      } ${!isLoggedIn ? 'cursor-not-allowed opacity-70' : ''}`}
++    >
++      <div className="flex min-w-0 items-center gap-3">
++        <div
++          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
++            isCompleted ? 'bg-emerald-500/15 text-emerald-400' : 'bg-white/5 text-[#FF9E6B]'
++          }`}
++        >
++          <TypeIcon className="h-5 w-5" />
++        </div>
++        <div className="min-w-0">
++          <p className="truncate text-sm font-semibold text-white">{item.title}</p>
++          <p className="text-xs text-white/45">
++            {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
++            {item.durationLabel ? ` · ${item.durationLabel}` : ''}
++          </p>
++        </div>
++      </div>
++
++      <div className="flex shrink-0 items-center gap-2">
++        {isOpening ? (
++          <Loader2 className="h-4 w-4 animate-spin text-white/50" />
++        ) : isCompleted ? (
++          <CheckCircle2 className="h-5 w-5 text-emerald-400" />
++        ) : !isLoggedIn ? (
++          <Lock className="h-4 w-4 text-white/30" />
++        ) : (
++          <ExternalLink className="h-4 w-4 text-white/40" />
++        )}
++      </div>
++    </button>
++  );
++}
+diff --git a/src/pages/RoadmapPage.jsx b/src/pages/RoadmapPage.jsx
+index ae959e7..a300ee8 100644
+--- a/src/pages/RoadmapPage.jsx
++++ b/src/pages/RoadmapPage.jsx
+@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
+ import { motion } from 'framer-motion';
+ import RoadmapHero from '../components/roadmap/RoadmapHero';
+ import PillarTabs from '../components/roadmap/PillarTabs';
+-import PillarSection from '../components/roadmap/PillarSection';
++import PillarModal from '../components/roadmap/PillarModal';
+ import CareerPathsSection from '../components/roadmap/CareerPathsSection';
+ import {
+   getRoadmapPillars,
+@@ -25,9 +25,9 @@ export default function RoadmapPage({ user }) {
+   const [streak, setStreak] = useState({ currentStreak: 0, longestStreak: 0 });
+   const [batch, setBatch] = useState(null);
+   const [memberCount, setMemberCount] = useState(0);
+-  const [activeKey, setActiveKey] = useState(null);
++  const [openPillarKey, setOpenPillarKey] = useState(null); // which pillar's popup is open
+   const [loading, setLoading] = useState(true);
+-  const [savingId, setSavingId] = useState(null);
++  const [openingItemId, setOpeningItemId] = useState(null);
+   const [error, setError] = useState('');
+   const [careerPaths, setCareerPaths] = useState({ featured: [], more: [], totalCount: 0, remainingCount: 0 });
+ 
+@@ -36,7 +36,6 @@ export default function RoadmapPage({ user }) {
+       const res = await getRoadmapPillars();
+       setPillars(res.pillars || []);
+       setOverallProgress(res.overallProgress || 0);
+-      setActiveKey((prev) => prev || (res.pillars && res.pillars[0]?.key) || null);
+     } catch (err) {
+       setError(err.message || 'Could not load the roadmap right now.');
+     } finally {
+@@ -72,33 +71,40 @@ export default function RoadmapPage({ user }) {
+       .catch(() => {});
+   }, [isLoggedIn]);
+ 
+-  const activePillar = useMemo(
+-    () => pillars.find((p) => p.key === activeKey) || pillars[0],
+-    [pillars, activeKey]
++  const openPillar = useMemo(
++    () => pillars.find((p) => p.key === openPillarKey) || null,
++    [pillars, openPillarKey]
+   );
+ 
+-  const handleCompleteItem = async (itemId) => {
+-    if (!isLoggedIn || savingId) return;
+-    setSavingId(itemId);
++  // Opening a video/PDF/article IS the completion action — there is no
++  // separate "mark complete" button. Task/quiz items (no file to open yet)
++  // are completed the same way, by tapping the row.
++  const handleOpenItem = async (item) => {
++    if (!isLoggedIn || openingItemId) return;
++
++    if (item.url) {
++      window.open(item.url, '_blank', 'noopener,noreferrer');
++    }
++
++    const alreadyDone = openPillar?.progress?.completedItemIds?.includes(item.id);
++    if (alreadyDone) return;
++
++    setOpeningItemId(item.id);
+     try {
+-      const res = await completeRoadmapItem(itemId);
++      const res = await completeRoadmapItem(item.id);
+       setStreak({ currentStreak: res.currentStreak, longestStreak: res.longestStreak });
+       setOverallProgress(res.overallProgress);
+-      // Reflect completion locally without a full refetch.
+       setPillars((prev) =>
+         prev.map((p) => {
+-          if (!p.items.some((i) => i.id === itemId)) return p;
+-          const completedItemIds = Array.from(new Set([...(p.progress?.completedItemIds || []), itemId]));
+-          return {
+-            ...p,
+-            progress: { percent: res.pillarProgress, completedItemIds },
+-          };
++          if (!p.items.some((i) => i.id === item.id)) return p;
++          const completedItemIds = Array.from(new Set([...(p.progress?.completedItemIds || []), item.id]));
++          return { ...p, progress: { percent: res.pillarProgress, completedItemIds } };
+         })
+       );
+     } catch (err) {
+       setError(err.message || 'Could not save your progress. Please try again.');
+     } finally {
+-      setSavingId(null);
++      setOpeningItemId(null);
+     }
+   };
+ 
+@@ -127,8 +133,8 @@ export default function RoadmapPage({ user }) {
+               Your complete roadmap. All in one place.
+             </h2>
+             <p className="mx-auto mt-3 max-w-2xl text-white/60">
+-              7 structured pillars from arrival to placement — pick a tab to explore, and mark
+-              things complete as you go to build your streak.
++              7 structured pillars from arrival to placement — tap a tab to open its videos and
++              PDFs. Opening a resource marks it complete automatically and builds your streak.
+             </p>
+           </div>
+ 
+@@ -142,26 +148,14 @@ export default function RoadmapPage({ user }) {
+             </p>
+           ) : (
+             <>
+-              <PillarTabs pillars={pillars} activeKey={activePillar?.key} onChange={setActiveKey} />
+-              <div className="mt-6">
+-                {activePillar && (
+-                  <PillarSection
+-                    pillar={activePillar}
+-                    isLoggedIn={isLoggedIn}
+-                    onCompleteItem={handleCompleteItem}
+-                    savingId={savingId}
+-                  />
+-                )}
+-              </div>
+-              {error && (
+-                <p className="mt-4 text-center text-sm text-red-300">{error}</p>
+-              )}
++              <PillarTabs pillars={pillars} activeKey={openPillarKey} onChange={setOpenPillarKey} />
++              {error && <p className="mt-4 text-center text-sm text-red-300">{error}</p>}
+               {!isLoggedIn && (
+                 <p className="mt-8 text-center text-sm text-white/50">
+                   <a href="/login" className="font-semibold text-[#FF6B2B] hover:underline">
+                     Log in
+                   </a>{' '}
+-                  to track your streak, save progress, and join your cohort.
++                  to open resources, track your streak, and join your cohort.
+                 </p>
+               )}
+             </>
+@@ -175,6 +169,14 @@ export default function RoadmapPage({ user }) {
+         totalCount={careerPaths.totalCount}
+         remainingCount={careerPaths.remainingCount}
+       />
++
++      <PillarModal
++        pillar={openPillar}
++        isLoggedIn={isLoggedIn}
++        openingItemId={openingItemId}
++        onOpenItem={handleOpenItem}
++        onClose={() => setOpenPillarKey(null)}
++      />
+     </main>
+   );
+ }

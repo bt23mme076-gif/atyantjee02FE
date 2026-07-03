@@ -1,0 +1,938 @@
+diff --git a/src/components/admin/RoadmapContentTab.jsx b/src/components/admin/RoadmapContentTab.jsx
+new file mode 100644
+index 0000000..450e45d
+--- /dev/null
++++ b/src/components/admin/RoadmapContentTab.jsx
+@@ -0,0 +1,392 @@
++import React, { useState, useEffect, useCallback } from 'react';
++import {
++  adminListPillars, adminCreatePillar, adminUpdatePillar, adminDeletePillar,
++  adminListItems, adminCreateItem, adminUpdateItem, adminDeleteItem,
++  adminListCareerPaths, adminCreateCareerPath, adminUpdateCareerPath, adminDeleteCareerPath,
++  adminListFaqVideos, adminCreateFaqVideo, adminUpdateFaqVideo, adminDeleteFaqVideo,
++  uploadRoadmapContent,
++} from '../../utils/api';
++
++const SUB_TABS = ['Pillars', 'Content Items', 'Career Paths', 'FAQ Videos'];
++
++function Field({ label, children }) {
++  return (
++    <div>
++      <label className="mb-1 block text-xs font-semibold text-gray-600">{label}</label>
++      {children}
++    </div>
++  );
++}
++
++const inputCls = 'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40';
++
++// ─── Pillars sub-tab ──────────────────────────────────────────────────
++function PillarsPanel() {
++  const [pillars, setPillars] = useState([]);
++  const [form, setForm] = useState({ key: '', title: '', tagline: '', icon: 'Compass', order: 0, isFlagship: false });
++  const [editingId, setEditingId] = useState(null);
++  const [saving, setSaving] = useState(false);
++  const [error, setError] = useState('');
++
++  const load = useCallback(() => adminListPillars().then((r) => setPillars(r.pillars || [])).catch((e) => setError(e.message)), []);
++  useEffect(() => { load(); }, [load]);
++
++  const resetForm = () => { setForm({ key: '', title: '', tagline: '', icon: 'Compass', order: 0, isFlagship: false }); setEditingId(null); };
++
++  const handleSubmit = async (e) => {
++    e.preventDefault();
++    setSaving(true);
++    setError('');
++    try {
++      if (editingId) await adminUpdatePillar(editingId, form);
++      else await adminCreatePillar(form);
++      resetForm();
++      load();
++    } catch (err) { setError(err.message); } finally { setSaving(false); }
++  };
++
++  const startEdit = (p) => { setForm({ key: p.key, title: p.title, tagline: p.tagline, icon: p.icon, order: p.order, isFlagship: p.isFlagship }); setEditingId(p.id); };
++
++  const remove = async (id) => {
++    if (!window.confirm('Delete this pillar and all its content items?')) return;
++    await adminDeletePillar(id);
++    load();
++  };
++
++  return (
++    <div className="space-y-6">
++      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 rounded-xl border border-gray-200 p-4 sm:grid-cols-2 lg:grid-cols-3">
++        {error && <p className="col-span-full rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>}
++        <Field label="Key (unique, e.g. college-arrival)">
++          <input required disabled={!!editingId} value={form.key} onChange={(e) => setForm({ ...form, key: e.target.value })} className={inputCls} />
++        </Field>
++        <Field label="Title"><input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} /></Field>
++        <Field label="Tagline"><input value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} className={inputCls} /></Field>
++        <Field label="Icon (lucide name)"><input value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className={inputCls} placeholder="Compass, ShieldCheck, Flame..." /></Field>
++        <Field label="Order"><input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} className={inputCls} /></Field>
++        <label className="flex items-center gap-2 self-end pb-2 text-sm text-gray-700">
++          <input type="checkbox" checked={form.isFlagship} onChange={(e) => setForm({ ...form, isFlagship: e.target.checked })} /> Flagship
++        </label>
++        <div className="col-span-full flex gap-2">
++          <button disabled={saving} type="submit" className="rounded-full bg-[#FF6B2B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#ff7a42] disabled:opacity-60">
++            {editingId ? 'Save changes' : 'Add pillar'}
++          </button>
++          {editingId && <button type="button" onClick={resetForm} className="rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-gray-600">Cancel</button>}
++        </div>
++      </form>
++
++      <div className="overflow-x-auto rounded-xl border border-gray-200">
++        <table className="w-full text-sm">
++          <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
++            <tr><th className="px-4 py-2">Order</th><th className="px-4 py-2">Title</th><th className="px-4 py-2">Key</th><th className="px-4 py-2"></th></tr>
++          </thead>
++          <tbody className="divide-y divide-gray-100">
++            {pillars.map((p) => (
++              <tr key={p.id}>
++                <td className="px-4 py-2">{p.order}</td>
++                <td className="px-4 py-2 font-semibold">{p.title} {p.isFlagship && <span className="ml-1 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-700">Flagship</span>}</td>
++                <td className="px-4 py-2 text-gray-500">{p.key}</td>
++                <td className="px-4 py-2 text-right">
++                  <button onClick={() => startEdit(p)} className="mr-3 text-xs font-semibold text-blue-600">Edit</button>
++                  <button onClick={() => remove(p.id)} className="text-xs font-semibold text-red-600">Delete</button>
++                </td>
++              </tr>
++            ))}
++          </tbody>
++        </table>
++      </div>
++    </div>
++  );
++}
++
++// ─── Content Items sub-tab (documents/videos/tasks) ──────────────────
++function ItemsPanel() {
++  const [pillars, setPillars] = useState([]);
++  const [pillarId, setPillarId] = useState('');
++  const [items, setItems] = useState([]);
++  const [form, setForm] = useState({ title: '', type: 'video', url: '', durationLabel: '', order: 0, requiresReferralUnlock: false });
++  const [editingId, setEditingId] = useState(null);
++  const [uploading, setUploading] = useState(false);
++  const [error, setError] = useState('');
++
++  useEffect(() => { adminListPillars().then((r) => { setPillars(r.pillars || []); if (r.pillars?.length) setPillarId(r.pillars[0].id); }); }, []);
++
++  const load = useCallback(() => {
++    if (!pillarId) return;
++    adminListItems(pillarId).then((r) => setItems(r.items || [])).catch((e) => setError(e.message));
++  }, [pillarId]);
++  useEffect(() => { load(); }, [load]);
++
++  const resetForm = () => { setForm({ title: '', type: 'video', url: '', durationLabel: '', order: 0, requiresReferralUnlock: false }); setEditingId(null); };
++
++  const handleFile = async (e) => {
++    const file = e.target.files?.[0];
++    if (!file) return;
++    setUploading(true);
++    setError('');
++    try {
++      const res = await uploadRoadmapContent(file);
++      setForm((f) => ({ ...f, url: res.url }));
++    } catch (err) { setError(err.message); } finally { setUploading(false); }
++  };
++
++  const handleSubmit = async (e) => {
++    e.preventDefault();
++    setError('');
++    try {
++      if (editingId) await adminUpdateItem(editingId, form);
++      else await adminCreateItem({ ...form, pillar: pillarId });
++      resetForm();
++      load();
++    } catch (err) { setError(err.message); }
++  };
++
++  const startEdit = (i) => { setForm({ title: i.title, type: i.type, url: i.url, durationLabel: i.durationLabel, order: i.order, requiresReferralUnlock: i.requiresReferralUnlock }); setEditingId(i.id); };
++  const remove = async (id) => { if (!window.confirm('Delete this item?')) return; await adminDeleteItem(id); load(); };
++
++  return (
++    <div className="space-y-6">
++      <Field label="Pillar">
++        <select value={pillarId} onChange={(e) => setPillarId(e.target.value)} className={inputCls}>
++          {pillars.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
++        </select>
++      </Field>
++
++      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 rounded-xl border border-gray-200 p-4 sm:grid-cols-2 lg:grid-cols-3">
++        {error && <p className="col-span-full rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>}
++        <Field label="Title"><input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} /></Field>
++        <Field label="Type">
++          <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className={inputCls}>
++            <option value="video">Video</option><option value="document">Document</option>
++            <option value="article">Article</option><option value="task">Task</option><option value="quiz">Quiz</option>
++          </select>
++        </Field>
++        <Field label="Duration label (e.g. 8 min watch)"><input value={form.durationLabel} onChange={(e) => setForm({ ...form, durationLabel: e.target.value })} className={inputCls} /></Field>
++        <Field label="Upload a file (PDF/video/image)">
++          <input type="file" onChange={handleFile} className="w-full text-xs" />
++          {uploading && <p className="mt-1 text-xs text-gray-500">Uploading…</p>}
++        </Field>
++        <Field label="Or paste a URL (YouTube, Drive link, etc.)">
++          <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className={inputCls} placeholder="https://..." />
++        </Field>
++        <Field label="Order"><input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} className={inputCls} /></Field>
++        <label className="flex items-center gap-2 self-end pb-2 text-sm text-gray-700">
++          <input type="checkbox" checked={form.requiresReferralUnlock} onChange={(e) => setForm({ ...form, requiresReferralUnlock: e.target.checked })} />
++          Requires referral unlock
++        </label>
++        <div className="col-span-full flex gap-2">
++          <button type="submit" className="rounded-full bg-[#FF6B2B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#ff7a42]">
++            {editingId ? 'Save changes' : 'Add item'}
++          </button>
++          {editingId && <button type="button" onClick={resetForm} className="rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-gray-600">Cancel</button>}
++        </div>
++      </form>
++
++      <div className="overflow-x-auto rounded-xl border border-gray-200">
++        <table className="w-full text-sm">
++          <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
++            <tr><th className="px-4 py-2">Title</th><th className="px-4 py-2">Type</th><th className="px-4 py-2">Gated?</th><th className="px-4 py-2"></th></tr>
++          </thead>
++          <tbody className="divide-y divide-gray-100">
++            {items.map((i) => (
++              <tr key={i.id}>
++                <td className="px-4 py-2 font-semibold">{i.title}</td>
++                <td className="px-4 py-2 capitalize text-gray-500">{i.type}</td>
++                <td className="px-4 py-2">{i.requiresReferralUnlock ? 'Yes' : '—'}</td>
++                <td className="px-4 py-2 text-right">
++                  <button onClick={() => startEdit(i)} className="mr-3 text-xs font-semibold text-blue-600">Edit</button>
++                  <button onClick={() => remove(i.id)} className="text-xs font-semibold text-red-600">Delete</button>
++                </td>
++              </tr>
++            ))}
++          </tbody>
++        </table>
++      </div>
++    </div>
++  );
++}
++
++// ─── Career Paths sub-tab ──────────────────────────────────────────────
++function CareerPathsPanel() {
++  const [paths, setPaths] = useState([]);
++  const [form, setForm] = useState({ title: '', colorKey: 'rose', order: 0, isFeatured: false });
++  const [editingId, setEditingId] = useState(null);
++  const [error, setError] = useState('');
++
++  const load = useCallback(() => adminListCareerPaths().then((r) => setPaths(r.careerPaths || [])).catch((e) => setError(e.message)), []);
++  useEffect(() => { load(); }, [load]);
++
++  const resetForm = () => { setForm({ title: '', colorKey: 'rose', order: 0, isFeatured: false }); setEditingId(null); };
++
++  const handleSubmit = async (e) => {
++    e.preventDefault();
++    setError('');
++    try {
++      if (editingId) await adminUpdateCareerPath(editingId, form);
++      else await adminCreateCareerPath(form);
++      resetForm();
++      load();
++    } catch (err) { setError(err.message); }
++  };
++
++  const startEdit = (p) => { setForm({ title: p.title, colorKey: p.colorKey, order: p.order, isFeatured: p.isFeatured }); setEditingId(p.id); };
++  const remove = async (id) => { if (!window.confirm('Delete this career path?')) return; await adminDeleteCareerPath(id); load(); };
++
++  return (
++    <div className="space-y-6">
++      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 rounded-xl border border-gray-200 p-4 sm:grid-cols-2 lg:grid-cols-4">
++        {error && <p className="col-span-full rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>}
++        <Field label="Title"><input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} /></Field>
++        <Field label="Color">
++          <select value={form.colorKey} onChange={(e) => setForm({ ...form, colorKey: e.target.value })} className={inputCls}>
++            {['rose', 'violet', 'emerald', 'amber', 'sky'].map((c) => <option key={c} value={c}>{c}</option>)}
++          </select>
++        </Field>
++        <Field label="Order"><input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} className={inputCls} /></Field>
++        <label className="flex items-center gap-2 self-end pb-2 text-sm text-gray-700">
++          <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} /> Featured (shown by default)
++        </label>
++        <div className="col-span-full flex gap-2">
++          <button type="submit" className="rounded-full bg-[#FF6B2B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#ff7a42]">
++            {editingId ? 'Save changes' : 'Add career path'}
++          </button>
++          {editingId && <button type="button" onClick={resetForm} className="rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-gray-600">Cancel</button>}
++        </div>
++      </form>
++
++      <div className="overflow-x-auto rounded-xl border border-gray-200">
++        <table className="w-full text-sm">
++          <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
++            <tr><th className="px-4 py-2">Title</th><th className="px-4 py-2">Color</th><th className="px-4 py-2">Featured?</th><th className="px-4 py-2"></th></tr>
++          </thead>
++          <tbody className="divide-y divide-gray-100">
++            {paths.map((p) => (
++              <tr key={p.id}>
++                <td className="px-4 py-2 font-semibold">{p.title}</td>
++                <td className="px-4 py-2 capitalize text-gray-500">{p.colorKey}</td>
++                <td className="px-4 py-2">{p.isFeatured ? 'Yes' : '—'}</td>
++                <td className="px-4 py-2 text-right">
++                  <button onClick={() => startEdit(p)} className="mr-3 text-xs font-semibold text-blue-600">Edit</button>
++                  <button onClick={() => remove(p.id)} className="text-xs font-semibold text-red-600">Delete</button>
++                </td>
++              </tr>
++            ))}
++          </tbody>
++        </table>
++      </div>
++    </div>
++  );
++}
++
++// ─── FAQ Videos sub-tab ─────────────────────────────────────────────────
++function FaqVideosPanel() {
++  const [videos, setVideos] = useState([]);
++  const [form, setForm] = useState({ question: '', shortAnswer: '', videoUrl: '', order: 0 });
++  const [editingId, setEditingId] = useState(null);
++  const [uploading, setUploading] = useState(false);
++  const [error, setError] = useState('');
++
++  const load = useCallback(() => adminListFaqVideos().then((r) => setVideos(r.faqVideos || [])).catch((e) => setError(e.message)), []);
++  useEffect(() => { load(); }, [load]);
++
++  const resetForm = () => { setForm({ question: '', shortAnswer: '', videoUrl: '', order: 0 }); setEditingId(null); };
++
++  const handleFile = async (e) => {
++    const file = e.target.files?.[0];
++    if (!file) return;
++    setUploading(true);
++    setError('');
++    try {
++      const res = await uploadRoadmapContent(file);
++      setForm((f) => ({ ...f, videoUrl: res.url }));
++    } catch (err) { setError(err.message); } finally { setUploading(false); }
++  };
++
++  const handleSubmit = async (e) => {
++    e.preventDefault();
++    setError('');
++    try {
++      if (editingId) await adminUpdateFaqVideo(editingId, form);
++      else await adminCreateFaqVideo(form);
++      resetForm();
++      load();
++    } catch (err) { setError(err.message); }
++  };
++
++  const startEdit = (v) => { setForm({ question: v.question, shortAnswer: v.shortAnswer, videoUrl: v.videoUrl, order: v.order }); setEditingId(v.id); };
++  const remove = async (id) => { if (!window.confirm('Delete this FAQ video?')) return; await adminDeleteFaqVideo(id); load(); };
++
++  return (
++    <div className="space-y-6">
++      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 rounded-xl border border-gray-200 p-4 sm:grid-cols-2">
++        {error && <p className="col-span-full rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>}
++        <Field label="Question"><input required value={form.question} onChange={(e) => setForm({ ...form, question: e.target.value })} className={inputCls} /></Field>
++        <Field label="Short answer (shown on the card)"><input value={form.shortAnswer} onChange={(e) => setForm({ ...form, shortAnswer: e.target.value })} className={inputCls} /></Field>
++        <Field label="Upload a video">
++          <input type="file" accept="video/*" onChange={handleFile} className="w-full text-xs" />
++          {uploading && <p className="mt-1 text-xs text-gray-500">Uploading…</p>}
++        </Field>
++        <Field label="Or paste a YouTube/Vimeo link">
++          <input required value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} className={inputCls} placeholder="https://youtube.com/watch?v=..." />
++        </Field>
++        <Field label="Order"><input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} className={inputCls} /></Field>
++        <div className="col-span-full flex gap-2">
++          <button type="submit" className="rounded-full bg-[#FF6B2B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#ff7a42]">
++            {editingId ? 'Save changes' : 'Add FAQ video'}
++          </button>
++          {editingId && <button type="button" onClick={resetForm} className="rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-gray-600">Cancel</button>}
++        </div>
++      </form>
++
++      <div className="overflow-x-auto rounded-xl border border-gray-200">
++        <table className="w-full text-sm">
++          <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
++            <tr><th className="px-4 py-2">Question</th><th className="px-4 py-2">Video</th><th className="px-4 py-2"></th></tr>
++          </thead>
++          <tbody className="divide-y divide-gray-100">
++            {videos.map((v) => (
++              <tr key={v.id}>
++                <td className="px-4 py-2 font-semibold">{v.question}</td>
++                <td className="max-w-xs truncate px-4 py-2 text-gray-500">{v.videoUrl}</td>
++                <td className="px-4 py-2 text-right">
++                  <button onClick={() => startEdit(v)} className="mr-3 text-xs font-semibold text-blue-600">Edit</button>
++                  <button onClick={() => remove(v.id)} className="text-xs font-semibold text-red-600">Delete</button>
++                </td>
++              </tr>
++            ))}
++          </tbody>
++        </table>
++      </div>
++    </div>
++  );
++}
++
++// ─── Roadmap content management tab ───────────────────────────────────
++// Rendered inside the existing Atyant Admin Dashboard (AtyantLoginPage.jsx)
++// as a new "roadmap" tab, giving the team a place to upload documents and
++// videos into the /roadmap page's pillars, career paths, and FAQ videos.
++export default function RoadmapContentTab() {
++  const [subTab, setSubTab] = useState('Pillars');
++
++  return (
++    <div>
++      <div className="mb-6 flex flex-wrap gap-2">
++        {SUB_TABS.map((t) => (
++          <button
++            key={t}
++            onClick={() => setSubTab(t)}
++            className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
++              subTab === t ? 'bg-[#0B0F2E] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
++            }`}
++          >
++            {t}
++          </button>
++        ))}
++      </div>
++      {subTab === 'Pillars' && <PillarsPanel />}
++      {subTab === 'Content Items' && <ItemsPanel />}
++      {subTab === 'Career Paths' && <CareerPathsPanel />}
++      {subTab === 'FAQ Videos' && <FaqVideosPanel />}
++    </div>
++  );
++}
+diff --git a/src/components/roadmap/FaqVideoModal.jsx b/src/components/roadmap/FaqVideoModal.jsx
+new file mode 100644
+index 0000000..e7d6e56
+--- /dev/null
++++ b/src/components/roadmap/FaqVideoModal.jsx
+@@ -0,0 +1,63 @@
++import React from 'react';
++import { motion, AnimatePresence } from 'framer-motion';
++import { X, PlayCircle } from 'lucide-react';
++import { getEmbedUrl } from './videoEmbed';
++
++// Pop-up video player shown when a student taps an FAQ question. Handles
++// both YouTube/Vimeo links (admin-pasted) and directly uploaded video files.
++export default function FaqVideoModal({ faq, onClose }) {
++  const embedUrl = faq ? getEmbedUrl(faq.videoUrl) : null;
++
++  return (
++    <AnimatePresence>
++      {faq && (
++        <motion.div
++          initial={{ opacity: 0 }}
++          animate={{ opacity: 1 }}
++          exit={{ opacity: 0 }}
++          className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
++          onClick={onClose}
++        >
++          <motion.div
++            initial={{ opacity: 0, scale: 0.96 }}
++            animate={{ opacity: 1, scale: 1 }}
++            exit={{ opacity: 0, scale: 0.96 }}
++            onClick={(e) => e.stopPropagation()}
++            className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/10 bg-[#0B0F2E] shadow-2xl"
++          >
++            <button
++              onClick={onClose}
++              aria-label="Close"
++              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white/80 hover:bg-black/60"
++            >
++              <X className="h-5 w-5" />
++            </button>
++
++            <div className="aspect-video w-full bg-black">
++              {embedUrl ? (
++                <iframe
++                  src={embedUrl}
++                  title={faq.question}
++                  className="h-full w-full"
++                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
++                  allowFullScreen
++                />
++              ) : faq.videoUrl ? (
++                <video src={faq.videoUrl} controls autoPlay className="h-full w-full" />
++              ) : (
++                <div className="flex h-full w-full items-center justify-center text-white/40">
++                  <PlayCircle className="h-10 w-10" />
++                </div>
++              )}
++            </div>
++
++            <div className="p-5 sm:p-6">
++              <h4 className="text-lg font-bold text-white">{faq.question}</h4>
++              {faq.shortAnswer && <p className="mt-1 text-sm text-white/60">{faq.shortAnswer}</p>}
++            </div>
++          </motion.div>
++        </motion.div>
++      )}
++    </AnimatePresence>
++  );
++}
+diff --git a/src/components/roadmap/FaqVideoSection.jsx b/src/components/roadmap/FaqVideoSection.jsx
+new file mode 100644
+index 0000000..bb42c38
+--- /dev/null
++++ b/src/components/roadmap/FaqVideoSection.jsx
+@@ -0,0 +1,46 @@
++import React, { useState } from 'react';
++import { PlayCircle } from 'lucide-react';
++import FaqVideoModal from './FaqVideoModal';
++
++// "Quick guidance" FAQ section — a grid of common questions; tapping one
++// opens a pop-up video (FaqVideoModal) instead of a plain text answer.
++export default function FaqVideoSection({ faqVideos = [] }) {
++  const [openFaq, setOpenFaq] = useState(null);
++
++  if (!faqVideos.length) return null;
++
++  return (
++    <section className="bg-[#0B0F2E] pb-20 sm:pb-28">
++      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
++        <div className="mb-8 text-center">
++          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF9E6B]">Quick Guidance</p>
++          <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">Got questions? Watch the answer.</h2>
++          <p className="mx-auto mt-3 max-w-xl text-white/60">
++            Short videos from the team and mentors, answering the questions students ask most.
++          </p>
++        </div>
++
++        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
++          {faqVideos.map((faq) => (
++            <button
++              key={faq.id}
++              type="button"
++              onClick={() => setOpenFaq(faq)}
++              className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-left transition hover:border-[#FF6B2B]/40 hover:bg-white/[0.05]"
++            >
++              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#FF6B2B]/15 text-[#FF6B2B]">
++                <PlayCircle className="h-6 w-6" />
++              </span>
++              <span className="min-w-0">
++                <span className="block truncate text-sm font-semibold text-white">{faq.question}</span>
++                {faq.shortAnswer && <span className="block truncate text-xs text-white/45">{faq.shortAnswer}</span>}
++              </span>
++            </button>
++          ))}
++        </div>
++      </div>
++
++      <FaqVideoModal faq={openFaq} onClose={() => setOpenFaq(null)} />
++    </section>
++  );
++}
+diff --git a/src/components/roadmap/PillarModal.jsx b/src/components/roadmap/PillarModal.jsx
+index b0f0504..eb256e2 100644
+--- a/src/components/roadmap/PillarModal.jsx
++++ b/src/components/roadmap/PillarModal.jsx
+@@ -8,7 +8,7 @@ import RoadmapItemRow from './RoadmapItemRow';
+ // Popup shown when a pillar tab is clicked (per the "College Arrival Guide
+ // → creates another pop up → has PDFs, videos and all things" flow).
+ // Replaces the old always-visible inline section below the tabs.
+-export default function PillarModal({ pillar, isLoggedIn, openingItemId, onOpenItem, onClose }) {
++export default function PillarModal({ pillar, isLoggedIn, openingItemId, onOpenItem, onLockedClick, onClose }) {
+   useEffect(() => {
+     if (!pillar) return;
+     const onKeyDown = (e) => {
+@@ -86,6 +86,7 @@ export default function PillarModal({ pillar, isLoggedIn, openingItemId, onOpenI
+                     isCompleted={completedIds.has(item.id)}
+                     isOpening={openingItemId === item.id}
+                     onOpen={onOpenItem}
++                    onLockedClick={onLockedClick}
+                   />
+                 ))
+               ) : (
+diff --git a/src/components/roadmap/ReferralCard.jsx b/src/components/roadmap/ReferralCard.jsx
+new file mode 100644
+index 0000000..dfdaa78
+--- /dev/null
++++ b/src/components/roadmap/ReferralCard.jsx
+@@ -0,0 +1,64 @@
++import React, { useState } from 'react';
++import { Gift, Copy, Check } from 'lucide-react';
++import ProgressBar from './ProgressBar';
++
++// Referral system: shows the student's shareable code/link, how many
++// friends they've referred, and progress toward unlocking referral-gated
++// roadmap content (bonus videos/PDFs flagged by the admin panel).
++export default function ReferralCard({ referral }) {
++  const [copied, setCopied] = useState(false);
++  if (!referral) return null;
++
++  const { referralCode, referralCount, threshold, unlocked, remaining, shareUrl } = referral;
++  const percent = threshold > 0 ? Math.min(100, Math.round((referralCount / threshold) * 100)) : 0;
++
++  const handleCopy = async () => {
++    try {
++      await navigator.clipboard.writeText(shareUrl);
++      setCopied(true);
++      setTimeout(() => setCopied(false), 2000);
++    } catch {
++      // clipboard API unavailable — user can still select/copy the text field
++    }
++  };
++
++  return (
++    <div className="rounded-3xl border border-[#8B5CF6]/20 bg-gradient-to-br from-[#8B5CF6]/10 to-transparent p-6 sm:p-8">
++      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
++        <div>
++          <div className="inline-flex items-center gap-2 rounded-full bg-[#8B5CF6]/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#C4B5FD]">
++            <Gift className="h-3.5 w-3.5" /> Refer & Unlock
++          </div>
++          <h3 className="mt-3 text-xl font-bold text-white sm:text-2xl">
++            {unlocked ? 'Bonus content unlocked!' : `Refer ${remaining} more friend${remaining === 1 ? '' : 's'} to unlock bonus content`}
++          </h3>
++          <p className="mt-1 max-w-md text-sm text-white/60">
++            {unlocked
++              ? `You've referred ${referralCount} friends — every bonus video and PDF on the roadmap is now open.`
++              : `Every friend who signs up with your link counts. Refer ${threshold} to unlock premium roadmap content.`}
++          </p>
++        </div>
++
++        <div className="w-full sm:w-64">
++          <ProgressBar percent={percent} label={`${referralCount} / ${threshold} referrals`} />
++          <div className="mt-3 flex items-center gap-2">
++            <input
++              readOnly
++              value={shareUrl}
++              onClick={(e) => e.target.select()}
++              className="w-full truncate rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70"
++            />
++            <button
++              type="button"
++              onClick={handleCopy}
++              className="flex shrink-0 items-center gap-1.5 rounded-lg bg-[#FF6B2B] px-3 py-2 text-xs font-semibold text-white hover:bg-[#ff7a42]"
++            >
++              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
++              {copied ? 'Copied' : 'Copy'}
++            </button>
++          </div>
++        </div>
++      </div>
++    </div>
++  );
++}
+diff --git a/src/components/roadmap/RoadmapItemRow.jsx b/src/components/roadmap/RoadmapItemRow.jsx
+index 16f523a..c457ac2 100644
+--- a/src/components/roadmap/RoadmapItemRow.jsx
++++ b/src/components/roadmap/RoadmapItemRow.jsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { PlayCircle, FileText, ClipboardCheck, HelpCircle, CheckCircle2, Lock, ExternalLink, Loader2 } from 'lucide-react';
++import { PlayCircle, FileText, ClipboardCheck, HelpCircle, CheckCircle2, Lock, ExternalLink, Loader2, Gift } from 'lucide-react';
+ 
+ const typeIconMap = {
+   video: PlayCircle,
+@@ -13,24 +13,35 @@ const typeIconMap = {
+ // complete" control — clicking the row opens the video/PDF/article (in a
+ // new tab, once Phase 2's admin uploads add real files) and that click
+ // itself marks the item complete for logged-in students.
+-export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpening, onOpen }) {
++//
++// Referral-gated items (requiresReferralUnlock) show a lock instead, and
++// clicking them calls onLockedClick so the page can point the student at
++// their referral progress instead of trying to open/complete anything.
++export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpening, onOpen, onLockedClick }) {
+   const TypeIcon = typeIconMap[item.type] || FileText;
++  const isLocked = isLoggedIn && item.locked;
+ 
+   return (
+     <button
+       type="button"
+-      disabled={!isLoggedIn || isOpening}
+-      onClick={() => onOpen(item)}
++      disabled={(!isLoggedIn && !isLocked) || isOpening}
++      onClick={() => (isLocked ? onLockedClick?.(item) : onOpen(item))}
+       className={`flex w-full items-center justify-between gap-4 rounded-2xl border px-5 py-4 text-left transition ${
+         isCompleted
+           ? 'border-emerald-400/30 bg-emerald-500/5'
++          : isLocked
++          ? 'border-[#8B5CF6]/25 bg-[#8B5CF6]/5 hover:border-[#8B5CF6]/40'
+           : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+       } ${!isLoggedIn ? 'cursor-not-allowed opacity-70' : ''}`}
+     >
+       <div className="flex min-w-0 items-center gap-3">
+         <div
+           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+-            isCompleted ? 'bg-emerald-500/15 text-emerald-400' : 'bg-white/5 text-[#FF9E6B]'
++            isCompleted
++              ? 'bg-emerald-500/15 text-emerald-400'
++              : isLocked
++              ? 'bg-[#8B5CF6]/15 text-[#C4B5FD]'
++              : 'bg-white/5 text-[#FF9E6B]'
+           }`}
+         >
+           <TypeIcon className="h-5 w-5" />
+@@ -40,6 +51,7 @@ export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpenin
+           <p className="text-xs text-white/45">
+             {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+             {item.durationLabel ? ` · ${item.durationLabel}` : ''}
++            {isLocked ? ' · Refer friends to unlock' : ''}
+           </p>
+         </div>
+       </div>
+@@ -49,6 +61,8 @@ export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpenin
+           <Loader2 className="h-4 w-4 animate-spin text-white/50" />
+         ) : isCompleted ? (
+           <CheckCircle2 className="h-5 w-5 text-emerald-400" />
++        ) : isLocked ? (
++          <Gift className="h-4 w-4 text-[#C4B5FD]" />
+         ) : !isLoggedIn ? (
+           <Lock className="h-4 w-4 text-white/30" />
+         ) : (
+diff --git a/src/components/roadmap/videoEmbed.js b/src/components/roadmap/videoEmbed.js
+new file mode 100644
+index 0000000..2ac9b37
+--- /dev/null
++++ b/src/components/roadmap/videoEmbed.js
+@@ -0,0 +1,10 @@
++// Turns a YouTube/Vimeo URL into an embeddable iframe src, or returns null
++// so the caller falls back to a plain <video> tag for direct file uploads.
++export function getEmbedUrl(url) {
++  if (!url) return null;
++  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
++  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
++  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
++  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
++  return null;
++}
+diff --git a/src/pages/AtyantLoginPage.jsx b/src/pages/AtyantLoginPage.jsx
+index 24eeb8a..1dcf0b7 100644
+--- a/src/pages/AtyantLoginPage.jsx
++++ b/src/pages/AtyantLoginPage.jsx
+@@ -16,6 +16,7 @@ import {
+   verifyIdDocAdmin,
+   rejectIdDocAdmin,
+ } from '../utils/api';
++import RoadmapContentTab from '../components/admin/RoadmapContentTab';
+ 
+ 
+ // ─── helpers ──────────────────────────────────────────────────────────────────
+@@ -512,7 +513,7 @@ function MentorsTab() {
+ 
+ // ─── Main AdminPanel Page ─────────────────────────────────────────────────────────
+ 
+-const TABS = ['leads', 'payments', 'chat', 'mentors'];
++const TABS = ['leads', 'payments', 'chat', 'mentors', 'roadmap'];
+ 
+ export default function AtyantLoginPage() {
+   const [authed, setAuthed] = React.useState(false);
+@@ -644,6 +645,7 @@ export default function AtyantLoginPage() {
+               {tab === 'payments' && <PaymentsTab />}
+               {tab === 'chat' && <ChatSessionsTab />}
+               {tab === 'mentors' && <MentorsTab />}
++              {tab === 'roadmap' && <RoadmapContentTab />}
+             </div>
+           </>
+         )}
+diff --git a/src/pages/AuthPage.jsx b/src/pages/AuthPage.jsx
+index 2143d46..5910da2 100644
+--- a/src/pages/AuthPage.jsx
++++ b/src/pages/AuthPage.jsx
+@@ -14,6 +14,7 @@ export default function AuthPage({ setUser }) {
+   const navigate = useNavigate();
+   const location = useLocation();
+   const customMessage = location.state?.message;
++  const referralCode = new URLSearchParams(location.search).get('ref') || undefined;
+ 
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+@@ -31,7 +32,7 @@ export default function AuthPage({ setUser }) {
+         const deviceInfo = typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 150) : '';
+         res = await userLogin({ phone, password, deviceInfo });
+       } else {
+-        res = await userSignup({ name, phone, password, role });
++        res = await userSignup({ name, phone, password, role, referralCode });
+       }
+       if (setUser) setUser(res.user);
+ 
+@@ -72,6 +73,12 @@ export default function AuthPage({ setUser }) {
+           </p>
+         </div>
+ 
++        {!isLogin && referralCode && (
++          <div className="mb-6 p-3 rounded-2xl bg-purple-50 border border-[#8B5CF6]/20 text-xs font-semibold text-[#8B5CF6] text-center">
++            🎁 You were invited by a friend — signing up counts toward their referral rewards.
++          </div>
++        )}
++
+         {/* Role Toggle for Signup */}
+         {!isLogin && (
+           <div className="mb-6">
+diff --git a/src/pages/RoadmapPage.jsx b/src/pages/RoadmapPage.jsx
+index a300ee8..10fed37 100644
+--- a/src/pages/RoadmapPage.jsx
++++ b/src/pages/RoadmapPage.jsx
+@@ -1,15 +1,19 @@
+-import React, { useState, useEffect, useCallback, useMemo } from 'react';
++import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+ import { motion } from 'framer-motion';
+ import RoadmapHero from '../components/roadmap/RoadmapHero';
+ import PillarTabs from '../components/roadmap/PillarTabs';
+ import PillarModal from '../components/roadmap/PillarModal';
+ import CareerPathsSection from '../components/roadmap/CareerPathsSection';
++import ReferralCard from '../components/roadmap/ReferralCard';
++import FaqVideoSection from '../components/roadmap/FaqVideoSection';
+ import {
+   getRoadmapPillars,
+   completeRoadmapItem,
+   getStreak,
+   getMyBatch,
+   getCareerPaths,
++  getReferralStatus,
++  getFaqVideos,
+ } from '../utils/api';
+ 
+ const sectionVariants = {
+@@ -19,6 +23,7 @@ const sectionVariants = {
+ 
+ export default function RoadmapPage({ user }) {
+   const isLoggedIn = !!user;
++  const referralRef = useRef(null);
+ 
+   const [pillars, setPillars] = useState([]);
+   const [overallProgress, setOverallProgress] = useState(0);
+@@ -30,6 +35,8 @@ export default function RoadmapPage({ user }) {
+   const [openingItemId, setOpeningItemId] = useState(null);
+   const [error, setError] = useState('');
+   const [careerPaths, setCareerPaths] = useState({ featured: [], more: [], totalCount: 0, remainingCount: 0 });
++  const [referral, setReferral] = useState(null);
++  const [faqVideos, setFaqVideos] = useState([]);
+ 
+   const loadPillars = useCallback(async () => {
+     try {
+@@ -58,6 +65,7 @@ export default function RoadmapPage({ user }) {
+         })
+       )
+       .catch(() => {});
++    getFaqVideos().then((res) => setFaqVideos(res.faqVideos || [])).catch(() => {});
+   }, []);
+ 
+   useEffect(() => {
+@@ -69,6 +77,7 @@ export default function RoadmapPage({ user }) {
+         setMemberCount(res.memberCount || 0);
+       })
+       .catch(() => {});
++    getReferralStatus().then(setReferral).catch(() => {});
+   }, [isLoggedIn]);
+ 
+   const openPillar = useMemo(
+@@ -108,6 +117,13 @@ export default function RoadmapPage({ user }) {
+     }
+   };
+ 
++  // Referral-gated item tapped: close the popup and scroll to the referral
++  // card so the student can see exactly how many more friends they need.
++  const handleLockedClick = () => {
++    setOpenPillarKey(null);
++    setTimeout(() => referralRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
++  };
++
+   return (
+     <main>
+       <RoadmapHero
+@@ -124,7 +140,7 @@ export default function RoadmapPage({ user }) {
+         initial="hidden"
+         whileInView="visible"
+         viewport={{ once: true, amount: 0.1 }}
+-        className="bg-[#0B0F2E] pb-20 pt-4 sm:pb-28"
++        className="bg-[#0B0F2E] pb-16 pt-4 sm:pb-20"
+       >
+         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+           <div className="mb-10 text-center">
+@@ -163,6 +179,14 @@ export default function RoadmapPage({ user }) {
+         </div>
+       </motion.section>
+ 
++      {isLoggedIn && referral && (
++        <section ref={referralRef} className="bg-[#0B0F2E] pb-16 sm:pb-20">
++          <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
++            <ReferralCard referral={referral} />
++          </div>
++        </section>
++      )}
++
+       <CareerPathsSection
+         featured={careerPaths.featured}
+         more={careerPaths.more}
+@@ -170,11 +194,14 @@ export default function RoadmapPage({ user }) {
+         remainingCount={careerPaths.remainingCount}
+       />
+ 
++      <FaqVideoSection faqVideos={faqVideos} />
++
+       <PillarModal
+         pillar={openPillar}
+         isLoggedIn={isLoggedIn}
+         openingItemId={openingItemId}
+         onOpenItem={handleOpenItem}
++        onLockedClick={handleLockedClick}
+         onClose={() => setOpenPillarKey(null)}
+       />
+     </main>
+diff --git a/src/utils/api.js b/src/utils/api.js
+index 5d58d9b..294c648 100644
+--- a/src/utils/api.js
++++ b/src/utils/api.js
+@@ -350,3 +350,65 @@ export const logoutUser = async () => {
+ 
+ 
+ export const getCareerPaths = () => request('/api/roadmap/career-paths');
++
++
++// ─── Referral & FAQ videos (public + student) ────────────────────────────
++
++export const getFaqVideos = () => request('/api/roadmap/faq-videos');
++
++export const getReferralStatus = () =>
++  request('/api/roadmap/referral', { headers: userAuthHeader() });
++
++// ─── Admin: Roadmap content management ──────────────────────────────────
++
++export const adminListPillars = () => request('/api/admin/roadmap/pillars', { headers: adminAuthHeader() });
++export const adminCreatePillar = (payload) =>
++  request('/api/admin/roadmap/pillars', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminUpdatePillar = (id, payload) =>
++  request(`/api/admin/roadmap/pillars/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminDeletePillar = (id) =>
++  request(`/api/admin/roadmap/pillars/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
++
++export const adminListItems = (pillarId) =>
++  request(`/api/admin/roadmap/items${pillarId ? `?pillar=${pillarId}` : ''}`, { headers: adminAuthHeader() });
++export const adminCreateItem = (payload) =>
++  request('/api/admin/roadmap/items', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminUpdateItem = (id, payload) =>
++  request(`/api/admin/roadmap/items/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminDeleteItem = (id) =>
++  request(`/api/admin/roadmap/items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
++
++export const adminListCareerPaths = () => request('/api/admin/career-paths', { headers: adminAuthHeader() });
++export const adminCreateCareerPath = (payload) =>
++  request('/api/admin/career-paths', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminUpdateCareerPath = (id, payload) =>
++  request(`/api/admin/career-paths/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminDeleteCareerPath = (id) =>
++  request(`/api/admin/career-paths/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
++
++export const adminListFaqVideos = () => request('/api/admin/faq-videos', { headers: adminAuthHeader() });
++export const adminCreateFaqVideo = (payload) =>
++  request('/api/admin/faq-videos', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminUpdateFaqVideo = (id, payload) =>
++  request(`/api/admin/faq-videos/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
++export const adminDeleteFaqVideo = (id) =>
++  request(`/api/admin/faq-videos/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
++
++// Admin uploads a document/video file and gets back a URL to attach to a
++// RoadmapItem or FaqVideo via the CRUD calls above.
++export const uploadRoadmapContent = async (file) => {
++  const token = localStorage.getItem('admin_token');
++  const formData = new FormData();
++  formData.append('file', file);
++
++  const res = await fetch(`${API_BASE}/api/upload/roadmap-content`, {
++    method: 'POST',
++    headers: token ? { Authorization: `Bearer ${token}` } : {},
++    body: formData,
++  });
++
++  let data;
++  try { data = await res.json(); } catch { data = {}; }
++  if (!res.ok) throw new Error(data.error || 'Upload failed');
++  return data;
++};

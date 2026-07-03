@@ -14,6 +14,7 @@ export default function AuthPage({ setUser }) {
   const navigate = useNavigate();
   const location = useLocation();
   const customMessage = location.state?.message;
+  const referralCode = new URLSearchParams(location.search).get('ref') || undefined;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,9 +29,10 @@ export default function AuthPage({ setUser }) {
     try {
       let res;
       if (isLogin) {
-        res = await userLogin({ phone, password });
+        const deviceInfo = typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 150) : '';
+        res = await userLogin({ phone, password, deviceInfo });
       } else {
-        res = await userSignup({ name, phone, password, role });
+        res = await userSignup({ name, phone, password, role, referralCode });
       }
       if (setUser) setUser(res.user);
 
@@ -70,6 +72,12 @@ export default function AuthPage({ setUser }) {
             {isLogin ? 'Log in to access your dashboard.' : 'Join Atyant as a student or mentor.'}
           </p>
         </div>
+
+        {!isLogin && referralCode && (
+          <div className="mb-6 p-3 rounded-2xl bg-purple-50 border border-[#8B5CF6]/20 text-xs font-semibold text-[#8B5CF6] text-center">
+            🎁 You were invited by a friend — signing up counts toward their referral rewards.
+          </div>
+        )}
 
         {/* Role Toggle for Signup */}
         {!isLogin && (
