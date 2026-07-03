@@ -15,7 +15,23 @@ import {
   viewIdDocAdmin,
   verifyIdDocAdmin,
   rejectIdDocAdmin,
+  adminUpdateMentorBundles,
 } from '../utils/api';
+
+// Canonical bundle ids a mentor can offer — kept in sync with PLANS in
+// atyant-12-vertical/src/services/paymentService.js. Bundles are admin-only
+// now (see PATCH /api/admin/mentors/:id/bundles); this is the picklist used
+// below in MentorsTab's inline bundle editor.
+const ADMIN_BUNDLE_OPTIONS = [
+  'complete-round',
+  'ultimate-peace',
+  'csab-complete',
+  'csab-ultimate',
+  'college-clarity',
+  'admission-success',
+  'admission-career-growth',
+];
+import RoadmapContentTab from '../components/admin/RoadmapContentTab';
 
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -323,6 +339,11 @@ function MentorsTab() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState('');
   const [search, setSearch] = React.useState('');
+  // Bundles are admin-only now — this tracks which mentor row currently has
+  // the inline bundle editor open, and the in-progress selection for it.
+  const [editingBundlesFor, setEditingBundlesFor] = React.useState(null);
+  const [draftBundles, setDraftBundles] = React.useState([]);
+  const [savingBundles, setSavingBundles] = React.useState(false);
 
   const fetchMentors = React.useCallback(async () => {
     setLoading(true);
@@ -350,6 +371,30 @@ function MentorsTab() {
       fetchMentors();
     } catch (e) {
       alert(e.message);
+    }
+  }
+
+  function openBundleEditor(mentor) {
+    setEditingBundlesFor(mentor._id || mentor.id);
+    setDraftBundles(Array.isArray(mentor.bundles) ? [...mentor.bundles] : []);
+  }
+
+  function toggleDraftBundle(id) {
+    setDraftBundles((prev) =>
+      prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]
+    );
+  }
+
+  async function saveBundles(mentorId) {
+    setSavingBundles(true);
+    try {
+      await adminUpdateMentorBundles(mentorId, draftBundles);
+      setEditingBundlesFor(null);
+      fetchMentors();
+    } catch (e) {
+      alert(e.message || 'Failed to update bundles');
+    } finally {
+      setSavingBundles(false);
     }
   }
 
@@ -424,6 +469,7 @@ function MentorsTab() {
                 <th className="px-3 py-2 text-left">Phone</th>
                 <th className="px-3 py-2 text-left">College & Branch</th>
                 <th className="px-3 py-2 text-left">State</th>
+                <th className="px-3 py-2 text-left">Bundles</th>
                 <th className="px-3 py-2 text-left">Identity Doc</th>
                 <th className="px-3 py-2 text-left">Date Joined</th>
                 <th className="px-3 py-2 text-left">Actions</th>
@@ -443,7 +489,60 @@ function MentorsTab() {
                     <div className="text-[11px] text-gray-400 truncate">{m.branch || '—'}</div>
                   </td>
                   <td className="px-3 py-2 text-gray-500">{m.state || '—'}</td>
-                  
+
+                  <td className="px-3 py-2">
+                    {editingBundlesFor === (m._id || m.id) ? (
+                      <div className="flex flex-col gap-1.5 max-w-[200px]">
+                        {ADMIN_BUNDLE_OPTIONS.map((opt) => (
+                          <label key={opt} className="flex items-center gap-1.5 text-[11px] text-gray-600">
+                            <input
+                              type="checkbox"
+                              checked={draftBundles.includes(opt)}
+                              onChange={() => toggleDraftBundle(opt)}
+                            />
+                            {opt}
+                          </label>
+                        ))}
+                        <div className="flex gap-1 mt-1">
+                          <button
+                            disabled={savingBundles}
+                            onClick={() => saveBundles(m._id || m.id)}
+                            className="text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-2 py-1 rounded disabled:opacity-50"
+                          >
+                            {savingBundles ? 'Saving…' : 'Save'}
+                          </button>
+                          <button
+                            disabled={savingBundles}
+                            onClick={() => setEditingBundlesFor(null)}
+                            className="text-[11px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1 max-w-[180px]">
+                        <div className="flex flex-wrap gap-1">
+                          {(m.bundles || []).length > 0 ? (
+                            m.bundles.map((b) => (
+                              <span key={b} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                                {b}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[11px] text-gray-400 italic">None</span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => openBundleEditor(m)}
+                          className="text-[11px] font-bold text-blue-600 hover:underline text-left"
+                        >
+                          Edit bundles
+                        </button>
+                      </div>
+                    )}
+                  </td>
+
                   <td className="px-3 py-2">
                     {m.idDocFilename ? (
                       <div className="flex flex-col gap-1.5 max-w-[150px]">
@@ -512,7 +611,7 @@ function MentorsTab() {
 
 // ─── Main AdminPanel Page ─────────────────────────────────────────────────────────
 
-const TABS = ['leads', 'payments', 'chat', 'mentors'];
+const TABS = ['leads', 'payments', 'chat', 'mentors', 'roadmap'];
 
 export default function AtyantLoginPage() {
   const [authed, setAuthed] = React.useState(false);
@@ -644,6 +743,7 @@ export default function AtyantLoginPage() {
               {tab === 'payments' && <PaymentsTab />}
               {tab === 'chat' && <ChatSessionsTab />}
               {tab === 'mentors' && <MentorsTab />}
+              {tab === 'roadmap' && <RoadmapContentTab />}
             </div>
           </>
         )}

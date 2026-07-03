@@ -1,0 +1,155 @@
+diff --git a/src/components/roadmap/CareerPathsSection.jsx b/src/components/roadmap/CareerPathsSection.jsx
+new file mode 100644
+index 0000000..a5faf1e
+--- /dev/null
++++ b/src/components/roadmap/CareerPathsSection.jsx
+@@ -0,0 +1,80 @@
++import React from 'react';
++import { motion } from 'framer-motion';
++import { ArrowRight } from 'lucide-react';
++
++// Pastel dot colors keyed by the backend's `colorKey`, matching the
++// "29 career paths" reference design's varied circle avatars.
++const dotColorMap = {
++  rose: 'bg-rose-200',
++  violet: 'bg-violet-200',
++  emerald: 'bg-emerald-200',
++  amber: 'bg-amber-200',
++  sky: 'bg-sky-200',
++};
++
++function CareerPathCard({ path, onSelect }) {
++  return (
++    <motion.button
++      type="button"
++      onClick={() => onSelect(path)}
++      whileHover={{ y: -2 }}
++      className="flex items-center justify-between gap-3 rounded-2xl border border-[#0B0F2E]/10 bg-white px-5 py-4 text-left shadow-sm transition hover:border-[#FF6B2B]/40 hover:shadow-md"
++    >
++      <div className="flex min-w-0 items-center gap-3">
++        <span className={`h-9 w-9 shrink-0 rounded-full ${dotColorMap[path.colorKey] || 'bg-rose-200'}`} />
++        <span className="truncate text-sm font-semibold text-[#0B0F2E]">{path.title}</span>
++      </div>
++      <ArrowRight className="h-4 w-4 shrink-0 text-[#0B0F2E]/40" />
++    </motion.button>
++  );
++}
++
++// "29 career paths. One platform." grid — deliberately light/cream to match
++// the roadmap design reference, distinct from the dark navy pillar section
++// it sits below on /roadmap.
++export default function CareerPathsSection({ featured = [], totalCount = 0, remainingCount = 0 }) {
++  const handleSelect = () => {
++    // No dedicated per-path page yet — reuse the site's existing lead
++    // capture flow so interest here still reaches the team.
++    window.dispatchEvent(new CustomEvent('openLeadModal'));
++  };
++
++  if (!featured.length) return null;
++
++  return (
++    <section className="bg-[#FFF8F0] py-16 sm:py-20">
++      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
++        <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
++          <div>
++            <p className="text-sm font-bold uppercase tracking-wide text-[#FF6B2B]">Career Exploration</p>
++            <h2 className="mt-2 max-w-xl text-3xl font-black leading-tight text-[#0B0F2E] sm:text-4xl">
++              {totalCount || featured.length} career paths. One platform.
++            </h2>
++            <p className="mt-3 max-w-lg text-[#0B0F2E]/60">
++              From Software Engineering to MBA prep — explore every direction available to you.
++            </p>
++          </div>
++          <button
++            type="button"
++            onClick={handleSelect}
++            className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full border border-[#0B0F2E] px-6 py-3 text-sm font-semibold text-[#0B0F2E] transition hover:bg-[#0B0F2E] hover:text-white sm:self-auto"
++          >
++            Take the Career Fit Quiz <ArrowRight className="h-4 w-4" />
++          </button>
++        </div>
++
++        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
++          {featured.map((path) => (
++            <CareerPathCard key={path.id} path={path} onSelect={handleSelect} />
++          ))}
++        </div>
++
++        {remainingCount > 0 && (
++          <p className="mt-6 text-sm text-[#0B0F2E]/50">
++            + {remainingCount} more paths inside the platform.
++          </p>
++        )}
++      </div>
++    </section>
++  );
++}
+diff --git a/src/pages/RoadmapPage.jsx b/src/pages/RoadmapPage.jsx
+index 41e66f9..ce624c4 100644
+--- a/src/pages/RoadmapPage.jsx
++++ b/src/pages/RoadmapPage.jsx
+@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
+ import RoadmapHero from '../components/roadmap/RoadmapHero';
+ import PillarTabs from '../components/roadmap/PillarTabs';
+ import PillarSection from '../components/roadmap/PillarSection';
++import CareerPathsSection from '../components/roadmap/CareerPathsSection';
+ import {
+   getRoadmapPillars,
+   completeRoadmapItem,
+   getStreak,
+   getMyBatch,
++  getCareerPaths,
+ } from '../utils/api';
+ 
+ const sectionVariants = {
+@@ -27,6 +29,7 @@ export default function RoadmapPage({ user }) {
+   const [loading, setLoading] = useState(true);
+   const [savingId, setSavingId] = useState(null);
+   const [error, setError] = useState('');
++  const [careerPaths, setCareerPaths] = useState({ featured: [], totalCount: 0, remainingCount: 0 });
+ 
+   const loadPillars = useCallback(async () => {
+     try {
+@@ -45,6 +48,18 @@ export default function RoadmapPage({ user }) {
+     loadPillars();
+   }, [loadPillars]);
+ 
++  useEffect(() => {
++    getCareerPaths()
++      .then((res) =>
++        setCareerPaths({
++          featured: res.featured || [],
++          totalCount: res.totalCount || 0,
++          remainingCount: res.remainingCount || 0,
++        })
++      )
++      .catch(() => {});
++  }, []);
++
+   useEffect(() => {
+     if (!isLoggedIn) return;
+     getStreak().then(setStreak).catch(() => {});
+@@ -152,6 +167,12 @@ export default function RoadmapPage({ user }) {
+           )}
+         </div>
+       </motion.section>
++
++      <CareerPathsSection
++        featured={careerPaths.featured}
++        totalCount={careerPaths.totalCount}
++        remainingCount={careerPaths.remainingCount}
++      />
+     </main>
+   );
+ }
+diff --git a/src/utils/api.js b/src/utils/api.js
+index 814b373..5d58d9b 100644
+--- a/src/utils/api.js
++++ b/src/utils/api.js
+@@ -347,3 +347,6 @@ export const logoutUser = async () => {
+     localStorage.removeItem('user_token');
+   }
+ };
++
++
++export const getCareerPaths = () => request('/api/roadmap/career-paths');

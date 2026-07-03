@@ -235,11 +235,11 @@ export default function ProfilePage({ user, setUser }) {
     navigate('/');
   };
 
-  const handleBundleToggle = (b) => {
-    setBundles((prev) =>
-      prev.includes(b) ? prev.filter((item) => item !== b) : [...prev, b]
-    );
-  };
+  // NOTE: bundles are now admin-managed only (backend security fix — a
+  // mentor could previously self-grant any paid bundle via this form). This
+  // form no longer lets mentors toggle bundles; it just displays what an
+  // admin has assigned. See adminUpdateMentorBundles in the backend and the
+  // read-only bundle list below.
 
   // Safe character limit handler function
   const handleBioChange = (e) => {
@@ -266,7 +266,7 @@ export default function ProfilePage({ user, setUser }) {
         payload.categoryRank = categoryRank || undefined;
         payload.preferredLang = preferredLang;
         payload.gender = gender;
-        payload.bundles = bundles;
+        // bundles intentionally omitted — admin-managed only, see note above.
         payload.bio = bio;
       }
 
@@ -674,20 +674,28 @@ export default function ProfilePage({ user, setUser }) {
                 </div>
               </div>
 
-              {/* Product Bundles Configuration Node Loop */}
+              {/* Product Bundles — read-only display.
+                  Bundles used to be self-service (mentors could check/uncheck
+                  any package here, which meant a mentor could grant
+                  themselves any paid bundle without actually being verified
+                  for it). That's now an admin-only action; this section just
+                  shows what's currently assigned. */}
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Bundles You Offer</label>
-                <p className="text-xs text-slate-500 mb-4">Select the packages you are comfortable delivering. Students will book you based on what you offer.</p>
+                <p className="text-xs text-slate-500 mb-4">
+                  Managed by the Atyant team. To add or change the packages you deliver, contact admin support — this list is read-only.
+                </p>
                 <div className="space-y-4">
                   {AVAILABLE_BUNDLES.map(b => {
                     const isSelected = bundles.includes(b.id);
                     return (
                       <div
-                        key={b.id} onClick={() => handleBundleToggle(b.id)}
-                        className={`relative flex gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+                        key={b.id}
+                        aria-disabled="true"
+                        className={`relative flex gap-4 p-5 rounded-2xl border-2 transition-all duration-200 cursor-default ${
                           isSelected
                             ? 'border-[#FF6B2B] bg-[#FF6B2B]/5 shadow-md shadow-[#FF6B2B]/10'
-                            : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50'
+                            : 'border-slate-100 opacity-60'
                         }`}
                       >
                         <div className="flex-shrink-0 pt-0.5">
