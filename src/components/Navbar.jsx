@@ -184,7 +184,7 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
               }`}
           >
             <Sparkles className="h-3.5 w-3.5 text-[#FFB38E]" />
-            Roadmap
+            Explore College Guide
           </button>
 
           <div className="border-t border-white/5 pt-4 flex flex-col gap-3">
