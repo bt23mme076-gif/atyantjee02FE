@@ -196,8 +196,11 @@ function AppContent() {
     else navigate(`/${tab}`);
   };
 
+  const isDarkPage = location.pathname === '/' || location.pathname === '/atyantlogin';
+  const bgClass = isDarkPage ? 'bg-[#0B0F2E]' : 'bg-white';
+
   return (
-    <div className="min-h-screen bg-white font-sans antialiased" style={{ overflowX: 'clip' }}>
+    <div className={`min-h-screen ${bgClass} font-sans antialiased`} style={{ overflowX: 'clip' }}>
       <Navbar 
         onLeadClick={() => setShowLeadModal(true)} 
         activeTab={activeTab}
