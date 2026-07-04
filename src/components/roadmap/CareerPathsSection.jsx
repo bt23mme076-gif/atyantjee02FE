@@ -1,29 +1,62 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { 
+  ArrowRight, ChevronDown, Code, Database, Briefcase, Palette, Shield, Cloud, Settings, Zap, 
+  Building, LineChart, DollarSign, GraduationCap, Award, Globe, Rocket, Gamepad2, 
+  Megaphone, Coins, Truck, Bot, Brain, Cpu, Link2, PenTool, Handshake, Users, Scale, 
+  FlaskConical, Leaf, HelpCircle 
+} from 'lucide-react';
 
-// Pastel dot colors keyed by the backend's `colorKey`. Tuned as translucent
-// fills over the dark navy background (rest of the site's convention —
-// see PillarSection/RoadmapItemCard) rather than the light-mode pastel
-// swatches used by the original my-roadmap-mate reference.
-const dotColorMap = {
-  rose: 'bg-rose-400/25 ring-1 ring-rose-400/40',
-  violet: 'bg-violet-400/25 ring-1 ring-violet-400/40',
-  emerald: 'bg-emerald-400/25 ring-1 ring-emerald-400/40',
-  amber: 'bg-amber-400/25 ring-1 ring-amber-400/40',
-  sky: 'bg-sky-400/25 ring-1 ring-sky-400/40',
+const iconMap = {
+  'software-engineering': Code,
+  'data-science': Database,
+  'product-management': Briefcase,
+  'ui-ux-design': Palette,
+  'cybersecurity': Shield,
+  'cloud-and-devops': Cloud,
+  'mechanical-core': Settings,
+  'electronics-and-vlsi': Zap,
+  'civil-and-infra': Building,
+  'consulting': LineChart,
+  'investment-banking': DollarSign,
+  'mba-prep': GraduationCap,
+  'gate-prep': Award,
+  'ms-abroad': Globe,
+  'entrepreneurship': Rocket,
+  'game-development': Gamepad2,
+  'digital-marketing': Megaphone,
+  'finance-and-fp-and-a': Coins,
+  'supply-chain-and-operations': Truck,
+  'robotics': Bot,
+  'ai-ml-research': Brain,
+  'embedded-systems': Cpu,
+  'blockchain-and-web3': Link2,
+  'technical-writing': PenTool,
+  'sales-and-business-development': Handshake,
+  'hr-and-people-ops': Users,
+  'legal-and-compliance': Scale,
+  'biotech-and-pharma': FlaskConical,
+  'renewable-energy': Leaf
 };
 
+function getCareerPathIcon(slug) {
+  return iconMap[slug] || HelpCircle;
+}
+
 function CareerPathCard({ path, onSelect }) {
+  const IconComponent = getCareerPathIcon(path.slug);
+  
   return (
     <motion.button
       type="button"
       onClick={() => onSelect(path)}
       whileHover={{ y: -2 }}
-      className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-left transition hover:border-[#FF6B2B]/40 hover:bg-white/[0.05]"
+      className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-5 py-4 text-left transition hover:border-[#FF6B2B]/40 hover:bg-white/[0.05]"
     >
       <div className="flex min-w-0 items-center gap-3">
-        <span className={`h-9 w-9 shrink-0 rounded-full ${dotColorMap[path.colorKey] || dotColorMap.rose}`} />
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-white ring-1 ring-white/15">
+          <IconComponent className="h-4.5 w-4.5 text-[#FF6B2B]" strokeWidth={2.2} />
+        </div>
         <span className="truncate text-sm font-semibold text-white">{path.title}</span>
       </div>
       <ArrowRight className="h-4 w-4 shrink-0 text-white/30" />

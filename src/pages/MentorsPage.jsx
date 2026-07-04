@@ -136,7 +136,7 @@ function BundleRow({ bundleId, isSelected, onSelect }) {
     <button
       type="button"
       onClick={onSelect}
-      className="flex w-full items-center justify-between rounded-xl px-3 py-2 border transition-all text-left"
+      className="flex w-full items-center justify-between rounded-lg px-3 py-2 border transition-all text-left"
       style={{
         borderColor: isSelected ? b.color : 'rgba(255,255,255,0.06)',
         backgroundColor: isSelected ? b.color + '15' : 'transparent',
@@ -236,7 +236,7 @@ function MentorCard({ mentor, index, defaultBundle }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.18, delay: index * 0.04 }}
-      className="bg-white/3 border border-white/5 rounded-[1.5rem] p-5 flex flex-col hover:border-white/15 hover:shadow-lg hover:bg-white/5 transition-all duration-200"
+      className="bg-white/3 border border-white/5 rounded-lg p-5 flex flex-col hover:border-white/15 hover:shadow-lg hover:bg-white/5 transition-all duration-200"
     >
       <div className="flex items-center gap-3 mb-4">
         {mentor.profilePhotoFilename ? (
@@ -279,7 +279,7 @@ function MentorCard({ mentor, index, defaultBundle }) {
 
       {mentor.bio && (
         <div className="mb-4 pb-4 border-b border-white/5">
-          <p className="text-[11px] text-slate-300 italic leading-relaxed bg-white/5 p-3 rounded-xl border border-white/5 relative">
+          <p className="text-[11px] text-slate-300 italic leading-relaxed bg-white/5 p-3 rounded-lg border border-white/5 relative">
             <span className="absolute -top-2 left-2 text-xl text-slate-400">"</span>
             {mentor.bio}
           </p>
@@ -298,7 +298,7 @@ function MentorCard({ mentor, index, defaultBundle }) {
 
       <button
         onClick={handleBookClick}
-        className="mt-4 w-full py-2.5 rounded-xl bg-white text-slate-900 text-sm font-bold hover:bg-slate-100 transition-all duration-200"
+        className="mt-4 w-full py-2.5 rounded-lg bg-white text-slate-900 text-sm font-bold hover:bg-slate-100 transition-all duration-200"
       >
         Book {bundle?.name} →
       </button>
@@ -342,7 +342,7 @@ function CustomRangeModal({ open, onClose, onApply }) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-[#0B0F2E] border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-xl"
+        className="bg-[#0B0F2E] border border-white/10 rounded-lg p-6 w-full max-w-sm shadow-xl"
       >
         <h3 className="text-base font-black text-white mb-1">Custom Rank Range</h3>
         <p className="text-xs text-slate-400 mb-4">Type your exact JEE rank range</p>
@@ -352,7 +352,7 @@ function CustomRangeModal({ open, onClose, onApply }) {
             <input
               type="number" placeholder="e.g. 40000" value={minVal}
               onChange={e => setMinVal(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition"
+              className="w-full rounded-lg border border-white/15 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition"
             />
           </div>
           <div className="flex-1">
@@ -360,16 +360,16 @@ function CustomRangeModal({ open, onClose, onApply }) {
             <input
               type="number" placeholder="e.g. 50000" value={maxVal}
               onChange={e => setMaxVal(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition"
+              className="w-full rounded-lg border border-white/15 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition"
             />
           </div>
         </div>
         {error && <p className="text-xs text-red-400 mb-3">{error}</p>}
         <div className="flex gap-2">
-          <button onClick={onClose} className="flex-1 py-2 rounded-xl border border-white/10 text-sm font-semibold text-slate-300 hover:bg-white/5 transition">
+          <button onClick={onClose} className="flex-1 rounded-lg border border-white/10 text-sm font-semibold text-slate-300 hover:bg-white/5 transition">
             Cancel
           </button>
-          <button onClick={handleApply} className="flex-1 py-2 rounded-xl bg-[#FF6B2B] text-white text-sm font-bold hover:bg-[#ff7b48] transition">
+          <button onClick={handleApply} className="flex-1 rounded-lg bg-[#FF6B2B] text-white text-sm font-bold hover:bg-[#ff7b48] transition">
             Apply
           </button>
         </div>
@@ -614,7 +614,7 @@ export default function MentorsPage() {
           </p>
 
           {/* ── Rank Range Selector ── */}
-          <div className="mt-8 mx-auto max-w-2xl bg-white/5 backdrop-blur rounded-2xl border border-white/10 shadow-lg p-5">
+          <div className="mt-8 mx-auto max-w-2xl bg-white/5 backdrop-blur rounded-lg border border-white/10 shadow-lg p-5">
 
             {/* Header row */}
             <div className="flex items-center justify-between mb-4">
@@ -700,7 +700,7 @@ export default function MentorsPage() {
               placeholder="Search by name or college..."
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="w-full rounded-xl border border-white/10 bg-white/5 py-2 pl-9 pr-3 text-sm text-white placeholder-slate-500 outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition"
+              className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pl-9 pr-3 text-sm text-white placeholder-slate-500 outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition"
             />
           </div>
 
@@ -708,7 +708,7 @@ export default function MentorsPage() {
           <div className="flex flex-col gap-1 flex-1 min-w-[110px]">
             <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">College Type</label>
             <select value={filterCollegeType} onChange={handleCollegeTypeChange}
-              className="rounded-xl border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
+              className="rounded-lg border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
               <option value="" className="bg-[#0B0F2E] text-white">All Types</option>
               <option value="IIT" className="bg-[#0B0F2E] text-white">IIT</option>
               <option value="NIT" className="bg-[#0B0F2E] text-white">NIT</option>
@@ -724,7 +724,7 @@ export default function MentorsPage() {
             <div className="flex flex-col gap-1 flex-1 min-w-[110px]">
               <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">College</label>
               <select value={filterCollegeName} onChange={e => { setFilterCollegeName(e.target.value); setPage(1); }}
-                className="rounded-xl border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
+                className="rounded-lg border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
                 <option value="" className="bg-[#0B0F2E] text-white">All {filterCollegeType}</option>
                 {activeCollegeList.map(name => <option key={name} value={name} className="bg-[#0B0F2E] text-white">{name}</option>)}
               </select>
@@ -735,7 +735,7 @@ export default function MentorsPage() {
           <div className="flex flex-col gap-1 flex-1 min-w-[110px]">
             <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">State</label>
             <select value={filterState} onChange={e => { setFilterState(e.target.value); setPage(1); }}
-              className="rounded-xl border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
+              className="rounded-lg border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
               <option value="" className="bg-[#0B0F2E] text-white">All States</option>
               {ALL_INDIAN_STATES.map(st => <option key={st} value={st} className="bg-[#0B0F2E] text-white">{st}</option>)}
             </select>
@@ -745,7 +745,7 @@ export default function MentorsPage() {
           <div className="flex flex-col gap-1 flex-1 min-w-[110px]">
             <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Department</label>
             <select value={filterBranch} onChange={e => { setFilterBranch(e.target.value); setPage(1); }}
-              className="rounded-xl border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
+              className="rounded-lg border border-white/10 bg-white/5 py-2 px-3 text-sm text-white outline-none focus:border-[#FF6B2B] focus:bg-white/10 transition">
               <option value="" className="bg-[#0B0F2E] text-white">All Departments</option>
               {DEPARTMENTS.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
@@ -754,7 +754,7 @@ export default function MentorsPage() {
           {/* Clear all */}
           {hasFilter && (
             <button onClick={clearFilters}
-              className="py-2 px-3 rounded-xl text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 transition self-end">
+              className="py-2 px-3 rounded-lg text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 transition self-end">
               Clear all
             </button>
           )}
@@ -779,7 +779,7 @@ export default function MentorsPage() {
             )}
           </p>
           <select value={sortBy} onChange={e => { setSortBy(e.target.value); setPage(1); }}
-            className="rounded-xl border border-white/10 bg-white/5 py-2 px-3 text-xs text-slate-300 outline-none focus:border-[#FF6B2B] transition">
+            className="rounded-lg border border-white/10 bg-white/5 py-2 px-3 text-xs text-slate-300 outline-none focus:border-[#FF6B2B] transition">
             <option value="default" className="bg-[#0B0F2E] text-white">Sort: Recommended</option>
             <option value="priceLow" className="bg-[#0B0F2E] text-white">Price: low to high</option>
             <option value="rating" className="bg-[#0B0F2E] text-white">Highest rated</option>
@@ -813,7 +813,7 @@ export default function MentorsPage() {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 rounded-xl text-sm font-bold border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              className="px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
               ← Prev
             </button>
@@ -832,7 +832,7 @@ export default function MentorsPage() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className="w-9 h-9 rounded-xl text-sm font-bold border transition"
+                    className="w-9 h-9 rounded-lg text-sm font-bold border transition"
                     style={{
                       backgroundColor: page === p ? '#FF6B2B' : 'transparent',
                       color:           page === p ? '#fff'    : '#cbd5e1',
@@ -848,7 +848,7 @@ export default function MentorsPage() {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-4 py-2 rounded-xl text-sm font-bold border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              className="px-4 py-2 rounded-lg text-sm font-bold border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
               Next →
             </button>

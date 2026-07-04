@@ -192,29 +192,29 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
               <div className="grid grid-cols-3 gap-2.5">
                 <button
                   onClick={() => navigate('/programs#josaa')}
-                  className="flex flex-col items-center justify-between p-3 rounded-2xl bg-white/3 border border-[#FF6B2B]/35 shadow-[0_0_15px_rgba(255,107,43,0.15)] active:scale-95 transition text-center"
+                  className="flex flex-col items-center justify-between p-3 rounded-lg bg-white/3 border border-white/10 shadow-sm active:scale-95 transition text-center"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF6B2B]/20 text-base text-[#FFB38E] border border-[#FF6B2B]/30">🎓</div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">🎓</div>
                   <span className="text-[11px] font-bold text-white mt-2 leading-tight">JoSAA / CSAB</span>
-                  <span className="text-[8px] font-bold text-[#FF6B2B] uppercase tracking-wide bg-[#FF6B2B]/10 px-1.5 py-0.5 rounded-full mt-1.5">Active</span>
+                  <span className="text-[8px] font-bold text-green-400 uppercase tracking-wide bg-green-500/10 px-1.5 py-0.5 rounded-full mt-1.5 border border-green-500/20">Active</span>
                 </button>
 
                 <button
                   onClick={() => navigate('/programs#mhtcet')}
-                  className="flex flex-col items-center justify-between p-3 rounded-2xl bg-white/3 border border-blue-500/35 shadow-[0_0_15px_rgba(59,130,246,0.15)] active:scale-95 transition text-center"
+                  className="flex flex-col items-center justify-between p-3 rounded-lg bg-white/3 border border-white/10 shadow-sm active:scale-95 transition text-center"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-500/20 text-base text-blue-300 border border-blue-500/30">🏛️</div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">🏛️</div>
                   <span className="text-[11px] font-bold text-white mt-2 leading-tight">MHT-CET</span>
-                  <span className="text-[8px] font-bold text-blue-400 uppercase tracking-wide bg-blue-500/10 px-1.5 py-0.5 rounded-full mt-1.5">Active</span>
+                  <span className="text-[8px] font-bold text-green-400 uppercase tracking-wide bg-green-500/10 px-1.5 py-0.5 rounded-full mt-1.5 border border-green-500/20">Active</span>
                 </button>
 
                 <button
                   onClick={() => navigate('/programs#othercounselling')}
-                  className="flex flex-col items-center justify-between p-3 rounded-2xl bg-white/3 border border-emerald-500/35 shadow-[0_0_15px_rgba(16,185,129,0.15)] active:scale-95 transition text-center"
+                  className="flex flex-col items-center justify-between p-3 rounded-lg bg-white/3 border border-white/10 shadow-sm active:scale-95 transition text-center"
                 >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 text-base text-emerald-300 border border-emerald-500/30">🌐</div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">🌐</div>
                   <span className="text-[11px] font-bold text-white mt-2 leading-tight">All India</span>
-                  <span className="text-[8px] font-bold text-emerald-400 uppercase tracking-wide bg-emerald-500/10 px-1.5 py-0.5 rounded-full mt-1.5">Active</span>
+                  <span className="text-[8px] font-bold text-green-400 uppercase tracking-wide bg-green-500/10 px-1.5 py-0.5 rounded-full mt-1.5 border border-green-500/20">Active</span>
                 </button>
               </div>
             </div>
@@ -245,13 +245,13 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             
             {/* Card 1: JoSAA / CSAB */}
-            <div className="relative overflow-hidden rounded-[2rem] border border-[#FF6B2B]/25 bg-white/3 p-8 shadow-[0_0_40px_rgba(255,107,43,0.08)] flex flex-col justify-between hover:border-[#FF6B2B]/50 transition duration-300">
+            <div className="relative overflow-hidden rounded-lg border border-white/10 bg-white/3 p-8 shadow-sm flex flex-col justify-between hover:border-[#FF6B2B]/40 transition duration-300">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <span className="rounded-full bg-[#FF6B2B] px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                  <span className="rounded-full bg-green-500/15 border border-green-500/25 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-green-400">
                     Active Now
                   </span>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF6B2B]/15 text-[#FFB38E] border border-[#FF6B2B]/20">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">
                     <GraduationCap className="h-6 w-6" />
                   </div>
                 </div>
@@ -271,7 +271,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                     { label: 'Support till Allotment', icon: <Trophy className="h-4 w-4" /> },
                   ].map((bullet, index) => (
                     <div key={index} className="flex items-center gap-3.5 text-sm text-slate-300">
-                      <div className="text-[#FFB38E]">{bullet.icon}</div>
+                      <div className="text-[#FF6B2B]">{bullet.icon}</div>
                       <span>{bullet.label}</span>
                     </div>
                   ))}
@@ -280,20 +280,20 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
 
               <button
                 onClick={() => navigate('/programs#josaa')}
-                className="w-full py-4 rounded-full bg-white text-[#FF6B2B] font-bold text-sm tracking-wide shadow-lg hover:bg-slate-100 hover:scale-[1.02] active:scale-[0.98] transition"
+                className="w-full py-4 rounded-lg bg-[#FF6B2B] text-white font-bold text-sm tracking-wide shadow-lg hover:bg-[#e05a1f] hover:scale-[1.02] active:scale-[0.98] transition"
               >
                 Explore JoSAA / CSAB →
               </button>
             </div>
 
             {/* Card 2: MHT-CET */}
-            <div className="relative overflow-hidden rounded-[2rem] border border-blue-500/25 bg-white/3 p-8 shadow-[0_0_40px_rgba(59,130,246,0.08)] flex flex-col justify-between hover:border-blue-500/50 transition duration-300">
+            <div className="relative overflow-hidden rounded-lg border border-white/10 bg-white/3 p-8 shadow-sm flex flex-col justify-between hover:border-[#FF6B2B]/40 transition duration-300">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <span className="rounded-full bg-blue-600 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                  <span className="rounded-full bg-green-500/15 border border-green-500/25 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-green-400">
                     Active Now
                   </span>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/20">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">
                     <Building2 className="h-6 w-6" />
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                     { label: 'Career Advantage', icon: <Rocket className="h-4 w-4" /> },
                   ].map((bullet, index) => (
                     <div key={index} className="flex items-center gap-3.5 text-sm text-slate-300">
-                      <div className="text-blue-300">{bullet.icon}</div>
+                      <div className="text-[#FF6B2B]">{bullet.icon}</div>
                       <span>{bullet.label}</span>
                     </div>
                   ))}
@@ -322,20 +322,20 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
 
               <button
                 onClick={() => navigate('/programs#mhtcet')}
-                className="w-full py-4 rounded-full bg-white text-blue-600 font-bold text-sm tracking-wide shadow-lg hover:bg-slate-100 hover:scale-[1.02] active:scale-[0.98] transition"
+                className="w-full py-4 rounded-lg bg-[#FF6B2B] text-white font-bold text-sm tracking-wide shadow-lg hover:bg-[#e05a1f] hover:scale-[1.02] active:scale-[0.98] transition"
               >
                 Explore MHT-CET →
               </button>
             </div>
 
             {/* Card 3: All India */}
-            <div className="relative overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-white/3 p-8 shadow-[0_0_40px_rgba(16,185,129,0.08)] flex flex-col justify-between hover:border-emerald-500/50 transition duration-300">
+            <div className="relative overflow-hidden rounded-lg border border-white/10 bg-white/3 p-8 shadow-sm flex flex-col justify-between hover:border-[#FF6B2B]/40 transition duration-300">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <span className="rounded-full bg-emerald-600 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                  <span className="rounded-full bg-green-500/15 border border-green-500/25 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-green-400">
                     Active Now
                   </span>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">
                     <Globe className="h-6 w-6" />
                   </div>
                 </div>
@@ -355,7 +355,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                     { label: 'Spot Round Strategy', icon: <Trophy className="h-4 w-4" /> },
                   ].map((bullet, index) => (
                     <div key={index} className="flex items-center gap-3.5 text-sm text-slate-300">
-                      <div className="text-emerald-300">{bullet.icon}</div>
+                      <div className="text-[#FF6B2B]">{bullet.icon}</div>
                       <span>{bullet.label}</span>
                     </div>
                   ))}
@@ -364,7 +364,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
 
               <button
                 onClick={() => navigate('/programs#othercounselling')}
-                className="w-full py-4 rounded-full bg-white text-emerald-600 font-bold text-sm tracking-wide shadow-lg hover:bg-slate-100 hover:scale-[1.02] active:scale-[0.98] transition"
+                className="w-full py-4 rounded-lg bg-[#FF6B2B] text-white font-bold text-sm tracking-wide shadow-lg hover:bg-[#e05a1f] hover:scale-[1.02] active:scale-[0.98] transition"
               >
                 Explore All India →
               </button>
@@ -373,7 +373,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
           </div>
 
           {/* 4. Atyant Career Accelerator Card (Green/Coming Soon) */}
-          <div className="mt-8 relative overflow-hidden rounded-[2.2rem] border border-green-500/20 bg-white/3 p-8 shadow-[0_0_50px_rgba(16,185,129,0.05)] hover:border-green-500/40 transition duration-300">
+          <div className="mt-8 relative overflow-hidden rounded-lg border border-white/10 bg-white/3 p-8 shadow-sm hover:border-[#FF6B2B]/40 transition duration-300">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
               
               <div className="flex-1">
@@ -382,9 +382,9 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                 </span>
 
                 <h3 className="text-2xl sm:text-3xl font-black text-white">
-                  Atyant <span className="text-green-400">Career Accelerator</span>
+                  Atyant <span className="text-[#FF6B2B]">Career Accelerator</span>
                 </h3>
-                <p className="mt-1.5 text-sm font-semibold text-green-300">
+                <p className="mt-1.5 text-sm font-semibold text-slate-300">
                   Become Job Ready. Increase your ROI. Land Better Placements.
                 </p>
 
@@ -411,7 +411,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                   onClick={() => {
                     window.open('https://wa.me/919579040183?text=Hi%2C%20I%20want%20to%20get%20notified%20about%20the%20Atyant%20Career%20Accelerator.%20Please%20register%20my%20number.', '_blank');
                   }}
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#10B981] hover:bg-emerald-600 text-white font-bold text-sm tracking-wide shadow-lg active:scale-95 transition"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-[#FF6B2B] hover:bg-[#e05a1f] text-white font-bold text-sm tracking-wide shadow-lg active:scale-95 transition"
                 >
                   <Bell className="h-4 w-4 animate-bounce" />
                   Notify Me
@@ -466,15 +466,15 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
               { desc: 'Talk to seniors with ranks like yours', icon: <Users className="h-5 w-5" />, color: '#FF6B2B' },
-              { desc: 'Real JoSAA / CSAB & MHT-CET experience', icon: <MessageCircle className="h-5 w-5" />, color: '#8B5CF6' },
+              { desc: 'Real JoSAA / CSAB & MHT-CET experience', icon: <MessageCircle className="h-5 w-5" />, color: '#FF6B2B' },
               { desc: 'Honest advice, not sugarcoating', icon: <ShieldCheck className="h-5 w-5" />, color: '#10B981' },
               { desc: 'Affordable guidance starting at ₹99', icon: <span className="font-bold text-sm">₹99</span>, color: '#FF6B2B', isCustomIcon: true },
-              { desc: 'Support from choice filing till allotment', icon: <RefreshCw className="h-5 w-5 animate-spin" style={{ animationDuration: '6s' }} />, color: '#0B72FF' },
+              { desc: 'Support from choice filing till allotment', icon: <RefreshCw className="h-5 w-5 animate-spin" style={{ animationDuration: '6s' }} />, color: '#FF6B2B' },
               { desc: 'No bots. Only real seniors.', icon: <UserCheck className="h-5 w-5" />, color: '#10B981' },
             ].map((card, idx) => (
               <div 
                 key={idx} 
-                className="flex flex-col items-center justify-center p-6 rounded-[1.8rem] border border-white/5 bg-white/3 hover:border-white/10 hover:bg-white/5 transition-all text-center"
+                className="flex flex-col items-center justify-center p-6 rounded-lg border border-white/5 bg-white/3 hover:border-white/10 hover:bg-white/5 transition-all text-center"
               >
                 <div 
                   className="flex h-12 w-12 items-center justify-center rounded-full border mb-4 shadow-md"
@@ -497,8 +497,8 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
 
         {/* 7. WhatsApp Contact Box */}
         <div className="py-8">
-          <div className="relative overflow-hidden rounded-[2.2rem] border border-white/5 bg-white/2 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="absolute top-[-100px] left-[-100px] w-64 h-64 rounded-full bg-emerald-500/5 blur-[80px] pointer-events-none" />
+          <div className="relative overflow-hidden rounded-lg border border-white/5 bg-white/2 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="absolute top-[-100px] left-[-100px] w-64 h-64 rounded-full bg-green-500/5 blur-[80px] pointer-events-none" />
 
             <div className="flex items-center gap-4 text-left">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/30 shadow-[0_0_20px_rgba(37,211,102,0.15)]">
@@ -507,7 +507,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
               <div>
                 <h4 className="text-lg font-bold text-white leading-snug">Still confused?</h4>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl font-medium">
-                  Talk to a senior before investing your future. <span className="text-emerald-400 font-semibold">Usually replies within a few minutes.</span>
+                  Talk to a senior before investing your future. <span className="text-[#10B981] font-semibold">Usually replies within a few minutes.</span>
                 </p>
               </div>
             </div>

@@ -20,7 +20,7 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full px-4 pt-3 sm:px-6 lg:px-8 pointer-events-none">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full px-4 pt-3 sm:px-6 lg:px-8 pointer-events-none">
       <div
         className={`mx-auto flex w-full max-w-7xl items-center justify-between px-4 lg:px-6 py-2.5 lg:py-3 transition-all duration-300 rounded-full border pointer-events-auto ${scrolled || menuOpen
           ? 'border-white/10 bg-[#0B0F2E]/80 shadow-[0_12px_40px_rgba(0,0,0,0.3)] backdrop-blur-xl'
@@ -48,9 +48,9 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
         <div className="lg:hidden flex-shrink-0 flex items-center justify-center">
           <button
             onClick={() => { onTabChange && onTabChange('roadmap'); closeMenu(); }}
-            className="flex items-center justify-center gap-1.5 rounded-full px-3.5 py-2 text-[10px] font-bold text-white bg-gradient-to-r from-[#FF6B2B] to-[#8B5CF6] shadow-md shadow-[#8B5CF6]/20 transition active:scale-95 shrink-0"
+            className="flex items-center justify-center gap-1.5 rounded-full px-3.5 py-2 text-[10px] font-bold text-white bg-gradient-to-r from-[#FF6B2B] to-[#ff8c59] shadow-md shadow-[#FF6B2B]/20 transition active:scale-95 shrink-0"
           >
-            <Sparkles className="h-2.5 w-2.5 text-[#FFB38E]" />
+            {/* <Sparkles className="h-2.5 w-2.5 text-[#FFB38E]" /> */}
             <span>College Guide</span>
           </button>
         </div>
@@ -75,7 +75,7 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
               }`}
           >
             <span>Find Mentors</span>
-            <span className="flex h-3 w-5 items-center justify-center rounded bg-blue-500/20 text-[6px] font-black text-blue-400 ring-1 ring-blue-500/30">NEW</span>
+            {/* <span className="flex h-3 w-5 items-center justify-center rounded bg-blue-500/20 text-[6px] font-black text-blue-400 ring-1 ring-blue-500/30">NEW</span> */}
           </button>
 
           <Link
@@ -86,17 +86,17 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
               }`}
           >
             College Predictor
-            <span className="text-[7px] font-black text-[#1a1814] bg-[#c9a84c] px-1.5 py-0.5 rounded tracking-wide">PRO</span>
+            {/* <span className="text-[7px] font-black text-[#1a1814] bg-[#c9a84c] px-1.5 py-0.5 rounded tracking-wide">PRO</span> */}
           </Link>
 
           <button
             onClick={() => onTabChange && onTabChange('roadmap')}
             className={`group relative inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold text-white shadow-md transition-all duration-200 hover:scale-[1.03] ${activeTab === 'roadmap'
-              ? 'bg-gradient-to-r from-[#FF6B2B] to-[#8B5CF6] shadow-[#8B5CF6]/30'
+              ? 'bg-gradient-to-r from-[#FF6B2B] to-[#ff8c59] shadow-[#FF6B2B]/30'
               : 'bg-white/5 border border-white/5 hover:bg-white/10'
               }`}
           >
-            <Sparkles className="h-3 w-3 text-[#FFB38E] animate-pulse" />
+            {/* <Sparkles className="h-3 w-3 text-[#FFB38E] animate-pulse" /> */}
             Explore College Guide
           </button>
         </nav>
@@ -172,7 +172,7 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
               }`}
           >
             <span className="flex items-center gap-2">Find Mentors</span>
-            <span className="flex h-3.5 w-6 items-center justify-center rounded bg-blue-500/20 text-[7px] font-black text-blue-400 ring-1 ring-blue-500/40">NEW</span>
+            {/* <span className="flex h-3.5 w-6 items-center justify-center rounded bg-blue-500/20 text-[7px] font-black text-blue-400 ring-1 ring-blue-500/40">NEW</span> */}
           </button>
 
           <Link
@@ -184,7 +184,7 @@ export default function Navbar({ onLeadClick, activeTab, onTabChange, user }) {
               }`}
           >
             <span>College Predictor</span>
-            <span className="text-[7px] font-black text-[#1a1814] bg-[#c9a84c] px-1.5 py-0.5 rounded tracking-wide">PRO</span>
+            {/* <span className="text-[7px] font-black text-[#1a1814] bg-[#c9a84c] px-1.5 py-0.5 rounded tracking-wide">PRO</span> */}
           </Link>
 
 

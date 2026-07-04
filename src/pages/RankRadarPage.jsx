@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Check, ChevronDown, ChevronUp, Frown } from 'lucide-react';
+import { Search, Check, ChevronDown, ChevronUp, Frown, Trophy, ClipboardList, User } from 'lucide-react';
 import { STATES_INDIA, INST_STATE, DB } from '../data/rankRadarData';
 
 // ─── Wizard step definitions ─────────────────────────────────────
@@ -209,12 +209,16 @@ function ExamStep({ state, set }) {
       <StepIntro title="Which exam did you give?" sub="This determines which colleges and cutoffs are shown." />
       <div className="rr-option-grid rr-cols-2">
         <div className={`rr-opt-card ${state.examType === 'JEE Adv' ? 'selected' : ''}`} onClick={() => set({ examType: 'JEE Adv' })}>
-          <div className="rr-opt-icon">🏆</div>
+          <div className="rr-opt-icon">
+            <Trophy className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
+          </div>
           <div className="rr-opt-label">JEE Advanced</div>
           <div className="rr-opt-desc">IITs only — rank from JEE Adv scorecard</div>
         </div>
         <div className={`rr-opt-card ${state.examType === 'JEE Main' ? 'selected' : ''}`} onClick={() => set({ examType: 'JEE Main' })}>
-          <div className="rr-opt-icon">📋</div>
+          <div className="rr-opt-icon">
+            <ClipboardList className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
+          </div>
           <div className="rr-opt-label">JEE Main</div>
           <div className="rr-opt-desc">NITs, IIITs, GFTIs — CRL rank from NTA</div>
         </div>
@@ -283,12 +287,16 @@ function GenderStep({ state, set }) {
       <StepIntro title="Gender" sub="Female candidates are eligible for both Gender Neutral and Female Only seat pools." />
       <div className="rr-option-grid rr-cols-2">
         <div className={`rr-opt-card ${state.gender === 'Male' ? 'selected' : ''}`} onClick={() => set({ gender: 'Male' })}>
-          <div className="rr-opt-icon">👨</div>
+          <div className="rr-opt-icon">
+            <User className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
+          </div>
           <div className="rr-opt-label">Male</div>
           <div className="rr-opt-desc">Gender Neutral pool only</div>
         </div>
         <div className={`rr-opt-card ${state.gender === 'Female' ? 'selected' : ''}`} onClick={() => set({ gender: 'Female' })}>
-          <div className="rr-opt-icon">👩</div>
+          <div className="rr-opt-icon">
+            <User className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
+          </div>
           <div className="rr-opt-label">Female</div>
           <div className="rr-opt-desc">Gender Neutral + Female Only pools</div>
         </div>
@@ -675,8 +683,20 @@ const RR_STYLES = `
   .rr-option-grid.rr-cols-2,.rr-option-grid.rr-cols-5{grid-template-columns:1fr 1fr}
   .rr-stats-row{grid-template-columns:1fr 1fr}
   .rr-card-ranks{grid-template-columns:1fr 1fr}
+  .rr-step-indicators{
+    width:100%;
+    overflow-x:auto;
+    padding:4px 0;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .rr-step-indicators::-webkit-scrollbar{
+    display:none;
+  }
 }
 @media(max-width:480px){
   .rr-option-grid.rr-cols-2,.rr-option-grid.rr-cols-5{grid-template-columns:1fr}
+  .rr-brand-sub{display:none}
+  .rr-badge-year{font-size:10px;padding:3px 8px}
 }
 `;

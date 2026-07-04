@@ -208,67 +208,69 @@ function AppContent() {
         user={user}
       />
 
-      <AnimatePresence mode="wait">
-        <Suspense fallback={<RouteLoadingFallback />}>
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <LaunchpadPage activeTab={activeTab} onTabChange={handleTabChange} user={user} />
-              </motion.div>
-            } />
-            <Route path="/college" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <CollegePage activeTab={activeTab} onTabChange={handleTabChange} />
-              </motion.div>
-            } />
-            <Route path="/finalyear" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <FinalYearPage activeTab={activeTab} onTabChange={handleTabChange} />
-              </motion.div>
-            } />
-            <Route path="/workingpro" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <WorkingProPage activeTab={activeTab} onTabChange={handleTabChange} />
-              </motion.div>
-            } />
-            <Route path="/predictor" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <RankRadarPage />
-              </motion.div>
-            } />
-            <Route path="/mentors" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <MentorsPage />
-              </motion.div>
-            } />
-            <Route path="/atyantlogin" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <AtyantLoginPage />
-              </motion.div>
-            } />
-            <Route path="/login" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <AuthPage setUser={setUser} />
-              </motion.div>
-            } />
-            <Route path="/profile" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <ProfilePage user={user} setUser={setUser} />
-              </motion.div>
-            } />
-            <Route path="/programs" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <ProgramsPage user={user} />
-              </motion.div>
-            } />
-            <Route path="/roadmap" element={
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                <RoadmapPage user={user} />
-              </motion.div>
-            } />
-          </Routes>
-        </Suspense>
-      </AnimatePresence>
+      <div className="pt-20 lg:pt-24">
+        <AnimatePresence mode="wait">
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <LaunchpadPage activeTab={activeTab} onTabChange={handleTabChange} user={user} />
+                </motion.div>
+              } />
+              <Route path="/college" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <CollegePage activeTab={activeTab} onTabChange={handleTabChange} />
+                </motion.div>
+              } />
+              <Route path="/finalyear" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <FinalYearPage activeTab={activeTab} onTabChange={handleTabChange} />
+                </motion.div>
+              } />
+              <Route path="/workingpro" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <WorkingProPage activeTab={activeTab} onTabChange={handleTabChange} />
+                </motion.div>
+              } />
+              <Route path="/predictor" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <RankRadarPage />
+                </motion.div>
+              } />
+              <Route path="/mentors" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <MentorsPage />
+                </motion.div>
+              } />
+              <Route path="/atyantlogin" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <AtyantLoginPage />
+                </motion.div>
+              } />
+              <Route path="/login" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <AuthPage setUser={setUser} />
+                </motion.div>
+              } />
+              <Route path="/profile" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <ProfilePage user={user} setUser={setUser} />
+                </motion.div>
+              } />
+              <Route path="/programs" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <ProgramsPage user={user} />
+                </motion.div>
+              } />
+              <Route path="/roadmap" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <RoadmapPage user={user} />
+                </motion.div>
+              } />
+            </Routes>
+          </Suspense>
+        </AnimatePresence>
+      </div>
 
       <Footer />
       <LeadCaptureModal open={showLeadModal} onClose={() => setShowLeadModal(false)} />

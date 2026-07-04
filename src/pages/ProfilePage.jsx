@@ -4,6 +4,7 @@ import { ALL_INDIAN_STATES, POPULAR_LANGUAGES, COLLEGES_BY_TYPE, DEPARTMENTS } f
 import { getUserMe, updateUser, uploadProfilePhoto, uploadIdDoc, getMyBookings, deleteIdDoc, verifyPayment, googleLogin } from '../utils/api';
 import API_BASE from '../utils/api';
 import { getDetailedWhatsAppLink } from '../utils/whatsapp';
+import { Flame, Trophy, BarChart2, Gift, Users, User, ShieldCheck, Mail, Phone, Calendar, ShoppingBag, Lock, Award, FileText } from 'lucide-react';
 
 const AVAILABLE_BUNDLES = [
   {
@@ -47,12 +48,13 @@ const AVAILABLE_BUNDLES = [
 ];
 
 // ── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ icon, label, value, accent = '#FF6B2B' }) {
+function StatCard({ icon: Icon, label, value, nudge }) {
   return (
-    <div className="flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl border border-white/10 text-center gap-1 hover:bg-white/10 transition-all duration-200">
-      <span className="text-2xl">{icon}</span>
-      <span className="text-xl font-black text-white leading-tight">{value}</span>
+    <div className="flex flex-col items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 text-center gap-1 hover:bg-white/10 transition-all duration-200 min-h-[130px]">
+      <Icon className="w-6 h-6 text-[#FF6B2B]" strokeWidth={2} />
+      <span className="text-xl font-black text-white leading-tight mt-1">{value}</span>
       <span className="text-[10px] font-semibold text-white/50 uppercase tracking-wider">{label}</span>
+      {nudge && <span className="text-[9px] text-[#FFB38E] mt-1 leading-tight font-medium max-w-[130px]">{nudge}</span>}
     </div>
   );
 }
@@ -83,10 +85,10 @@ function calcCompletion(user, name, profilePhotoFilename, verificationStatus) {
 // ── Section Wrapper ──────────────────────────────────────────────────────────
 function Section({ title, icon, children, className = '' }) {
   return (
-    <div className={`bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden ${className}`}>
-      <div className="flex items-center gap-2.5 px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+    <div className={`bg-[#0F143C]/50 rounded-lg border border-white/10 shadow-sm overflow-hidden ${className}`}>
+      <div className="flex items-center gap-2.5 px-6 py-4 border-b border-white/10 bg-white/5">
         <span className="text-base">{icon}</span>
-        <h3 className="text-sm font-black text-slate-800 tracking-wide uppercase">{title}</h3>
+        <h3 className="text-sm font-black text-white tracking-wide uppercase">{title}</h3>
       </div>
       <div className="p-6">{children}</div>
     </div>
@@ -97,19 +99,19 @@ function Section({ title, icon, children, className = '' }) {
 function Field({ label, required, hint, children }) {
   return (
     <div>
-      <label className="block text-sm font-bold text-slate-700 mb-1">
+      <label className="block text-sm font-bold text-slate-300 mb-1">
         {label}
         {required && <span className="text-red-400 ml-1">*</span>}
       </label>
-      {hint && <p className="text-[11px] text-slate-400 mb-2 leading-relaxed">{hint}</p>}
+      {hint && <p className="text-[11px] text-white/50 mb-2 leading-relaxed">{hint}</p>}
       {children}
     </div>
   );
 }
 
-const inputCls = 'w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition text-sm text-slate-800 placeholder-slate-300';
-const disabledCls = `${inputCls} bg-slate-50 text-slate-400 cursor-not-allowed`;
-const selectCls = `${inputCls} cursor-pointer`;
+const inputCls = 'w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition text-sm text-white placeholder-slate-500';
+const disabledCls = `${inputCls} opacity-50 text-slate-400 cursor-not-allowed`;
+const selectCls = `${inputCls} cursor-pointer [&>option]:bg-[#0F143C] [&>option]:text-white`;
 
 // ── Main Component ───────────────────────────────────────────────────────────
 export default function ProfilePage({ user, setUser }) {
@@ -410,9 +412,9 @@ export default function ProfilePage({ user, setUser }) {
   if (!user) return null;
 
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: '👤' },
-    { id: 'bookings', label: 'My Bookings', icon: '🛍️', count: bookings.length },
-    ...(user.role === 'mentor' ? [{ id: 'verification', label: 'Verification', icon: '🔐' }] : []),
+    { id: 'profile', label: 'Profile', icon: <User className="w-4 h-4" /> },
+    { id: 'bookings', label: 'My Bookings', icon: <ShoppingBag className="w-4 h-4" />, count: bookings.length },
+    ...(user.role === 'mentor' ? [{ id: 'verification', label: 'Verification', icon: <Lock className="w-4 h-4" /> }] : []),
   ];
 
   return (
@@ -550,7 +552,7 @@ export default function ProfilePage({ user, setUser }) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="absolute top-4 right-4 sm:relative sm:top-auto sm:right-auto flex-shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-red-400/80 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition border border-red-500/10"
+                className="absolute top-4 right-4 sm:relative sm:top-auto sm:right-auto flex-shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-red-400/80 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition border border-red-500/10"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -561,9 +563,24 @@ export default function ProfilePage({ user, setUser }) {
 
             {/* ── Stats Row ── */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-              <StatCard icon="🔥" label="Current Streak" value={`${user.currentStreak || 0}d`} />
-              <StatCard icon="🏆" label="Best Streak" value={`${user.longestStreak || 0}d`} />
-              <StatCard icon="📊" label="Progress" value={`${Math.round(user.overallProgress || 0)}%`} />
+              <StatCard 
+                icon={Flame} 
+                label="Current Streak" 
+                value={`${user.currentStreak || 0}d`} 
+                nudge={!user.currentStreak ? "Complete your first task to start a streak" : null}
+              />
+              <StatCard 
+                icon={Trophy} 
+                label="Best Streak" 
+                value={`${user.longestStreak || 0}d`} 
+                nudge={!user.longestStreak ? "Build a daily habit!" : null}
+              />
+              <StatCard 
+                icon={BarChart2} 
+                label="Progress" 
+                value={`${Math.round(user.overallProgress || 0)}%`} 
+                nudge={!user.overallProgress ? "Start exploring college guide!" : null}
+              />
               {user.referralCode ? (
                 <button
                   type="button"
@@ -572,15 +589,23 @@ export default function ProfilePage({ user, setUser }) {
                     setSuccess('Referral code copied!');
                     setTimeout(() => setSuccess(''), 2000);
                   }}
-                  className="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 text-center gap-1 transition-all duration-200 group"
+                  className="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 text-center gap-1 transition-all duration-200 group min-h-[130px]"
                   title="Click to copy referral code"
                 >
-                  <span className="text-2xl">🎁</span>
-                  <span className="text-sm font-black text-white leading-tight font-mono tracking-wider">{user.referralCode}</span>
+                  <Gift className="w-6 h-6 text-[#FF6B2B]" strokeWidth={2} />
+                  <span className="text-sm font-black text-white leading-tight font-mono tracking-wider mt-1">{user.referralCode}</span>
                   <span className="text-[10px] font-semibold text-[#FF6B2B]/80 uppercase tracking-wider group-hover:text-[#FF6B2B]">Copy Referral</span>
+                  {!user.referralCount && (
+                    <span className="text-[9px] text-[#FFB38E] mt-1 leading-tight font-medium max-w-[130px]">Share with friends to get rewards!</span>
+                  )}
                 </button>
               ) : (
-                <StatCard icon="👥" label="Referrals" value={user.referralCount || 0} />
+                <StatCard 
+                  icon={Users} 
+                  label="Referrals" 
+                  value={user.referralCount || 0} 
+                  nudge={!user.referralCount ? "Invite friends to earn rewards" : null}
+                />
               )}
             </div>
           </div>
@@ -605,13 +630,13 @@ export default function ProfilePage({ user, setUser }) {
 
       {/* ── Tabs ── */}
       <div className="max-w-3xl mx-auto mb-5">
-        <div className="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10 overflow-x-auto scrollbar-none">
+        <div className="flex gap-2 p-1 bg-white/5 rounded-lg border border-white/10 overflow-x-auto scrollbar-none">
           {tabs.map(tab => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab.id
                   ? 'bg-white text-[#0B0F2E] shadow-sm'
                   : 'text-white/50 hover:text-white/80'
@@ -829,19 +854,19 @@ export default function ProfilePage({ user, setUser }) {
                 </Section>
 
                 {/* Bundles — read-only */}
-                <Section title="Assigned Bundles" icon="📦">
-                  <p className="text-xs text-slate-500 mb-4">Managed by the Atyant team. To add or change packages, contact admin support.</p>
+                <Section title="Assigned Bundles" icon={<ShieldCheck className="w-4 h-4 text-[#FF6B2B]" />}>
+                  <p className="text-xs text-slate-400 mb-4">Managed by the Atyant team. To add or change packages, contact admin support.</p>
                   <div className="space-y-4">
                     {AVAILABLE_BUNDLES.map(b => {
                       const isSelected = bundles.includes(b.id);
                       return (
                         <div
                           key={b.id}
-                          className={`relative flex gap-4 p-5 rounded-2xl border-2 transition-all duration-200 cursor-default ${
-                            isSelected ? 'border-[#FF6B2B] bg-[#FF6B2B]/5' : 'border-slate-100 opacity-50'
+                          className={`relative flex gap-4 p-5 rounded-lg border transition-all duration-200 cursor-default ${
+                            isSelected ? 'border-[#FF6B2B] bg-[#FF6B2B]/10' : 'border-white/10 bg-white/5 opacity-50'
                           }`}
                         >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${isSelected ? 'bg-[#FF6B2B] border-[#FF6B2B]' : 'border-slate-300'}`}>
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 mt-0.5 ${isSelected ? 'bg-[#FF6B2B] border-[#FF6B2B]' : 'border-white/20'}`}>
                             {isSelected && (
                               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -850,10 +875,10 @@ export default function ProfilePage({ user, setUser }) {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2 mb-1">
-                              <span className="text-sm font-black text-slate-800">{b.icon} {b.name}</span>
-                              <span className="text-sm font-black text-[#0B0F2E] flex-shrink-0">₹{b.price}</span>
+                              <span className="text-sm font-black text-white">{b.name}</span>
+                              <span className="text-sm font-black text-white flex-shrink-0">₹{b.price}</span>
                             </div>
-                            <p className="text-xs text-slate-500 italic">{b.desc}</p>
+                            <p className="text-xs text-slate-400 italic">{b.desc}</p>
                           </div>
                         </div>
                       );
@@ -867,7 +892,7 @@ export default function ProfilePage({ user, setUser }) {
             <div className="pb-8">
               <button
                 type="submit" disabled={loading}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FF6B2B] to-[#FF8E53] text-white font-black text-base hover:opacity-90 transition-all disabled:opacity-60 shadow-xl shadow-[#FF6B2B]/20"
+                className="w-full py-4 rounded-lg bg-gradient-to-r from-[#FF6B2B] to-[#ff8c59] text-white font-black text-base hover:opacity-90 transition-all disabled:opacity-60 shadow-xl shadow-[#FF6B2B]/20"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -881,23 +906,23 @@ export default function ProfilePage({ user, setUser }) {
         </div>
       )}
 
-      {/* ──────────────────── TAB: BOOKINGS ──────────────────── */}
+      {/* ─── TAB: BOOKINGS ─── */}
       {activeTab === 'bookings' && (
         <div className="max-w-3xl mx-auto pb-8">
           {loadingBookings ? (
-            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm">
+            <div className="bg-[#0F143C]/50 rounded-lg p-10 text-center border border-white/10 shadow-sm">
               <div className="w-6 h-6 border-2 border-[#FF6B2B] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
               <p className="text-slate-400 text-sm">Loading your bookings…</p>
             </div>
           ) : bookings.length > 0 ? (
             <div className="space-y-4">
               {bookings.map((booking) => (
-                <div key={booking._id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:border-slate-200 hover:shadow-md transition-all duration-200">
+                <div key={booking._id} className="bg-[#0F143C]/50 rounded-lg border border-white/10 shadow-sm p-5 hover:border-white/20 hover:shadow-md transition-all duration-200">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-black text-slate-800">{booking.planTitle}</span>
-                        <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-100">Paid</span>
+                        <span className="text-sm font-black text-white">{booking.planTitle}</span>
+                        <span className="text-[10px] font-bold bg-green-500/15 text-green-400 px-2.5 py-0.5 rounded-full border border-green-500/20">Paid</span>
                       </div>
                       <div className="text-[11px] text-slate-400">
                         Ordered on {new Date(booking.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -907,14 +932,14 @@ export default function ProfilePage({ user, setUser }) {
                   </div>
 
                   {booking.mentorId ? (
-                    <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100/50 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B2B]/20 to-purple-500/20 text-slate-600 flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden">
+                    <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/10 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B2B]/20 to-[#FF8E53]/25 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden">
                         {booking.mentorId.profilePhotoFilename ? (
                           <img src={`${API_BASE}/api/upload/profile-photo/${booking.mentorId.profilePhotoFilename}`} alt={booking.mentorId.name} className="w-full h-full object-cover" />
                         ) : booking.mentorId.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-slate-800">{booking.mentorId.name}</div>
+                        <div className="text-xs font-bold text-white">{booking.mentorId.name}</div>
                         <div className="text-[10px] text-[#FF6B2B] font-semibold">{booking.mentorId.college}</div>
                         <div className="text-[9px] text-slate-400">AIR {booking.mentorId.rank || 'N/A'}</div>
                       </div>
@@ -923,11 +948,11 @@ export default function ProfilePage({ user, setUser }) {
                     <div className="text-xs text-slate-400 italic mb-4">No specific mentor assigned yet. Support will assign one!</div>
                   )}
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-50 pt-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
                     <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">ℹ️ Connect on WhatsApp after payment</span>
                     <a
                       href={getDetailedWhatsAppLink(booking)} target="_blank" rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20ba56] transition-all flex items-center gap-1.5 shadow-sm"
+                      className="px-4 py-2 rounded-lg bg-[#25D366] text-white text-xs font-bold hover:bg-[#20ba56] transition-all flex items-center gap-1.5 shadow-sm"
                     >
                       💬 Connect on WhatsApp
                     </a>
@@ -936,13 +961,13 @@ export default function ProfilePage({ user, setUser }) {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm">
-              <span className="text-4xl block mb-3">🎓</span>
-              <p className="text-sm font-bold text-slate-700 mb-1">No mentorship sessions purchased yet.</p>
+            <div className="bg-[#0F143C]/50 rounded-lg p-10 text-center border border-white/10 shadow-sm">
+              <GraduationCap className="w-10 h-10 text-slate-500 mx-auto mb-3" />
+              <p className="text-sm font-bold text-white mb-1">No mentorship sessions purchased yet.</p>
               <p className="text-xs text-slate-400 mb-5 max-w-sm mx-auto">Get rank-based guidance from NIT/IIT seniors and secure your dream seat.</p>
               <button
                 onClick={() => navigate('/mentors')}
-                className="px-6 py-2.5 rounded-xl bg-[#FF6B2B] text-white text-sm font-bold hover:bg-orange-600 transition"
+                className="px-6 py-2.5 rounded-lg bg-[#FF6B2B] text-white text-sm font-bold hover:bg-orange-600 transition"
               >
                 Browse Mentors & Bundles
               </button>
@@ -951,35 +976,35 @@ export default function ProfilePage({ user, setUser }) {
         </div>
       )}
 
-      {/* ──────────────────── TAB: VERIFICATION (mentors only) ──────────────────── */}
+      {/* ─── TAB: VERIFICATION (mentors only) ─── */}
       {activeTab === 'verification' && user.role === 'mentor' && (
         <div className="max-w-3xl mx-auto pb-8">
-          <Section title="Identity Verification" icon="🔐">
+          <Section title="Identity Verification" icon={<Lock className="w-4 h-4 text-[#FF6B2B]" />}>
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h4 className="text-sm font-bold text-slate-800">Verification Status</h4>
-                <p className="text-xs text-slate-500 mt-0.5">Upload your College ID or Aadhaar Card to get verified and appear to students.</p>
+                <h4 className="text-sm font-bold text-white">Verification Status</h4>
+                <p className="text-xs text-slate-400 mt-0.5">Upload your College ID or Aadhaar Card to get verified and appear to students.</p>
               </div>
               <div className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wide ${
-                verificationStatus === 'verified' ? 'bg-green-100 text-green-700 border border-green-200' :
-                verificationStatus === 'pending' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                verificationStatus === 'rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                'bg-slate-100 text-slate-600 border border-slate-200'
+                verificationStatus === 'verified' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                verificationStatus === 'pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                verificationStatus === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                'bg-white/5 text-slate-400 border border-white/10'
               }`}>
                 {verificationStatus.toUpperCase()}
               </div>
             </div>
 
             {verificationStatus === 'verified' && (
-              <div className="p-4 rounded-2xl bg-green-50 border border-green-100 text-sm text-green-700 font-medium flex items-center gap-3 mb-4">
-                <span className="text-xl">🎉</span>
+              <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-sm text-green-400 font-medium flex items-center gap-3 mb-4">
+                <ShieldCheck className="w-5 h-5 text-green-400 shrink-0" />
                 <span>Your identity has been verified! Students can see your verified badge.</span>
               </div>
             )}
 
             {verificationStatus === 'pending' && (
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100 text-sm text-amber-700 font-medium flex items-center gap-3 mb-4">
-                <span className="text-xl">⏳</span>
+              <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-400 font-medium flex items-center gap-3 mb-4">
+                <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0" />
                 <span>Your document is under review. This usually takes 1–2 business days.</span>
               </div>
             )}
@@ -991,12 +1016,12 @@ export default function ProfilePage({ user, setUser }) {
                   type="button"
                   onClick={() => idDocInputRef.current?.click()}
                   disabled={idDocUploading}
-                  className="w-full py-4 bg-white border-2 border-dashed border-blue-300 rounded-2xl text-blue-600 font-bold hover:bg-blue-50 transition flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-white/5 border-2 border-dashed border-white/20 rounded-lg text-slate-300 font-bold hover:bg-white/10 transition flex items-center justify-center gap-2"
                 >
                   {idDocUploading ? (
-                    <><div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />Uploading…</>
+                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Uploading…</>
                   ) : (
-                    <><span className="text-lg">📤</span>Select Document to Upload</>
+                    <><FileText className="w-4 h-4" />Select Document to Upload</>
                   )}
                 </button>
                 <p className="text-[11px] text-center text-slate-400 mt-2">Accepted: JPG, PNG, PDF · Max size 10MB</p>
@@ -1004,10 +1029,10 @@ export default function ProfilePage({ user, setUser }) {
             )}
 
             {idDocFilename && (
-              <div className="mt-4 p-3 bg-white rounded-xl border border-slate-100 flex items-center justify-between shadow-sm">
+              <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="text-sm">📄</span>
-                  <span className="text-xs font-semibold text-slate-700 truncate max-w-[180px]" title={idDocFilename}>{idDocFilename}</span>
+                  <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span className="text-xs font-semibold text-white truncate max-w-[180px]" title={idDocFilename}>{idDocFilename}</span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0 ml-4">
                   <a
@@ -1020,9 +1045,9 @@ export default function ProfilePage({ user, setUser }) {
                   <button
                     type="button"
                     onClick={handleDeleteIdDoc}
-                    className="text-xs font-bold text-red-500 hover:text-red-700 transition border-l border-slate-200 pl-3"
+                    className="text-xs font-bold text-red-500 hover:text-red-700 transition border-l border-white/10 pl-3"
                   >
-                    🗑️ Delete
+                    Delete
                   </button>
                 </div>
               </div>

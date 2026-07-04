@@ -146,11 +146,11 @@ export default function AuthPage({ setUser }) {
 
   if (googleSignupStep) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-slate-100 animate-fade-in">
+      <div className="min-h-screen bg-[#0B0F2E] flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md bg-[#0F143C]/50 rounded-lg shadow-xl p-8 border border-white/10 animate-fade-in">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-black text-[#0B0F2E]">Complete your Profile</h2>
-            <p className="text-slate-500 mt-2 text-sm font-medium">
+            <h2 className="text-2xl font-black text-white">Complete your Profile</h2>
+            <p className="text-slate-400 mt-2 text-sm font-medium">
               Hi {googleUser?.name}, please choose your role and enter your 10-digit phone number to finish signing up.
             </p>
           </div>
@@ -168,28 +168,28 @@ export default function AuthPage({ setUser }) {
 
           <form onSubmit={handleGoogleSignupSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 text-center font-semibold">
+              <div className="p-3 bg-red-500/10 text-red-400 text-sm rounded-lg border border-red-500/20 text-center font-semibold">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Email Address</label>
+              <label className="block text-sm font-bold text-slate-300 mb-1">Email Address</label>
               <input
                 type="text"
                 disabled
                 value={googleUser?.email || ''}
-                className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50 text-slate-400 font-medium focus:outline-none"
+                className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 text-slate-400 font-medium focus:outline-none"
               />
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center justify-between">
+              <label className="block text-sm font-bold text-slate-300 mb-2 flex items-center justify-between">
                 <span className="flex items-center gap-1">
                   Select Your Role <span className="text-red-500">*</span>
                 </span>
                 {!googleRole && (
-                  <span className="text-xs font-semibold text-[#FF6B2B] animate-pulse bg-orange-50 px-2 py-0.5 rounded-md">
+                  <span className="text-xs font-semibold text-[#FF6B2B] animate-pulse bg-white/5 px-2 py-0.5 rounded-md">
                     Required
                   </span>
                 )}
@@ -198,10 +198,10 @@ export default function AuthPage({ setUser }) {
                 <button
                   type="button"
                   onClick={() => setGoogleRole('student')}
-                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
+                  className={`flex flex-col items-center justify-center p-4 rounded-lg border transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
                     googleRole === 'student'
-                      ? 'border-[#8B5CF6] bg-[#8B5CF6]/5 text-[#8B5CF6] shadow-lg shadow-purple-500/10'
-                      : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50/50'
+                      ? 'border-[#FF6B2B] bg-[#FF6B2B]/10 text-white shadow-lg shadow-orange-500/10'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/10'
                   }`}
                 >
                   <span className="font-extrabold text-sm tracking-wide">Student</span>
@@ -211,10 +211,10 @@ export default function AuthPage({ setUser }) {
                 <button
                   type="button"
                   onClick={() => setGoogleRole('mentor')}
-                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
+                  className={`flex flex-col items-center justify-center p-4 rounded-lg border transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
                     googleRole === 'mentor'
-                      ? 'border-[#FF6B2B] bg-[#FF6B2B]/5 text-[#FF6B2B] shadow-lg shadow-orange-500/10'
-                      : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50/50'
+                      ? 'border-[#FF6B2B] bg-[#FF6B2B]/10 text-white shadow-lg shadow-orange-500/10'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/10'
                   }`}
                 >
                   <span className="font-extrabold text-sm tracking-wide">Mentor</span>
@@ -224,7 +224,7 @@ export default function AuthPage({ setUser }) {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Phone Number <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-slate-300 mb-1">Phone Number <span className="text-red-500">*</span></label>
               <input
                 type="tel"
                 required
@@ -233,14 +233,14 @@ export default function AuthPage({ setUser }) {
                 onChange={(e) => setGooglePhone(e.target.value)}
                 placeholder="9876543210"
                 title="Please enter exactly 10 digits"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
+                className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 mt-4 rounded-xl bg-[#FF6B2B] text-white font-black hover:bg-[#e05a1f] transition-all disabled:opacity-70 shadow-lg shadow-[#FF6B2B]/20"
+              className="w-full py-3.5 mt-4 rounded-lg bg-[#FF6B2B] text-white font-black hover:bg-[#e05a1f] transition-all disabled:opacity-70 shadow-lg shadow-[#FF6B2B]/20"
             >
               {loading ? 'Registering...' : 'Complete Registration'}
             </button>
@@ -254,7 +254,7 @@ export default function AuthPage({ setUser }) {
                 setGooglePhone('');
                 setError('');
               }}
-              className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-500 font-bold hover:bg-slate-50 transition"
+              className="w-full py-2.5 rounded-lg border border-white/10 bg-white/5 text-slate-300 font-bold hover:bg-white/10 transition"
             >
               Cancel
             </button>
@@ -265,11 +265,11 @@ export default function AuthPage({ setUser }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+    <div className="min-h-screen bg-[#0B0F2E] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md bg-[#0F143C]/50 rounded-lg shadow-xl p-8 border border-white/10">
 
         {customMessage && (
-          <div className="mb-6 p-4 rounded-2xl bg-orange-50/50 border border-[#FF6B2B]/20 text-xs font-semibold text-[#FF6B2B] text-center flex items-center justify-center gap-2">
+          <div className="mb-6 p-4 rounded-lg bg-orange-500/10 border border-[#FF6B2B]/20 text-xs font-semibold text-[#FFB38E] text-center flex items-center justify-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 shrink-0">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" />
             </svg>
@@ -278,16 +278,16 @@ export default function AuthPage({ setUser }) {
         )}
 
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-black text-[#0B0F2E]">
+          <h2 className="text-3xl font-black text-white">
             {isLogin ? 'Welcome Back' : 'Create an Account'}
           </h2>
-          <p className="text-slate-500 mt-2 text-sm">
+          <p className="text-slate-400 mt-2 text-sm">
             {isLogin ? 'Log in to access your dashboard.' : 'Join Atyant as a student or mentor.'}
           </p>
         </div>
 
         {!isLogin && referralCode && (
-          <div className="mb-6 p-3 rounded-2xl bg-purple-50 border border-[#8B5CF6]/20 text-xs font-semibold text-[#8B5CF6] text-center">
+          <div className="mb-6 p-3 rounded-lg bg-orange-500/10 border border-[#FF6B2B]/20 text-xs font-semibold text-[#FFB38E] text-center">
             🎁 You were invited by a friend — signing up counts toward their referral rewards.
           </div>
         )}
@@ -295,12 +295,12 @@ export default function AuthPage({ setUser }) {
         {/* Role Toggle for Signup */}
         {!isLogin && (
           <div className="mb-6">
-            <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center justify-between">
+            <label className="block text-sm font-bold text-slate-300 mb-2 flex items-center justify-between">
               <span className="flex items-center gap-1">
                 Select Your Role <span className="text-red-500">*</span>
               </span>
               {!role && (
-                <span className="text-xs font-semibold text-[#FF6B2B] animate-pulse bg-orange-50 px-2 py-0.5 rounded-md">
+                <span className="text-xs font-semibold text-[#FF6B2B] animate-pulse bg-white/5 px-2 py-0.5 rounded-md">
                   Please select one
                 </span>
               )}
@@ -310,14 +310,14 @@ export default function AuthPage({ setUser }) {
               <button
                 type="button"
                 onClick={() => setRole('student')}
-                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
+                className={`flex flex-col items-center justify-center p-4 rounded-lg border transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
                   role === 'student'
-                    ? 'border-[#8B5CF6] bg-[#8B5CF6]/5 text-[#8B5CF6] shadow-lg shadow-purple-500/10'
-                    : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50/50'
+                    ? 'border-[#FF6B2B] bg-[#FF6B2B]/10 text-white shadow-lg shadow-orange-500/10'
+                    : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/10'
                 }`}
               >
                 <div className={`p-3 rounded-full mb-2 transition-colors duration-300 ${
-                  role === 'student' ? 'bg-[#8B5CF6] text-white' : 'bg-slate-100 text-slate-500'
+                  role === 'student' ? 'bg-[#FF6B2B] text-white' : 'bg-white/5 text-slate-400'
                 }`}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.263 15.918a9 9 0 1 0 15.474 0M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 0v7.5m0-7.5H4.263m7.737 0h7.737" />
@@ -332,14 +332,14 @@ export default function AuthPage({ setUser }) {
               <button
                 type="button"
                 onClick={() => setRole('mentor')}
-                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
+                className={`flex flex-col items-center justify-center p-4 rounded-lg border transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${
                   role === 'mentor'
-                    ? 'border-[#FF6B2B] bg-[#FF6B2B]/5 text-[#FF6B2B] shadow-lg shadow-orange-500/10'
-                    : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50/50'
+                    ? 'border-[#FF6B2B] bg-[#FF6B2B]/10 text-white shadow-lg shadow-orange-500/10'
+                    : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/10'
                 }`}
               >
                 <div className={`p-3 rounded-full mb-2 transition-colors duration-300 ${
-                  role === 'mentor' ? 'bg-[#FF6B2B] text-white' : 'bg-slate-100 text-slate-500'
+                  role === 'mentor' ? 'bg-[#FF6B2B] text-white' : 'bg-white/5 text-slate-400'
                 }`}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.005 9.005 0 0 0-12 0m12 0a8.987 8.987 0 0 1-6 2.24 8.987 8.987 0 0 1-6-2.24m12 0V15a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v3.72M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -354,27 +354,27 @@ export default function AuthPage({ setUser }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 text-center font-medium">
+            <div className="p-3 bg-red-500/10 text-red-400 text-sm rounded-lg border border-red-500/20 text-center font-medium">
               {error}
             </div>
           )}
 
           {!isLogin && (
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Full Name</label>
+              <label className="block text-sm font-bold text-slate-300 mb-1">Full Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
+                className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-bold text-slate-300 mb-1">Phone Number</label>
             <input
               type="tel"
               required
@@ -383,26 +383,26 @@ export default function AuthPage({ setUser }) {
               onChange={(e) => setPhone(e.target.value)}
               placeholder="9876543210"
               title="Please enter exactly 10 digits"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
+              className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
+            <label className="block text-sm font-bold text-slate-300 mb-1">Password</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
+              className="w-full px-4 py-3 rounded-lg border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 transition"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 mt-2 rounded-xl bg-[#FF6B2B] text-white font-black hover:bg-[#e05a1f] transition-all disabled:opacity-70 shadow-lg shadow-[#FF6B2B]/20"
+            className="w-full py-3.5 mt-2 rounded-lg bg-[#FF6B2B] text-white font-black hover:bg-[#e05a1f] transition-all disabled:opacity-70 shadow-lg shadow-[#FF6B2B]/20"
           >
             {loading ? 'Processing...' : isLogin ? 'Log In' : 'Sign Up'}
           </button>
@@ -411,19 +411,39 @@ export default function AuthPage({ setUser }) {
         {/* Divider */}
         <div className="relative my-6 text-center">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200"></div>
+            <div className="w-full border-t border-white/10"></div>
           </div>
-          <span className="relative bg-white px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <span className="relative bg-[#0F143C] px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
             Or
           </span>
         </div>
 
         {/* Google Sign-in Container */}
         <div className="flex flex-col items-center justify-center w-full gap-2">
-          <div id="googleSignInDiv" className="w-full flex justify-center"></div>
+          <div className="relative w-full overflow-hidden rounded-lg">
+            {/* Custom Google Button matching design system */}
+            <button
+              type="button"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-white font-semibold text-sm"
+            >
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+            {/* Invisible Google Button Overlay */}
+            <div 
+              id="googleSignInDiv" 
+              className="absolute inset-0 w-full h-full opacity-[0.01] overflow-hidden pointer-events-auto"
+            ></div>
+          </div>
+          
           {!import.meta.env.VITE_GOOGLE_CLIENT_ID && (
-            <div className="text-[10px] text-slate-400 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-center w-full mt-2">
-              ⚠️ Google Client ID not configured. Please add <code className="font-mono text-pink-600 font-bold bg-pink-50/50 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code> to your frontend <code className="font-mono bg-slate-100 px-1 rounded">.env</code> file.
+            <div className="text-[10px] text-slate-400 bg-white/5 p-2.5 rounded-lg border border-white/10 text-center w-full mt-2">
+              ⚠️ Google Client ID not configured. Please add <code className="font-mono text-orange-400 font-bold bg-white/5 px-1 rounded">VITE_GOOGLE_CLIENT_ID</code> to your frontend <code className="font-mono bg-white/5 px-1 rounded">.env</code> file.
             </div>
           )}
         </div>
@@ -435,7 +455,7 @@ export default function AuthPage({ setUser }) {
               setRole(''); // Reset role selection so they must choose
               setError('');
             }}
-            className="text-sm font-semibold text-slate-500 hover:text-[#0B0F2E] transition"
+            className="text-sm font-semibold text-slate-400 hover:text-white transition"
           >
             {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Log In'}
           </button>
@@ -444,7 +464,7 @@ export default function AuthPage({ setUser }) {
         <div className="mt-8 text-center">
           <button
             onClick={() => navigate('/')}
-            className="text-xs font-bold text-slate-400 hover:text-slate-600 transition"
+            className="text-xs font-bold text-slate-500 hover:text-slate-300 transition"
           >
             ← Back to Home
           </button>
