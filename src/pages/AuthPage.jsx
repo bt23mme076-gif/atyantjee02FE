@@ -26,7 +26,10 @@ export default function AuthPage({ setUser }) {
 
   const completeAuthRedirect = (userObj) => {
     const pendingBooking = localStorage.getItem('atyant_pending_booking');
-    if (pendingBooking && userObj.role === 'student') {
+    const redirectUrl = new URLSearchParams(location.search).get('redirect') || location.state?.redirect;
+    if (redirectUrl) {
+      navigate(redirectUrl);
+    } else if (pendingBooking && userObj.role === 'student') {
       navigate('/mentors');
     } else {
       navigate(userObj.role === 'mentor' ? '/profile' : '/');

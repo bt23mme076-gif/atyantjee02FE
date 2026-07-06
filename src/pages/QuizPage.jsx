@@ -158,6 +158,14 @@ export default function QuizPage() {
   const sessionId = useRef(getOrCreateSessionId()).current;
 
   useEffect(() => {
+    const userToken = localStorage.getItem('user_token');
+    if (!userToken) {
+      navigate('/login?redirect=/quiz', {
+        state: { message: 'Please log in to take the Career Fit Quiz', redirect: '/quiz' }
+      });
+      return;
+    }
+
     getQuizQuestions()
       .then((data) => {
         setQuestions(data.questions || []);
@@ -167,7 +175,7 @@ export default function QuizPage() {
         setError(e.message);
         setLoading(false);
       });
-  }, []);
+  }, [navigate]);
 
   const currentQ = questions[step];
   const isMulti = currentQ?.type === 'multi_select';
