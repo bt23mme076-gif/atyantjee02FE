@@ -538,4 +538,5 @@ export const footerLinks = _override?.footerLinks ?? [
   { label: 'WhatsApp', href: 'https://wa.me/919579040183', title: 'All of you can join Atyant community' },
   { label: 'Contact', href: '#', title: 'Atyant Support - 919579040183' },
   { label: 'Privacy Policy', href: '#' },
+  { label: 'Admin Login', href: '/atyantlogin' },
 ];

@@ -33,6 +33,14 @@ export default function Footer({ onAdminClick }) {
                 >
                   {link.label}
                 </button>
+              ) : link.href.startsWith('/') ? (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="text-white transition hover:opacity-80"
+                >
+                  {link.label}
+                </Link>
               ) : (
                 <a key={link.label} href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noreferrer' : undefined} className="text-white transition hover:opacity-80">
                   {link.label}

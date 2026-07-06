@@ -4,10 +4,10 @@ import {
   adminListItems, adminCreateItem, adminUpdateItem, adminDeleteItem,
   adminListCareerPaths, adminCreateCareerPath, adminUpdateCareerPath, adminDeleteCareerPath,
   adminListFaqVideos, adminCreateFaqVideo, adminUpdateFaqVideo, adminDeleteFaqVideo,
-  uploadRoadmapContent,
+  uploadRoadmapContent, adminUpdateCareerDetail, getCareerDetail,
 } from '../../utils/api';
 
-const SUB_TABS = ['Pillars', 'Content Items', 'Career Paths', 'FAQ Videos'];
+const SUB_TABS = ['Pillars', 'Pillar Content Items', 'Career Paths', 'Career Path Content', 'FAQ Videos'];
 
 function Field({ label, children }) {
   return (
@@ -361,6 +361,244 @@ function FaqVideosPanel() {
   );
 }
 
+// ─── Career Path Content sub-tab ─────────────────────────────────────────
+function CareerPathContentPanel() {
+  const [paths, setPaths] = useState([]);
+  const [selectedId, setSelectedId] = useState('');
+  const [selectedSlug, setSelectedSlug] = useState('');
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [form, setForm] = useState({
+    tagline: '',
+    idealFor: '',
+    difficultyToBreakIn: 'Medium',
+    bestFitTraits: '',
+    salaryMin: '',
+    salaryMax: '',
+    salaryNote: '',
+    courseTitle: '', courseUrl: '',
+    bookTitle: '', bookUrl: '',
+    projectIdea: '',
+    communityName: '', communityUrl: '',
+    hiringCompanies: '',
+    onCampusVsOffCampus: '',
+    referralTips: '',
+    commonMistakes: '',
+    pivotOptions: '',
+    relatedPaths: '',
+    foundational: '', intermediate: '', advanced: '', mustHaveForInterviews: '',
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const loadPaths = useCallback(() =>
+    adminListCareerPaths()
+      .then((r) => setPaths(r.careerPaths || []))
+      .catch((e) => setError(e.message)), []);
+
+  useEffect(() => { loadPaths(); }, [loadPaths]);
+
+  // When a path is selected, fetch its existing detail and pre-populate the form
+  const handlePathChange = async (e) => {
+    const id = e.target.value;
+    const path = paths.find((p) => p.id === id);
+    setSelectedId(id);
+    setSelectedSlug(path?.slug || '');
+    setError('');
+    setSuccess('');
+    if (!id || !path?.slug) { return; }
+    setLoadingDetail(true);
+    try {
+      const data = await getCareerDetail(path.slug);
+      const c = data.career || {};
+      const sk = c.skillTree || {};
+      const res = c.resources || {};
+      const ep = c.entryPoints || {};
+      setForm({
+        tagline: c.tagline || '',
+        idealFor: c.snapshot?.idealFor || '',
+        difficultyToBreakIn: c.snapshot?.difficultyToBreakIn || 'Medium',
+        bestFitTraits: (c.snapshot?.bestFitTraits || []).join(', '),
+        salaryMin: c.snapshot?.salaryRangeINR?.min || '',
+        salaryMax: c.snapshot?.salaryRangeINR?.max || '',
+        salaryNote: c.snapshot?.salaryRangeINR?.note || '',
+        courseTitle: res.course?.title || '',
+        courseUrl: res.course?.url || '',
+        bookTitle: res.book?.title || '',
+        bookUrl: res.book?.url || '',
+        projectIdea: res.projectIdea || '',
+        communityName: res.community?.name || '',
+        communityUrl: res.community?.url || '',
+        hiringCompanies: (ep.hiringCompanies || []).join('\n'),
+        onCampusVsOffCampus: ep.onCampusVsOffCampus || '',
+        referralTips: ep.referralTips || '',
+        commonMistakes: (c.commonMistakes || []).join('\n'),
+        pivotOptions: (c.pivotOptions || []).join(', '),
+        relatedPaths: (c.relatedPaths || []).join(', '),
+        foundational: (sk.foundational || []).join('\n'),
+        intermediate: (sk.intermediate || []).join('\n'),
+        advanced: (sk.advanced || []).join('\n'),
+        mustHaveForInterviews: (sk.mustHaveForInterviews || []).join('\n'),
+      });
+    } catch (err) {
+      setError('Could not load existing data: ' + err.message);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const splitLines = (str) => str.split('\n').map(s => s.trim()).filter(Boolean);
+  const splitComma = (str) => str.split(',').map(s => s.trim()).filter(Boolean);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!selectedId) { setError('Select a career path first'); return; }
+    setSaving(true);
+    setError('');
+    setSuccess('');
+    try {
+      const payload = {
+        tagline: form.tagline,
+        snapshot: {
+          salaryRangeINR: { min: Number(form.salaryMin) || 0, max: Number(form.salaryMax) || 0, note: form.salaryNote },
+          difficultyToBreakIn: form.difficultyToBreakIn,
+          bestFitTraits: splitComma(form.bestFitTraits),
+          idealFor: form.idealFor,
+        },
+        skillTree: {
+          foundational: splitLines(form.foundational),
+          intermediate: splitLines(form.intermediate),
+          advanced: splitLines(form.advanced),
+          mustHaveForInterviews: splitLines(form.mustHaveForInterviews),
+        },
+        resources: {
+          course: { title: form.courseTitle, url: form.courseUrl },
+          book: { title: form.bookTitle, url: form.bookUrl },
+          projectIdea: form.projectIdea,
+          community: { name: form.communityName, url: form.communityUrl },
+        },
+        entryPoints: {
+          hiringCompanies: splitLines(form.hiringCompanies),
+          onCampusVsOffCampus: form.onCampusVsOffCampus,
+          referralTips: form.referralTips,
+        },
+        commonMistakes: splitLines(form.commonMistakes),
+        pivotOptions: splitComma(form.pivotOptions),
+        relatedPaths: splitComma(form.relatedPaths),
+      };
+      await adminUpdateCareerDetail(selectedId, payload);
+      setSuccess('✓ Saved successfully! Changes are live on the career detail page.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+        <p className="text-xs font-semibold text-blue-700">Select a career path below to edit its public detail page (tagline, salary, roadmap skills, resources, etc.)</p>
+      </div>
+
+      {error && <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>}
+      {success && <p className="rounded-md bg-green-50 px-3 py-2 text-xs text-green-700 font-semibold">{success}</p>}
+
+      <div className="flex items-center gap-3">
+        <select
+          value={selectedId}
+          onChange={handlePathChange}
+          className={inputCls + ' max-w-xs'}
+        >
+          <option value="">-- Select a career path --</option>
+          {paths.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
+        </select>
+        {loadingDetail && <span className="text-xs text-gray-400 animate-pulse">Loading existing data…</span>}
+      </div>
+
+      {!selectedId && (
+        <div className="rounded-xl border border-dashed border-gray-200 px-6 py-12 text-center">
+          <p className="text-sm font-semibold text-gray-400">Select a career path above to start editing its detail page content.</p>
+          <p className="mt-1 text-xs text-gray-300">{paths.length} career paths available</p>
+        </div>
+      )}
+
+      {selectedId && (
+        <form onSubmit={handleSave} className="space-y-6">
+          <div className="rounded-xl border border-gray-200 p-4 space-y-3">
+            <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Hero</p>
+            <Field label="Tagline"><input value={form.tagline} onChange={e => setForm(f => ({...f, tagline: e.target.value}))} className={inputCls} placeholder="Build the systems the internet runs on" /></Field>
+            <Field label="Ideal For"><input value={form.idealFor} onChange={e => setForm(f => ({...f, idealFor: e.target.value}))} className={inputCls} /></Field>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Field label="Min Salary (INR)"><input type="number" value={form.salaryMin} onChange={e => setForm(f => ({...f, salaryMin: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Max Salary (INR)"><input type="number" value={form.salaryMax} onChange={e => setForm(f => ({...f, salaryMax: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Salary Note"><input value={form.salaryNote} onChange={e => setForm(f => ({...f, salaryNote: e.target.value}))} className={inputCls} /></Field>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Difficulty to Break In">
+                <select value={form.difficultyToBreakIn} onChange={e => setForm(f => ({...f, difficultyToBreakIn: e.target.value}))} className={inputCls}>
+                  {['Low', 'Medium', 'High'].map(d => <option key={d}>{d}</option>)}
+                </select>
+              </Field>
+              <Field label="Best Fit Traits (comma-separated)"><input value={form.bestFitTraits} onChange={e => setForm(f => ({...f, bestFitTraits: e.target.value}))} className={inputCls} placeholder="Logical thinker, Patient debugger" /></Field>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 p-4 space-y-3">
+            <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Skill Tree (one skill per line)</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Foundational"><textarea rows={4} value={form.foundational} onChange={e => setForm(f => ({...f, foundational: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Intermediate"><textarea rows={4} value={form.intermediate} onChange={e => setForm(f => ({...f, intermediate: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Advanced"><textarea rows={4} value={form.advanced} onChange={e => setForm(f => ({...f, advanced: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Must-Have for Interviews"><textarea rows={4} value={form.mustHaveForInterviews} onChange={e => setForm(f => ({...f, mustHaveForInterviews: e.target.value}))} className={inputCls} /></Field>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 p-4 space-y-3">
+            <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Resources</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field label="Course Title"><input value={form.courseTitle} onChange={e => setForm(f => ({...f, courseTitle: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Course URL"><input value={form.courseUrl} onChange={e => setForm(f => ({...f, courseUrl: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Book Title"><input value={form.bookTitle} onChange={e => setForm(f => ({...f, bookTitle: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Book URL"><input value={form.bookUrl} onChange={e => setForm(f => ({...f, bookUrl: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Community Name"><input value={form.communityName} onChange={e => setForm(f => ({...f, communityName: e.target.value}))} className={inputCls} /></Field>
+              <Field label="Community URL"><input value={form.communityUrl} onChange={e => setForm(f => ({...f, communityUrl: e.target.value}))} className={inputCls} /></Field>
+            </div>
+            <Field label="Project Idea"><textarea rows={2} value={form.projectIdea} onChange={e => setForm(f => ({...f, projectIdea: e.target.value}))} className={inputCls} /></Field>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 p-4 space-y-3">
+            <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Entry Points</p>
+            <Field label="Hiring Companies (one per line)"><textarea rows={4} value={form.hiringCompanies} onChange={e => setForm(f => ({...f, hiringCompanies: e.target.value}))} className={inputCls} /></Field>
+            <Field label="On-Campus vs Off-Campus guidance"><textarea rows={3} value={form.onCampusVsOffCampus} onChange={e => setForm(f => ({...f, onCampusVsOffCampus: e.target.value}))} className={inputCls} /></Field>
+            <Field label="Referral Tips"><textarea rows={3} value={form.referralTips} onChange={e => setForm(f => ({...f, referralTips: e.target.value}))} className={inputCls} /></Field>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 p-4 space-y-3">
+            <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Common Mistakes (one per line)</p>
+            <Field label="Mistakes"><textarea rows={5} value={form.commonMistakes} onChange={e => setForm(f => ({...f, commonMistakes: e.target.value}))} className={inputCls} /></Field>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 p-4 space-y-3">
+            <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">Navigation & Related</p>
+            <Field label="Pivot Options (comma-separated slugs)"><input value={form.pivotOptions} onChange={e => setForm(f => ({...f, pivotOptions: e.target.value}))} className={inputCls} placeholder="data-science, cloud-and-devops" /></Field>
+            <Field label="Related Paths (comma-separated slugs)"><input value={form.relatedPaths} onChange={e => setForm(f => ({...f, relatedPaths: e.target.value}))} className={inputCls} /></Field>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button type="submit" disabled={saving} className="rounded-full bg-[#FF6B2B] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#ff7a42] disabled:opacity-60 transition">
+              {saving ? 'Saving…' : 'Save Career Content'}
+            </button>
+            {success && <a href={`/careers/${selectedSlug}`} target="_blank" rel="noreferrer" className="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
+              Preview page →
+            </a>}
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
 // ─── Roadmap content management tab ───────────────────────────────────
 // Rendered inside the existing Atyant Admin Dashboard (AtyantLoginPage.jsx)
 // as a new "roadmap" tab, giving the team a place to upload documents and
@@ -384,8 +622,9 @@ export default function RoadmapContentTab() {
         ))}
       </div>
       {subTab === 'Pillars' && <PillarsPanel />}
-      {subTab === 'Content Items' && <ItemsPanel />}
+      {subTab === 'Pillar Content Items' && <ItemsPanel />}
       {subTab === 'Career Paths' && <CareerPathsPanel />}
+      {subTab === 'Career Path Content' && <CareerPathContentPanel />}
       {subTab === 'FAQ Videos' && <FaqVideosPanel />}
     </div>
   );

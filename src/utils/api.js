@@ -444,3 +444,45 @@ export const uploadRoadmapContent = async (file) => {
   if (!res.ok) throw new Error(data.error || 'Upload failed');
   return data;
 };
+
+// ─── Public: Career Paths (detail + list) ─────────────────────────────────────
+
+export const getCareersList = () => request('/api/careers');
+export const getCareerDetail = (slug) => request(`/api/careers/${slug}`);
+export const getRelatedCareers = (slug) => request(`/api/careers/${slug}/related`);
+
+// ─── Public: Quiz ─────────────────────────────────────────────────────────────
+
+export const getQuizQuestions = () => request('/api/quiz/questions');
+
+export const submitQuizAnswers = (payload) =>
+  request('/api/quiz/submit', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
+export const getQuizResult = (id) => request(`/api/quiz/results/${id}`);
+export const submitQuizEmail = (id, email) =>
+  request(`/api/quiz/results/${id}/email`, {
+    method: 'PATCH',
+    body: JSON.stringify({ email }),
+  });
+
+// ─── Admin: Quiz question management ──────────────────────────────────────────
+
+export const adminListQuizQuestions = () =>
+  request('/api/admin/quiz-questions', { headers: adminAuthHeader() });
+export const adminCreateQuizQuestion = (payload) =>
+  request('/api/admin/quiz-questions', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateQuizQuestion = (id, payload) =>
+  request(`/api/admin/quiz-questions/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteQuizQuestion = (id) =>
+  request(`/api/admin/quiz-questions/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+// ─── Admin: Career detail content management ──────────────────────────────────
+// (uses the existing adminUpdateCareerPath endpoint which now accepts rich fields)
+export const adminGetCareerDetail = (slug) =>
+  request(`/api/careers/${slug}`, { headers: adminAuthHeader() });
+export const adminUpdateCareerDetail = (id, payload) =>
+  request(`/api/admin/career-paths/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+

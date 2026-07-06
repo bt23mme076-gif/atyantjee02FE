@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, ChevronDown, Code, Database, Briefcase, Palette, Shield, Cloud, Settings, Zap, 
@@ -25,7 +26,7 @@ const iconMap = {
   'entrepreneurship': Rocket,
   'game-development': Gamepad2,
   'digital-marketing': Megaphone,
-  'finance-and-fp-and-a': Coins,
+  'finance-and-fpanda': Coins,
   'supply-chain-and-operations': Truck,
   'robotics': Bot,
   'ai-ml-research': Brain,
@@ -43,24 +44,24 @@ function getCareerPathIcon(slug) {
   return iconMap[slug] || HelpCircle;
 }
 
-function CareerPathCard({ path, onSelect }) {
+function CareerPathCard({ path }) {
   const IconComponent = getCareerPathIcon(path.slug);
   
   return (
-    <motion.button
-      type="button"
-      onClick={() => onSelect(path)}
-      whileHover={{ y: -2 }}
-      className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-5 py-4 text-left transition hover:border-[#FF6B2B]/40 hover:bg-white/[0.05]"
-    >
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-white ring-1 ring-white/15">
-          <IconComponent className="h-4.5 w-4.5 text-[#FF6B2B]" strokeWidth={2.2} />
+    <Link to={`/careers/${path.slug}`}>
+      <motion.div
+        whileHover={{ y: -2 }}
+        className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-5 py-4 text-left transition hover:border-[#FF6B2B]/40 hover:bg-white/[0.05] cursor-pointer"
+      >
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-white ring-1 ring-white/15">
+            <IconComponent className="h-4.5 w-4.5 text-[#FF6B2B]" strokeWidth={2.2} />
+          </div>
+          <span className="truncate text-sm font-semibold text-white">{path.title}</span>
         </div>
-        <span className="truncate text-sm font-semibold text-white">{path.title}</span>
-      </div>
-      <ArrowRight className="h-4 w-4 shrink-0 text-white/30" />
-    </motion.button>
+        <ArrowRight className="h-4 w-4 shrink-0 text-white/30" />
+      </motion.div>
+    </Link>
   );
 }
 
@@ -71,12 +72,6 @@ function CareerPathCard({ path, onSelect }) {
 // instead of being static text.
 export default function CareerPathsSection({ featured = [], more = [], totalCount = 0, remainingCount = 0 }) {
   const [expanded, setExpanded] = useState(false);
-
-  const handleSelect = () => {
-    // No dedicated per-path page yet — reuse the site's existing lead
-    // capture flow so interest here still reaches the team.
-    window.dispatchEvent(new CustomEvent('openLeadModal'));
-  };
 
   if (!featured.length) return null;
 
@@ -94,18 +89,17 @@ export default function CareerPathsSection({ featured = [], more = [], totalCoun
               From Software Engineering to MBA prep — explore every direction available to you.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleSelect}
+          <Link
+            to="/quiz"
             className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full bg-[#FF6B2B] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#FF6B2B]/20 transition hover:scale-[1.02] hover:bg-[#ff7a42] sm:self-auto"
           >
             Take the Career Fit Quiz <ArrowRight className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {featured.map((path) => (
-            <CareerPathCard key={path.id} path={path} onSelect={handleSelect} />
+            <CareerPathCard key={path.id} path={path} />
           ))}
         </div>
 
@@ -120,7 +114,7 @@ export default function CareerPathsSection({ featured = [], more = [], totalCoun
             >
               <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {more.map((path) => (
-                  <CareerPathCard key={path.id} path={path} onSelect={handleSelect} />
+                  <CareerPathCard key={path.id} path={path} />
                 ))}
               </div>
             </motion.div>
