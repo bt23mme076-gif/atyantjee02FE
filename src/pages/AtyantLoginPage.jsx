@@ -623,14 +623,9 @@ export default function AtyantLoginPage() {
   const [tab, setTab] = React.useState('leads');
   const navigate = useNavigate();
 
-  // Try to restore session from stored token
+  // Always require manual login when visiting the page to ensure complete security
   React.useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (token) {
-      getMe()
-        .then((d) => { setAdminInfo(d.admin); setAuthed(true); })
-        .catch(() => { localStorage.removeItem('admin_token'); });
-    }
+    localStorage.removeItem('admin_token');
   }, []);
 
   async function handleLogin(e) {
