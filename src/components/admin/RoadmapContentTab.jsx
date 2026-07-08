@@ -3,11 +3,12 @@ import {
   adminListPillars, adminCreatePillar, adminUpdatePillar, adminDeletePillar,
   adminListItems, adminCreateItem, adminUpdateItem, adminDeleteItem,
   adminListCareerPaths, adminCreateCareerPath, adminUpdateCareerPath, adminDeleteCareerPath,
+  adminListCareerPathItems, adminCreateCareerPathItem, adminUpdateCareerPathItem, adminDeleteCareerPathItem,
   adminListFaqVideos, adminCreateFaqVideo, adminUpdateFaqVideo, adminDeleteFaqVideo,
   uploadRoadmapContent, adminUpdateCareerDetail, getCareerDetail,
 } from '../../utils/api';
 
-const SUB_TABS = ['Pillars', 'Pillar Content Items', 'Career Paths', 'Career Path Content', 'FAQ Videos'];
+const SUB_TABS = ['Pillars', 'Pillar Content Items', 'Career Paths', 'Career Path Items', 'Career Path Content', 'FAQ Videos'];
 
 function Field({ label, children }) {
   return (
@@ -337,6 +338,173 @@ function ItemsPanel() {
                 </td>
                 <td className="max-w-[200px] truncate px-4 py-2 text-xs text-gray-400">{i.url || '—'}</td>
                 <td className="px-4 py-2">{i.requiresReferralUnlock ? 'Yes' : '—'}</td>
+                <td className="px-4 py-2 text-right">
+                  <button onClick={() => startEdit(i)} className="mr-3 text-xs font-semibold text-blue-600">Edit</button>
+                  <button onClick={() => remove(i.id)} className="text-xs font-semibold text-red-600">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ─── Career Path Items sub-tab (same type-specific fields as Pillar Items) ────
+function CareerPathItemsPanel() {
+  const [paths, setPaths] = useState([]);
+  const [careerPathId, setCareerPathId] = useState('');
+  const [items, setItems] = useState([]);
+  const [form, setForm] = useState({ title: '', type: 'video', url: '', durationLabel: '', order: 0 });
+  const [editingId, setEditingId] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    adminListCareerPaths().then((r) => {
+      const list = r.careerPaths || [];
+      setPaths(list);
+      if (list.length) setCareerPathId(list[0].id);
+    });
+  }, []);
+
+  const load = useCallback(() => {
+    if (!careerPathId) return;
+    adminListCareerPathItems(careerPathId)
+      .then((r) => setItems(r.items || []))
+      .catch((e) => setError(e.message));
+  }, [careerPathId]);
+  useEffect(() => { load(); }, [load]);
+
+  const resetForm = () => {
+    setForm({ title: '', type: 'video', url: '', durationLabel: '', order: 0 });
+    setEditingId(null);
+  };
+
+  const handleTypeChange = (newType) => {
+    setForm({ ...form, type: newType, url: '', durationLabel: '' });
+  };
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError('');
+    try {
+      const res = await uploadRoadmapContent(file);
+      setForm((f) => ({ ...f, url: res.url }));
+    } catch (err) { setError(err.message); } finally { setUploading(false); }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      if (editingId) await adminUpdateCareerPathItem(editingId, form);
+      else await adminCreateCareerPathItem({ ...form, careerPath: careerPathId });
+      resetForm();
+      load();
+    } catch (err) { setError(err.message); }
+  };
+
+  const startEdit = (i) => {
+    setForm({ title: i.title, type: i.type, url: i.url, durationLabel: i.durationLabel, order: i.order });
+    setEditingId(i.id);
+  };
+  const remove = async (id) => {
+    if (!window.confirm('Delete this item?')) return;
+    await adminDeleteCareerPathItem(id);
+    load();
+  };
+
+  const typeDescriptions = {
+    video: 'Upload or link a video for students to watch.',
+    document: 'Upload a PDF/doc or link a shareable file for students to read.',
+    article: 'Link to a blog post, guide, or external webpage.',
+    task: 'Define an action students must complete (no file needed).',
+    quiz: 'Link to an internal quiz or external quiz tool.',
+  };
+  const typeBadgeColors = {
+    video: 'bg-purple-100 text-purple-700',
+    document: 'bg-blue-100 text-blue-700',
+    article: 'bg-green-100 text-green-700',
+    task: 'bg-yellow-100 text-yellow-700',
+    quiz: 'bg-rose-100 text-rose-700',
+  };
+
+  return (
+    <div className="space-y-6">
+      <Field label="Career Path">
+        <select value={careerPathId} onChange={(e) => setCareerPathId(e.target.value)} className={inputCls}>
+          {paths.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
+        </select>
+      </Field>
+
+      <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-gray-200 p-4">
+        {error && <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>}
+
+        {/* Row 1: Title + Type + Order */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Field label="Title">
+            <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} placeholder="e.g. Introduction to Software Engineering" />
+          </Field>
+          <Field label="Content Type">
+            <select value={form.type} onChange={(e) => handleTypeChange(e.target.value)} className={inputCls}>
+              <option value="video">🎬 Video</option>
+              <option value="document">📄 Document</option>
+              <option value="article">🔗 Article</option>
+              <option value="task">📋 Task</option>
+              <option value="quiz">🧩 Quiz</option>
+            </select>
+          </Field>
+          <Field label="Order (lower = first)">
+            <input type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} className={inputCls} />
+          </Field>
+        </div>
+
+        {/* Type hint */}
+        <p className="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-500">
+          <span className={`mr-2 rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${typeBadgeColors[form.type]}`}>{form.type}</span>
+          {typeDescriptions[form.type]}
+        </p>
+
+        {/* Type-specific fields — reuse the same components from Pillar Items */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {form.type === 'video'    && <VideoFields    form={form} setForm={setForm} uploading={uploading} handleFile={handleFile} />}
+          {form.type === 'document' && <DocumentFields form={form} setForm={setForm} uploading={uploading} handleFile={handleFile} />}
+          {form.type === 'article'  && <ArticleFields  form={form} setForm={setForm} />}
+          {form.type === 'task'     && <TaskFields     form={form} setForm={setForm} />}
+          {form.type === 'quiz'     && <QuizFields     form={form} setForm={setForm} />}
+        </div>
+
+        {/* Submit */}
+        <div className="flex justify-end gap-2 border-t border-gray-100 pt-3">
+          {editingId && <button type="button" onClick={resetForm} className="rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-gray-600">Cancel</button>}
+          <button type="submit" disabled={uploading} className="rounded-full bg-[#FF6B2B] px-5 py-2 text-sm font-semibold text-white hover:bg-[#ff7a42] disabled:opacity-60">
+            {editingId ? 'Save changes' : 'Add item'}
+          </button>
+        </div>
+      </form>
+
+      <div className="overflow-x-auto rounded-xl border border-gray-200">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
+            <tr>
+              <th className="px-4 py-2">Title</th>
+              <th className="px-4 py-2">Type</th>
+              <th className="px-4 py-2">URL / File</th>
+              <th className="px-4 py-2"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {items.map((i) => (
+              <tr key={i.id}>
+                <td className="px-4 py-2 font-semibold">{i.title}</td>
+                <td className="px-4 py-2">
+                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold uppercase ${typeBadgeColors[i.type] || 'bg-gray-100 text-gray-600'}`}>{i.type}</span>
+                </td>
+                <td className="max-w-[200px] truncate px-4 py-2 text-xs text-gray-400">{i.url || '—'}</td>
                 <td className="px-4 py-2 text-right">
                   <button onClick={() => startEdit(i)} className="mr-3 text-xs font-semibold text-blue-600">Edit</button>
                   <button onClick={() => remove(i.id)} className="text-xs font-semibold text-red-600">Delete</button>
@@ -768,6 +936,7 @@ export default function RoadmapContentTab() {
       {subTab === 'Pillars' && <PillarsPanel />}
       {subTab === 'Pillar Content Items' && <ItemsPanel />}
       {subTab === 'Career Paths' && <CareerPathsPanel />}
+      {subTab === 'Career Path Items' && <CareerPathItemsPanel />}
       {subTab === 'Career Path Content' && <CareerPathContentPanel />}
       {subTab === 'FAQ Videos' && <FaqVideosPanel />}
     </div>

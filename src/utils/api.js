@@ -426,6 +426,16 @@ export const adminUpdateCareerPath = (id, payload) =>
 export const adminDeleteCareerPath = (id) =>
   request(`/api/admin/career-paths/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
+// ─── Admin: Career Path Content Items ────────────────────────────────────────
+export const adminListCareerPathItems = (careerPathId) =>
+  request(`/api/admin/career-path-items${careerPathId ? `?careerPath=${careerPathId}` : ''}`, { headers: adminAuthHeader() });
+export const adminCreateCareerPathItem = (payload) =>
+  request('/api/admin/career-path-items', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateCareerPathItem = (id, payload) =>
+  request(`/api/admin/career-path-items/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteCareerPathItem = (id) =>
+  request(`/api/admin/career-path-items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
 export const adminListFaqVideos = () => request('/api/admin/faq-videos', { headers: adminAuthHeader() });
 export const adminCreateFaqVideo = (payload) =>
   request('/api/admin/faq-videos', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
