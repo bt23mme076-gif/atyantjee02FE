@@ -12,16 +12,22 @@ function isHostedFile(url) {
 }
 
 /**
- * Determines if a URL is embeddable as an iframe (Google Drive PDF preview, etc.)
+ * Returns Google Drive embed URL if the URL is a Drive link.
  */
-function getEmbedUrl(url) {
+function getDriveEmbedUrl(url) {
   if (!url) return null;
-  // Google Drive: convert to preview URL
   const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
   if (driveMatch) return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
-  // If it's our own hosted PDF, use it directly
-  if (isHostedFile(url)) return resolveAssetUrl(url);
   return null;
+}
+
+/**
+ * Get file extension from a URL path.
+ */
+function getExtension(url) {
+  if (!url) return '';
+  const path = url.split('?')[0]; // strip query
+  return path.split('.').pop().toLowerCase();
 }
 
 /**
@@ -94,30 +100,75 @@ function VideoViewer({ item }) {
 
 function DocumentViewer({ item }) {
   const resolved = resolveAssetUrl(item.url);
-  const embedUrl = getEmbedUrl(item.url);
+  const driveEmbed = getDriveEmbedUrl(item.url);
+  const ext = getExtension(item.url);
+  const isPdf = ext === 'pdf';
+  const isDoc = ['doc', 'docx', 'ppt', 'pptx'].includes(ext);
 
   if (!item.url) {
     return <p className="text-center text-sm text-white/50 py-8">No document attached to this item yet.</p>;
   }
 
-  if (embedUrl) {
+  // ── Google Drive link ──────────────────────────────────────────
+  if (driveEmbed) {
     return (
-      <div className="h-[60vh] w-full overflow-hidden rounded-xl bg-gray-900">
-        <iframe
-          src={embedUrl}
-          title={item.title}
-          className="h-full w-full border-0"
-        />
+      <div className="flex flex-col gap-3">
+        <a href={resolved} target="_blank" rel="noopener noreferrer"
+          className="inline-flex self-end items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700">
+          <ExternalLink className="h-3.5 w-3.5" /> Open in new tab
+        </a>
+        <div className="h-[60vh] w-full overflow-hidden rounded-xl bg-gray-900">
+          <iframe src={driveEmbed} title={item.title} className="h-full w-full border-0" />
+        </div>
       </div>
     );
   }
 
-  // PPT / DOC: can't embed → open in tab
+  // ── Uploaded PDF: use <object> tag (more reliable than iframe in modern browsers) ──
+  if (isPdf && isHostedFile(item.url)) {
+    return (
+      <div className="flex flex-col gap-3">
+        {/* Always-visible open button — iframe/object may still be blocked by some browsers */}
+        <div className="flex items-center justify-between rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
+          <div className="flex items-center gap-2 text-sm text-white/70">
+            <FileText className="h-4 w-4 text-blue-400" />
+            <span className="truncate max-w-[240px]">{item.title}</span>
+          </div>
+          <a
+            href={resolved}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-3 inline-flex shrink-0 items-center gap-1.5 rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+          >
+            <ExternalLink className="h-3.5 w-3.5" /> Open PDF
+          </a>
+        </div>
+
+        {/* Embedded preview using <object> — works in Chrome/Edge; Firefox may open outside */}
+        <object
+          data={resolved}
+          type="application/pdf"
+          className="h-[55vh] w-full rounded-xl border border-white/5"
+          title={item.title}
+        >
+          {/* Fallback shown when <object> fails (Safari, some mobile browsers) */}
+          <div className="flex h-full flex-col items-center justify-center gap-4 rounded-xl bg-gray-900 py-12">
+            <FileText className="h-14 w-14 text-blue-400/50" />
+            <p className="text-center text-sm text-white/60">
+              Your browser can&apos;t preview PDFs here.<br />Use the button above to open it.
+            </p>
+          </div>
+        </object>
+      </div>
+    );
+  }
+
+  // ── PPT / DOC or external link: can't embed → open in tab ──────
   return (
     <div className="flex flex-col items-center gap-4 py-8">
       <FileText className="h-16 w-16 text-blue-400/60" />
       <p className="text-center text-sm text-white/70">
-        This document opens in a new tab (PDF, PPT, or DOC).
+        {isDoc ? 'This Office document opens best in a new tab or in Google Docs.' : 'This document opens in a new tab.'}
       </p>
       <a
         href={resolved}
