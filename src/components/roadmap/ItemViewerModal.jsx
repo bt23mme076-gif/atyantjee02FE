@@ -71,7 +71,7 @@ function VideoViewer({ item }) {
         <video
           src={resolved}
           controls
-          autoPlay
+          preload="auto"
           className="h-full w-full"
           title={item.title}
         >
