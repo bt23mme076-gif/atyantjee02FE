@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import RoadmapHero from '../components/roadmap/RoadmapHero';
 import PillarTabs from '../components/roadmap/PillarTabs';
 import PillarModal from '../components/roadmap/PillarModal';
+import ItemViewerModal from '../components/roadmap/ItemViewerModal';
 import CareerPathsSection from '../components/roadmap/CareerPathsSection';
 import ReferralCard from '../components/roadmap/ReferralCard';
 import FaqVideoSection from '../components/roadmap/FaqVideoSection';
@@ -38,6 +39,7 @@ export default function RoadmapPage({ user }) {
   const [careerPaths, setCareerPaths] = useState({ featured: [], more: [], totalCount: 0, remainingCount: 0 });
   const [referral, setReferral] = useState(null);
   const [faqVideos, setFaqVideos] = useState([]);
+  const [viewingItem, setViewingItem] = useState(null); // item currently open in viewer modal
 
   const loadPillars = useCallback(async () => {
     try {
@@ -92,9 +94,8 @@ export default function RoadmapPage({ user }) {
   const handleOpenItem = async (item) => {
     if (!isLoggedIn || openingItemId) return;
 
-    if (item.url) {
-      window.open(resolveAssetUrl(item.url), '_blank', 'noopener,noreferrer');
-    }
+    // Open the item in the viewer modal (type-specific: video player, PDF iframe, etc.)
+    setViewingItem(item);
 
     const alreadyDone = openPillar?.progress?.completedItemIds?.includes(item.id);
     if (alreadyDone) return;
@@ -204,6 +205,12 @@ export default function RoadmapPage({ user }) {
         onOpenItem={handleOpenItem}
         onLockedClick={handleLockedClick}
         onClose={() => setOpenPillarKey(null)}
+      />
+
+      {/* Per-item viewer modal: video player / PDF iframe / article link / task / quiz */}
+      <ItemViewerModal
+        item={viewingItem}
+        onClose={() => setViewingItem(null)}
       />
     </main>
   );
