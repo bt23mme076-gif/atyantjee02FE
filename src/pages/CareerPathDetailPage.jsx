@@ -7,9 +7,11 @@ import {
   Settings, Zap, Building, LineChart, DollarSign, GraduationCap, Award,
   Globe, Rocket, Gamepad2, Megaphone, Coins, Truck, Bot, Brain,
   Link2, PenTool, Handshake, Users, Scale, FlaskConical, Leaf, HelpCircle,
-  Loader2, Users2, TrendingUp, Star, MessageSquare, RotateCcw
+  Loader2, Users2, TrendingUp, Star, MessageSquare, RotateCcw,
+  PlayCircle, FileText, ClipboardCheck, ExternalLink
 } from 'lucide-react';
 import { getCareerDetail, getRelatedCareers } from '../utils/api';
+import ItemViewerModal from '../components/roadmap/ItemViewerModal';
 
 const ICON_MAP = {
   'software-engineering': Code, 'data-science': Database, 'product-management': Briefcase,
@@ -186,6 +188,8 @@ function RelatedCard({ career }) {
 export default function CareerPathDetailPage() {
   const { slug } = useParams();
   const [career, setCareer] = useState(null);
+  const [items, setItems] = useState([]);
+  const [viewingItem, setViewingItem] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -199,6 +203,7 @@ export default function CareerPathDetailPage() {
     ])
       .then(([careerData, relData]) => {
         setCareer(careerData.career);
+        setItems(careerData.items || []);
         setRelated(relData.related || []);
         setLoading(false);
       })
@@ -418,7 +423,56 @@ export default function CareerPathDetailPage() {
           </section>
         )}
 
-        {/* ── 8. Related Paths ─────────────────────────────────────────────── */}
+        {/* ── 8. Custom Learning & Preparation Material ─────────────────────── */}
+        {items.length > 0 && (
+          <section>
+            <SectionHeader icon={<BookOpen className="h-4 w-4" />} label="Learning & Preparation Materials" />
+            <div className="grid sm:grid-cols-2 gap-4">
+              {items.map((item) => {
+                const isVideo = item.type === 'video';
+                const isDoc = item.type === 'document';
+                const isArticle = item.type === 'article';
+                const isTask = item.type === 'task';
+                const isQuiz = item.type === 'quiz';
+
+                const typeLabel = {
+                  video: '🎬 Video',
+                  document: '📄 Document',
+                  article: '🔗 Article',
+                  task: '📋 Task',
+                  quiz: '🧩 Quiz',
+                }[item.type] || item.type;
+
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => setViewingItem(item)}
+                    className="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 cursor-pointer hover:border-white/20 hover:bg-white/[0.06] transition-all group"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 text-[#FF9E6B]">
+                        {isVideo && <PlayCircle className="h-5 w-5" />}
+                        {isDoc && <FileText className="h-5 w-5" />}
+                        {isArticle && <BookOpen className="h-5 w-5" />}
+                        {isTask && <ClipboardCheck className="h-5 w-5" />}
+                        {isQuiz && <HelpCircle className="h-5 w-5" />}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-white group-hover:text-[#FF9E6B] transition">{item.title}</p>
+                        <p className="text-xs text-white/45 capitalize">
+                          {typeLabel} {item.durationLabel ? ` · ${item.durationLabel}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-white/40 group-hover:text-white/70 transition shrink-0" />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* ── 9. Related Paths ─────────────────────────────────────────────── */}
         {related.length > 0 && (
           <section>
             <SectionHeader icon={<Star className="h-4 w-4" />} label="You Might Also Like" />
@@ -429,7 +483,7 @@ export default function CareerPathDetailPage() {
         )}
       </div>
 
-      {/* ── 9. Sticky Bottom CTA (mobile) ────────────────────────────────── */}
+      {/* ── 10. Sticky Bottom CTA (mobile) ────────────────────────────────── */}
       <div className="fixed bottom-0 left-0 right-0 lg:hidden z-40 border-t border-white/10 bg-[#0B0F2E]/95 backdrop-blur-lg px-4 py-3 flex gap-3">
         <Link
           to="/quiz"
@@ -444,6 +498,12 @@ export default function CareerPathDetailPage() {
           Talk to a senior
         </button>
       </div>
+
+      {/* Item Viewer Modal */}
+      <ItemViewerModal
+        item={viewingItem}
+        onClose={() => setViewingItem(null)}
+      />
     </div>
   );
 }
