@@ -8,6 +8,14 @@ const API_BASE =
     ? import.meta.env.VITE_API_URL.replace(/\/$/, '') // strip trailing slash
     : '';
 
+export const resolveAssetUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('/api/')) {
+    return `${API_BASE}${url}`;
+  }
+  return url;
+};
+
 // ─── Core fetch wrapper ───────────────────────────────────────────────────────
 
 async function request(endpoint, options = {}) {

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, PlayCircle } from 'lucide-react';
 import { getEmbedUrl } from './videoEmbed';
+import { resolveAssetUrl } from '../../utils/api';
 
 // Pop-up video player shown when a student taps an FAQ question. Handles
 // both YouTube/Vimeo links (admin-pasted) and directly uploaded video files.
@@ -43,7 +44,7 @@ export default function FaqVideoModal({ faq, onClose }) {
                   allowFullScreen
                 />
               ) : faq.videoUrl ? (
-                <video src={faq.videoUrl} controls autoPlay className="h-full w-full" />
+                <video src={resolveAssetUrl(faq.videoUrl)} controls autoPlay className="h-full w-full" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-white/40">
                   <PlayCircle className="h-10 w-10" />

@@ -14,6 +14,7 @@ import {
   getCareerPaths,
   getReferralStatus,
   getFaqVideos,
+  resolveAssetUrl,
 } from '../utils/api';
 
 const sectionVariants = {
@@ -92,7 +93,7 @@ export default function RoadmapPage({ user }) {
     if (!isLoggedIn || openingItemId) return;
 
     if (item.url) {
-      window.open(item.url, '_blank', 'noopener,noreferrer');
+      window.open(resolveAssetUrl(item.url), '_blank', 'noopener,noreferrer');
     }
 
     const alreadyDone = openPillar?.progress?.completedItemIds?.includes(item.id);
