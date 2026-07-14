@@ -25,6 +25,7 @@ const ProgramsPage = lazy(() => import('./pages/ProgramsPage'));
 const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
 const CareerPathDetailPage = lazy(() => import('./pages/CareerPathDetailPage'));
+const PaymentStatusPage = lazy(() => import('./pages/PaymentStatusPage'));
 
 // Lightweight fallback shown while a route chunk downloads. Deliberately
 // minimal (no layout shift risk, no dependency on page-specific styles).
@@ -276,7 +277,12 @@ function AppContent() {
               } />
               <Route path="/careers/:slug" element={
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <CareerPathDetailPage />
+                  <CareerPathDetailPage user={user} />
+                </motion.div>
+              } />
+              <Route path="/payment/status" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <PaymentStatusPage />
                 </motion.div>
               } />
             </Routes>

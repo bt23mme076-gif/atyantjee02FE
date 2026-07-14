@@ -3,28 +3,16 @@ import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import {
   ArrowLeft, ArrowRight, ChevronDown, ChevronRight, AlertTriangle,
-  BookOpen, Cpu, Code, Database, Briefcase, Palette, Shield, Cloud,
   Settings, Zap, Building, LineChart, DollarSign, GraduationCap, Award,
   Globe, Rocket, Gamepad2, Megaphone, Coins, Truck, Bot, Brain,
   Link2, PenTool, Handshake, Users, Scale, FlaskConical, Leaf, HelpCircle,
   Loader2, Users2, TrendingUp, Star, MessageSquare, RotateCcw,
-  PlayCircle, FileText, ClipboardCheck, ExternalLink, X, Check, Wrench, Ban
+  PlayCircle, FileText, ClipboardCheck, ExternalLink, X, Check, Wrench, Ban, Code, BookOpen, Lock
 } from 'lucide-react';
-import { getCareerDetail, getRelatedCareers } from '../utils/api';
+import { getCareerDetail, getRelatedCareers, createPaymentOrder } from '../utils/api';
 import ItemViewerModal from '../components/roadmap/ItemViewerModal';
-
-const ICON_MAP = {
-  'software-engineering': Code, 'data-science': Database, 'product-management': Briefcase,
-  'ui-ux-design': Palette, 'cybersecurity': Shield, 'cloud-and-devops': Cloud,
-  'mechanical-core': Settings, 'electronics-and-vlsi': Zap, 'civil-and-infra': Building,
-  'consulting': LineChart, 'investment-banking': DollarSign, 'mba-prep': GraduationCap,
-  'gate-prep': Award, 'ms-abroad': Globe, 'entrepreneurship': Rocket,
-  'game-development': Gamepad2, 'digital-marketing': Megaphone, 'finance-and-fpanda': Coins,
-  'supply-chain-and-operations': Truck, 'robotics': Bot, 'ai-ml-research': Brain,
-  'embedded-systems': Cpu, 'blockchain-and-web3': Link2, 'technical-writing': PenTool,
-  'sales-and-business-development': Handshake, 'hr-and-people-ops': Users,
-  'legal-and-compliance': Scale, 'biotech-and-pharma': FlaskConical, 'renewable-energy': Leaf,
-};
+import { ICON_MAP } from '../data/careerIcons';
+import { load } from '@cashfreepayments/cashfree-js';
 
 function formatSlug(slug) {
   return (slug || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -655,12 +643,16 @@ function MistakeFlipCard({ text }) {
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
-export default function CareerPathDetailPage() {
+export default function CareerPathDetailPage({ user }) {
   const { slug } = useParams();
   const [career, setCareer] = useState(null);
   const [items, setItems] = useState([]);
   const [viewingItem, setViewingItem] = useState(null);
   const [related, setRelated] = useState([]);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [unlockForm, setUnlockForm] = useState({ name: user?.name || '', email: user?.email || '', phone: user?.phone || '' });
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -690,6 +682,48 @@ export default function CareerPathDetailPage() {
     damping: 30,
     restDelta: 0.001
   });
+
+  const handleMaterialClick = (item) => {
+    const isUnlocked = user?.unlockedPaths?.includes(slug);
+    if (!isUnlocked && !user?.premium) {
+      setShowUnlockModal(true);
+    } else {
+      setViewingItem(item);
+    }
+  };
+
+  const handlePayment = async (e) => {
+    e.preventDefault();
+    setIsProcessingPayment(true);
+    setPaymentError('');
+
+    try {
+      // 1. Create order
+      const data = await createPaymentOrder({
+        planId: 'career-premium',
+        pathSlug: slug,
+        name: unlockForm.name,
+        email: unlockForm.email,
+        phone: unlockForm.phone,
+      });
+
+      if (!data.paymentSessionId) throw new Error(data.message || "Failed to create order session");
+
+      // 2. Initialize Cashfree
+      const cashfree = await load({ mode: "sandbox" });
+
+      // 3. Trigger checkout
+      await cashfree.checkout({
+        paymentSessionId: data.paymentSessionId,
+        returnUrl: `${window.location.origin}/payment/status?order_id={order_id}&slug=${slug}`
+      });
+
+    } catch (err) {
+      console.error(err);
+      setPaymentError(err.message || 'Payment initialization failed.');
+      setIsProcessingPayment(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -886,7 +920,7 @@ export default function CareerPathDetailPage() {
                 return (
                   <div
                     key={item.id}
-                    onClick={() => setViewingItem(item)}
+                    onClick={() => handleMaterialClick(item)}
                     className="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 cursor-pointer hover:border-white/20 hover:bg-white/[0.06] transition-all group"
                   >
                     <div className="flex min-w-0 items-center gap-3">
@@ -904,7 +938,11 @@ export default function CareerPathDetailPage() {
                         </p>
                       </div>
                     </div>
-                    <ExternalLink className="h-4 w-4 text-white/40 group-hover:text-white/70 transition shrink-0" />
+                    {user?.unlockedPaths?.includes(slug) || user?.premium ? (
+                      <ExternalLink className="h-4 w-4 text-white/40 group-hover:text-white/70 transition shrink-0" />
+                    ) : (
+                      <Lock className="h-4 w-4 text-amber-500/60 group-hover:text-amber-500 transition shrink-0" />
+                    )}
                   </div>
                 );
               })}
@@ -944,6 +982,91 @@ export default function CareerPathDetailPage() {
         item={viewingItem}
         onClose={() => setViewingItem(null)}
       />
+
+      {/* Unlock Premium Modal */}
+      <AnimatePresence>
+        {showUnlockModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+              onClick={() => setShowUnlockModal(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-[#0B0F2E] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
+            >
+              <button 
+                onClick={() => setShowUnlockModal(false)}
+                className="absolute top-4 right-4 text-white/40 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="mb-6 flex flex-col items-center text-center">
+                <div className="w-14 h-14 bg-[#FF6B2B]/10 text-[#FF6B2B] rounded-full flex items-center justify-center mb-4">
+                  <Star className="w-7 h-7" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-white mb-2">Unlock Premium Materials</h2>
+                <p className="text-sm text-white/60">Get lifetime access to exclusive study materials, interview prep, and roadmaps for {career.title} for just <span className="font-bold text-white">₹249</span>.</p>
+              </div>
+
+              <form onSubmit={handlePayment} className="space-y-4">
+                {paymentError && (
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400">
+                    {paymentError}
+                  </div>
+                )}
+                <div>
+                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">Full Name</label>
+                  <input
+                    required
+                    type="text"
+                    value={unlockForm.name}
+                    onChange={e => setUnlockForm(f => ({ ...f, name: e.target.value }))}
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:border-[#FF6B2B] focus:ring-1 focus:ring-[#FF6B2B] transition-all outline-none"
+                    placeholder="Enter your name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">Email Address</label>
+                  <input
+                    required
+                    type="email"
+                    value={unlockForm.email}
+                    onChange={e => setUnlockForm(f => ({ ...f, email: e.target.value }))}
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:border-[#FF6B2B] focus:ring-1 focus:ring-[#FF6B2B] transition-all outline-none"
+                    placeholder="student@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">Phone Number</label>
+                  <input
+                    required
+                    type="tel"
+                    pattern="[0-9]{10}"
+                    title="10-digit mobile number"
+                    value={unlockForm.phone}
+                    onChange={e => setUnlockForm(f => ({ ...f, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:border-[#FF6B2B] focus:ring-1 focus:ring-[#FF6B2B] transition-all outline-none"
+                    placeholder="9876543210"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isProcessingPayment}
+                  className="w-full mt-2 bg-gradient-to-r from-[#FF6B2B] to-[#ff8c59] text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition shadow-lg shadow-[#FF6B2B]/20 flex justify-center items-center gap-2"
+                >
+                  {isProcessingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Pay ₹249 & Unlock'}
+                </button>
+                <p className="text-[10px] text-white/40 text-center mt-3">Secured by Cashfree Payments</p>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

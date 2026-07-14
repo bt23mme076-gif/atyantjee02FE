@@ -596,7 +596,7 @@ export default function DecisionEngine() {
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
               <a
-                href="https://chat.whatsapp.com/9579040183"
+                href="https://wa.me/919579040183"
                 target="_blank" rel="noopener noreferrer"
                 className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#25D366] px-8 py-4 text-sm font-black text-white shadow-[0_0_24px_rgba(37,211,102,0.3)] transition-all hover:scale-105 hover:shadow-[0_0_36px_rgba(37,211,102,0.5)]"
               >

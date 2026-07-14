@@ -5,7 +5,7 @@ import {
   ArrowRight, ChevronDown, Code, Database, Briefcase, Palette, Shield, Cloud, Settings, Zap, 
   Building, LineChart, DollarSign, GraduationCap, Award, Globe, Rocket, Gamepad2, 
   Megaphone, Coins, Truck, Bot, Brain, Cpu, Link2, PenTool, Handshake, Users, Scale, 
-  FlaskConical, Leaf, HelpCircle 
+  FlaskConical, Leaf, HelpCircle, Lock
 } from 'lucide-react';
 
 const iconMap = {
@@ -44,11 +44,19 @@ function getCareerPathIcon(slug) {
   return iconMap[slug] || HelpCircle;
 }
 
-function CareerPathCard({ path }) {
+function CareerPathCard({ path, isLoggedIn }) {
   const IconComponent = getCareerPathIcon(path.slug);
+  const navigate = useNavigate();
   
+  const handleClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      navigate('/login');
+    }
+  };
+
   return (
-    <Link to={`/careers/${path.slug}`}>
+    <Link to={`/careers/${path.slug}`} onClick={handleClick}>
       <motion.div
         whileHover={{ y: -2 }}
         className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-5 py-4 text-left transition hover:border-[#FF6B2B]/40 hover:bg-white/[0.05] cursor-pointer"
@@ -59,7 +67,11 @@ function CareerPathCard({ path }) {
           </div>
           <span className="truncate text-sm font-semibold text-white">{path.title}</span>
         </div>
-        <ArrowRight className="h-4 w-4 shrink-0 text-white/30" />
+        {isLoggedIn ? (
+          <ArrowRight className="h-4 w-4 shrink-0 text-white/30" />
+        ) : (
+          <Lock className="h-4 w-4 shrink-0 text-white/40" />
+        )}
       </motion.div>
     </Link>
   );
@@ -70,7 +82,7 @@ function CareerPathCard({ path }) {
 // RoadmapHero), not the light-mode reference design. The "+N more" control
 // is a real toggle: it expands the grid to reveal every remaining path
 // instead of being static text.
-export default function CareerPathsSection({ featured = [], more = [], totalCount = 0, remainingCount = 0 }) {
+export default function CareerPathsSection({ featured = [], more = [], totalCount = 0, remainingCount = 0, isLoggedIn }) {
   const [expanded, setExpanded] = useState(false);
 
   if (!featured.length) return null;
@@ -99,7 +111,7 @@ export default function CareerPathsSection({ featured = [], more = [], totalCoun
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {featured.map((path) => (
-            <CareerPathCard key={path.id} path={path} />
+            <CareerPathCard key={path.slug} path={path} isLoggedIn={isLoggedIn} />
           ))}
         </div>
 
@@ -114,8 +126,8 @@ export default function CareerPathsSection({ featured = [], more = [], totalCoun
             >
               <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {more.map((path) => (
-                  <CareerPathCard key={path.id} path={path} />
-                ))}
+                <CareerPathCard key={path.slug} path={path} isLoggedIn={isLoggedIn} />
+              ))}
               </div>
             </motion.div>
           )}

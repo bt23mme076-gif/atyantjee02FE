@@ -98,7 +98,7 @@ export default function LeadCaptureModal({ open, onClose }) {
 
             <div className="flex items-center justify-between pt-1">
               <a
-                href="https://chat.whatsapp.com/F3qcw7JZRIK5vbPgvUfaOA?mode=gi_t"
+                href="https://wa.me/919579040183"
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-full bg-[#FF6B2B] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#ff7a42] transition text-center"
@@ -120,7 +120,7 @@ export default function LeadCaptureModal({ open, onClose }) {
             <p className="mt-2 text-xs sm:text-sm text-gray-600">Meanwhile join our WhatsApp community or book a demo.</p>
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
               <a href="https://calendly.com/your-calendly-link" target="_blank" rel="noreferrer" className="w-full sm:w-auto rounded-full bg-[#0B72FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0B72FF]/90 transition text-center">Book a demo</a>
-              <a href="https://chat.whatsapp.com/F3qcw7JZRIK5vbPgvUfaOA?mode=gi_t" target="_blank" rel="noreferrer" className="text-sm text-[#FF6B2B]">Join WhatsApp</a>
+              <a href="https://wa.me/919579040183" target="_blank" rel="noreferrer" className="text-sm text-[#FF6B2B]">Join WhatsApp</a>
             </div>
           </div>
         )}
