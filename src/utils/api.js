@@ -257,8 +257,8 @@ export const googleSignup = async (payload) => {
 
 export const getUserMe = () => {
   const token = localStorage.getItem('user_token');
-  return request('/api/users/me', { 
-    headers: token ? { Authorization: `Bearer ${token}` } : {} 
+  return request('/api/users/me', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {}
   });
 };
 
@@ -279,13 +279,13 @@ export const uploadProfilePhoto = async (file) => {
   const token = localStorage.getItem('user_token');
   const formData = new FormData();
   formData.append('file', file);
-  
+
   const res = await fetch(`${API_BASE}/api/upload/profile-photo`, {
     method: 'POST',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: formData,
   });
-  
+
   let data;
   try { data = await res.json(); } catch { data = {}; }
   if (!res.ok) throw new Error(data.error || 'Upload failed');
@@ -296,13 +296,13 @@ export const uploadIdDoc = async (file) => {
   const token = localStorage.getItem('user_token');
   const formData = new FormData();
   formData.append('file', file);
-  
+
   const res = await fetch(`${API_BASE}/api/upload/id-doc`, {
     method: 'POST',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: formData,
   });
-  
+
   let data;
   try { data = await res.json(); } catch { data = {}; }
   if (!res.ok) throw new Error(data.error || 'Upload failed');
@@ -478,14 +478,6 @@ export const submitQuizAnswers = (payload) =>
     method: 'POST',
     body: JSON.stringify(payload),
   });
-
-export async function submitClarityForm(data) {
-  return request('/api/leads/clarity', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
-}
-
 
 export const getQuizResult = (id) => request(`/api/quiz/results/${id}`);
 export const submitQuizEmail = (id, email) =>
