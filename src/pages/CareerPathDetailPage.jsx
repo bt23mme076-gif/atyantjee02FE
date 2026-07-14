@@ -705,6 +705,7 @@ export default function CareerPathDetailPage({ user }) {
         name: unlockForm.name,
         email: unlockForm.email,
         phone: unlockForm.phone,
+        returnUrl: `${window.location.origin}/payment/status?order_id={order_id}`
       });
 
       if (!data.paymentSessionId) throw new Error(data.message || "Failed to create order session");
@@ -714,8 +715,7 @@ export default function CareerPathDetailPage({ user }) {
 
       // 3. Trigger checkout
       await cashfree.checkout({
-        paymentSessionId: data.paymentSessionId,
-        returnUrl: `${window.location.origin}/payment/status?order_id={order_id}&slug=${slug}`
+        paymentSessionId: data.paymentSessionId
       });
 
     } catch (err) {
