@@ -7,8 +7,8 @@ import { verifyPayment } from '../utils/api';
 export default function PaymentStatusPage() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('order_id');
-  const slug = searchParams.get('slug');
   const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
+  const [slug, setSlug] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
@@ -24,6 +24,7 @@ export default function PaymentStatusPage() {
         const data = await verifyPayment({ order_id: orderId });
         
         if (data.ok) {
+          if (data.payment?.pathSlug) setSlug(data.payment.pathSlug);
           setStatus('success');
         } else {
           setStatus('error');
