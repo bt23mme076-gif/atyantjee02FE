@@ -101,7 +101,7 @@ export default function GamifiedBentoSection() {
                 ))}
               </div>
 
-              <a href="https://chat.whatsapp.com/EnpaX25ybPU07nC3mDe0Z5" target="_blank" rel="noreferrer" className="w-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] text-white text-sm font-bold py-3.5 rounded-xl text-center hover:scale-[1.02] transition-transform shadow-lg shadow-[#FF6B2B]/30 flex justify-center items-center gap-2">
+              <a href="https://wa.me/919579040183" target="_blank" rel="noreferrer" className="w-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] text-white text-sm font-bold py-3.5 rounded-xl text-center hover:scale-[1.02] transition-transform shadow-lg shadow-[#FF6B2B]/30 flex justify-center items-center gap-2">
                 Join Free Group <ArrowRight className="w-4 h-4" />
               </a>
             </div>

@@ -194,6 +194,7 @@ export default function RoadmapPage({ user }) {
         more={careerPaths.more}
         totalCount={careerPaths.totalCount}
         remainingCount={careerPaths.remainingCount}
+        isLoggedIn={isLoggedIn}
       />
 
       <FaqVideoSection faqVideos={faqVideos} />

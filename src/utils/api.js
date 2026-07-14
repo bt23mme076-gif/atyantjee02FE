@@ -479,6 +479,14 @@ export const submitQuizAnswers = (payload) =>
     body: JSON.stringify(payload),
   });
 
+export async function submitClarityForm(data) {
+  return request('/api/leads/clarity', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+
 export const getQuizResult = (id) => request(`/api/quiz/results/${id}`);
 export const submitQuizEmail = (id, email) =>
   request(`/api/quiz/results/${id}/email`, {
