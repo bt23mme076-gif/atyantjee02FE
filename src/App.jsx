@@ -281,6 +281,12 @@ function AppContent() {
                   <CareerPathDetailPage user={user} />
                 </motion.div>
               } />
+              {/* Alias: all in-app links use /careers/:slug */}
+              <Route path="/careers/:slug" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <CareerPathDetailPage user={user} />
+                </motion.div>
+              } />
               <Route path="/courses/:slug" element={
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
                   <CourseDetailPage />
