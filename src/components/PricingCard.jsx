@@ -30,37 +30,44 @@ function loadCashfree() {
 // ─── Payment Modal ─────────────────────────────────────────────────────────────
 
 export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, onSuccessRedirectUrl }) {
-  const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
+  const [profile, setProfile] = React.useState(null);
   const [phone, setPhone] = React.useState('');
+  const [fetchingProfile, setFetchingProfile] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState(false);
 
   React.useEffect(() => {
     if (!open) {
-      setLoading(false); setError(''); setSuccess(false);
-    } else {
-      const token = localStorage.getItem('user_token');
-      if (token) {
-        getUserMe()
-          .then((res) => {
-            if (res?.user) {
-              if (!name) setName(res.user.name || '');
-              if (!email) setEmail(res.user.email || '');
-              if (!phone) setPhone(res.user.phone || '');
-            }
-          })
-          .catch(() => {});
-      }
+      setLoading(false); setError(''); setSuccess(false); setProfile(null); setPhone('');
+      return;
     }
+    const token = localStorage.getItem('user_token');
+    if (!token) {
+      setError('Please log in to continue with payment.');
+      return;
+    }
+    setFetchingProfile(true);
+    getUserMe()
+      .then((res) => {
+        if (res?.user) {
+          setProfile(res.user);
+          // Pre-fill phone stripping any country code/spaces
+          setPhone((res.user.phone || '').replace(/\D/g, '').slice(-10));
+        }
+      })
+      .catch(() => setError('Could not load your profile. Please try again.'))
+      .finally(() => setFetchingProfile(false));
   }, [open]);
 
   async function handlePay(e) {
     e.preventDefault();
     setError('');
 
-    // Extra validation for phone number
+    if (!profile) {
+      setError('Profile not loaded. Please close and try again.');
+      return;
+    }
     if (!/^[0-9]{10}$/.test(phone)) {
       setError('Please enter a valid 10-digit mobile number.');
       return;
@@ -68,12 +75,10 @@ export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, on
 
     setLoading(true);
 
-    // If planTitle is in PLAN_ID_MAP, it's a counselling plan. Otherwise, treat it as a course slug (which is used as planId).
-    // The backend handles resolving both static planIds and course slugs.
     const planId = PLAN_ID_MAP[planTitle] || planTitle;
 
     try {
-      const payload = { planId, name, email, phone };
+      const payload = { planId, name: profile.name, email: profile.email, phone };
       if (mentorId) payload.mentorId = mentorId;
       const orderData = await createPaymentOrder(payload);
       const loaded = await loadCashfree();
@@ -83,7 +88,6 @@ export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, on
         mode: orderData.cashfreeEnvironment === 'production' ? 'production' : 'sandbox'
       });
 
-      // Save pending WhatsApp redirection URL for verification hook
       if (onSuccessRedirectUrl) {
         localStorage.setItem('atyant_pending_redirect', onSuccessRedirectUrl);
       }
@@ -101,102 +105,142 @@ export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, on
 
   if (!open) return null;
 
+  // Human-readable plan title
+  const displayTitle = PLAN_ID_MAP[planTitle]
+    ? planTitle
+    : planTitle.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
   return (
-    <div className="fixed inset-0 z-[200000] flex items-center justify-center bg-black/50 px-4">
+    <div className="fixed inset-0 z-[200000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
       <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden"
         >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#0B0F2E] to-[#12183f] px-6 pt-6 pb-5">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 rounded-full p-1.5 text-white/40 hover:bg-white/10 hover:text-white transition"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#FF6B2B] mb-1">Secure Checkout</p>
+            <h3 className="text-xl font-black text-white">{displayTitle}</h3>
+            <p className="text-sm text-white/60 mt-0.5">₹{planPrice} · via Cashfree</p>
+          </div>
 
-          {success ? (
-            <div className="py-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle2 className="h-8 w-8 text-green-600" />
+          <div className="p-6">
+            {success ? (
+              <div className="py-6 text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                  <CheckCircle2 className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Payment Successful!</h3>
+                <p className="mt-2 text-sm text-gray-500">
+                  We'll reach out within 24 hours to schedule your session.
+                </p>
+                <button
+                  onClick={onClose}
+                  className="mt-6 rounded-full bg-[#FF6B2B] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#e05a1f] transition"
+                >
+                  Done
+                </button>
               </div>
-              <h3 className="text-xl font-bold text-gray-900">Payment Successful!</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                We'll reach out within 24 hours to schedule your session.
-              </p>
-              <button
-                onClick={onClose}
-                className="mt-6 rounded-full bg-[#FF6B2B] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#ff7a42] transition"
-              >
-                Done
-              </button>
-              {onSuccessRedirectUrl && (
-                <p className="mt-2 text-xs text-gray-400">Redirecting to WhatsApp...</p>
-              )}
-            </div>
-          ) : (
-            <form onSubmit={handlePay} className="space-y-4">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">Pay for {planTitle}</h3>
-                <p className="text-sm text-gray-500">₹{planPrice} — secure payment via Cashfree</p>
+            ) : fetchingProfile ? (
+              <div className="py-10 flex flex-col items-center gap-3 text-gray-400">
+                <div className="w-8 h-8 border-2 border-slate-200 border-t-[#FF6B2B] rounded-full animate-spin" />
+                <p className="text-sm">Loading your profile…</p>
               </div>
+            ) : (
+              <form onSubmit={handlePay} className="space-y-4">
+                {error && (
+                  <p className="rounded-lg bg-red-50 border border-red-100 px-3 py-2.5 text-xs text-red-600">{error}</p>
+                )}
 
-              {error && (
-                <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
-              )}
+                {/* Profile info — read-only */}
+                {profile && (
+                  <div className="space-y-3">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Paying as</p>
 
-              {/* Form Inputs ... */}
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Full Name *</label>
-                <input
-                  required value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Email *</label>
-                <input
-                  required type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Phone *</label>
-                <input
-                  required
-                  type="tel"
-                  pattern="[0-9]{10}"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="9876543210"
-                  title="Please enter a valid 10-digit mobile number"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
-                />
-              </div>
+                    {/* Name — locked */}
+                    <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FF6B2B]/10 text-[#FF6B2B] text-sm font-black">
+                        {(profile.name || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] text-gray-400">Full Name</p>
+                        <p className="text-sm font-semibold text-gray-800 truncate">{profile.name || '—'}</p>
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">Locked</span>
+                    </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-full bg-[#FF6B2B] py-3 text-sm font-bold text-white hover:bg-[#e05a1f] transition disabled:opacity-60 shadow-lg shadow-[#FF6B2B]/20"
-              >
-                {loading ? 'Processing…' : `Pay ₹${planPrice} Securely`}
-              </button>
+                    {/* Email — locked */}
+                    <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-400">
+                        <span className="text-sm">@</span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] text-gray-400">Email</p>
+                        <p className="text-sm font-semibold text-gray-800 truncate">{profile.email || '—'}</p>
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">Locked</span>
+                    </div>
 
-              <p className="text-center text-[11px] text-gray-400">
-                🔒 Secured by Cashfree · 100% safe checkout
-              </p>
-            </form>
-          )}
+                    {/* Phone — editable only if missing */}
+                    {profile.phone ? (
+                      <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-50 text-green-500 text-sm font-bold">
+                          #
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[11px] text-gray-400">Phone</p>
+                          <p className="text-sm font-semibold text-gray-800">{phone}</p>
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">Locked</span>
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                          Phone Number * <span className="text-gray-400 font-normal">(not in profile — enter below)</span>
+                        </label>
+                        <input
+                          required
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                          placeholder="9876543210"
+                          maxLength={10}
+                          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !profile}
+                  className="w-full rounded-xl bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] py-3.5 text-sm font-bold text-white hover:from-[#e05a1f] hover:to-[#ff6b2b] transition disabled:opacity-50 shadow-lg shadow-[#FF6B2B]/20 mt-2"
+                >
+                  {loading ? 'Processing…' : `Pay ₹${planPrice} Securely`}
+                </button>
+
+                <p className="text-center text-[11px] text-gray-400">
+                  🔒 Secured by Cashfree · 100% safe checkout
+                </p>
+              </form>
+            )}
+          </div>
         </motion.div>
       </AnimatePresence>
     </div>
   );
 }
+
 
 // ─── PricingCard ───────────────────────────────────────────────────────────────
 
