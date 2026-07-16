@@ -94,7 +94,7 @@ export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, on
 
       await cashfree.checkout({
         paymentSessionId: orderData.paymentSessionId,
-        returnUrl: `${import.meta.env.VITE_APP_URL}/profile?order_id=${orderData.orderId}`
+        returnUrl: `${window.location.origin}/payment-status?order_id=${orderData.orderId}`
       });
 
     } catch (err) {

@@ -705,7 +705,7 @@ export default function CareerPathDetailPage({ user }) {
         name: unlockForm.name,
         email: unlockForm.email,
         phone: unlockForm.phone,
-        returnUrl: `${import.meta.env.VITE_APP_URL}/payment/status?order_id={order_id}`
+        returnUrl: `${window.location.origin}/payment/status?order_id={order_id}`
       });
 
       if (!data.paymentSessionId) throw new Error(data.message || "Failed to create order session");

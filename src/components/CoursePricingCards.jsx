@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getActiveCourses } from '../utils/api';
+import { getActiveCourses, getUserMe } from '../utils/api';
 import { BookOpen, Sparkles, Trophy, Users, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { PaymentModal } from './PricingCard';
-import { getUserMe } from '../utils/api';
 
 export default function CoursePricingCards() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [showPayment, setShowPayment] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,15 +33,6 @@ export default function CoursePricingCards() {
   if (courses.length === 0) {
     return null; // Don't show anything if no courses
   }
-
-  const handleEnrollClick = (course) => {
-    if (!user) {
-      navigate('/auth');
-      return;
-    }
-    setSelectedCourse(course);
-    setShowPayment(true);
-  };
 
   return (
     <div className="py-12 lg:py-16">
@@ -105,24 +92,14 @@ export default function CoursePricingCards() {
             </div>
 
             <button
-              onClick={() => handleEnrollClick(course)}
+              onClick={() => navigate(`/courses/${course.slug}`)}
               className="w-full py-4 rounded-lg bg-[#FF6B2B] text-white font-bold text-sm tracking-wide shadow-lg hover:bg-[#e05a1f] hover:scale-[1.02] active:scale-[0.98] transition"
             >
-              Enroll Now →
+              {user?.purchasedCourses?.includes(course.slug) ? 'Go to Course →' : 'Enroll Now →'}
             </button>
           </div>
         ))}
       </div>
-
-      {selectedCourse && (
-        <PaymentModal 
-          open={showPayment} 
-          onClose={() => setShowPayment(false)} 
-          planTitle={selectedCourse.slug} 
-          planPrice={selectedCourse.price} 
-          onSuccessRedirectUrl={`/courses/${selectedCourse.slug}?payment=success`} 
-        />
-      )}
     </div>
   );
 }

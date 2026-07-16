@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCourseDetails, getUserMe } from '../utils/api';
 import { Lock, PlayCircle, FileText, ChevronDown, CheckCircle2, ChevronRight, MessageCircle } from 'lucide-react';
@@ -9,12 +9,15 @@ import CourseChatbot from '../components/CourseChatbot';
 export default function CourseDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [courseData, setCourseData] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedModules, setExpandedModules] = useState({});
   const [showPayment, setShowPayment] = useState(false);
+
+  const paymentSuccess = searchParams.get('payment') === 'success';
 
   useEffect(() => {
     const token = localStorage.getItem('user_token');
@@ -32,7 +35,7 @@ export default function CourseDetailPage() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, paymentSuccess]);
 
   if (loading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading course...</div>;
   if (error || !courseData) return <div className="min-h-screen bg-slate-50 flex items-center justify-center text-red-500">{error || 'Course not found'}</div>;
@@ -155,7 +158,7 @@ export default function CourseDetailPage() {
       <PaymentModal 
         open={showPayment} 
         onClose={() => setShowPayment(false)} 
-        planTitle={course.title} 
+        planTitle={course.slug} 
         planPrice={course.price} 
         onSuccessRedirectUrl={`/courses/${course.slug}?payment=success`} 
       />
