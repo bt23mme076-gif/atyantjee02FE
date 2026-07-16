@@ -32,6 +32,7 @@ const ADMIN_BUNDLE_OPTIONS = [
   'admission-career-growth',
 ];
 import RoadmapContentTab from '../components/admin/RoadmapContentTab';
+import CourseContentTab from '../components/admin/CourseContentTab';
 
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -611,7 +612,7 @@ function MentorsTab() {
 
 // ─── Main AdminPanel Page ─────────────────────────────────────────────────────────
 
-const TABS = ['leads', 'payments', 'chat', 'mentors', 'roadmap'];
+const TABS = ['leads', 'payments', 'chat', 'mentors', 'roadmap', 'courses'];
 
 export default function AtyantLoginPage() {
   const [authed, setAuthed] = React.useState(false);
@@ -660,31 +661,39 @@ export default function AtyantLoginPage() {
               <p className="text-sm text-gray-500 mt-1">{adminInfo.email}</p>
             )}
           </div>
-          <div className="flex items-center gap-4 justify-end sm:justify-start">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('/')}
+              className="text-sm font-semibold text-gray-500 hover:text-gray-900 border border-gray-200 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors"
+            >
+              Back to Site
+            </button>
             {authed && (
-              <button onClick={handleLogout} className="text-sm font-semibold text-red-500 hover:text-red-600 transition">Log out</button>
+              <button
+                onClick={handleLogout}
+                className="text-sm font-bold text-red-600 border border-red-100 hover:bg-red-50 rounded-lg px-4 py-2 transition-colors"
+              >
+                Log Out
+              </button>
             )}
-            <button onClick={() => navigate('/')} className="text-sm font-semibold text-gray-600 hover:text-gray-900 transition">← Back to Home</button>
           </div>
         </div>
 
         {/* Login Form */}
         {!authed ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <form onSubmit={handleLogin} className="w-full max-w-sm space-y-4">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-black text-[#0B0F2E]">Admin Login</h2>
-                <p className="text-sm text-gray-500 mt-1">Log in with your admin credentials.</p>
-              </div>
-              
+          <div className="max-w-md mx-auto py-12">
+            <h2 className="text-2xl font-black mb-6 text-center text-[#0B0F2E]">Admin Access Only</h2>
+            
+            <form onSubmit={handleLogin} className="space-y-4">
               {loginError && (
-                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600 border border-red-100">{loginError}</p>
+                <div className="rounded-lg bg-red-50 p-4 border border-red-100">
+                  <p className="text-sm text-red-600 font-medium">{loginError}</p>
+                </div>
               )}
               
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Email Address</label>
+                <label className="mb-2 block text-sm font-bold text-gray-700">Email Address</label>
                 <input
-                  required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -694,9 +703,8 @@ export default function AtyantLoginPage() {
               </div>
               
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Password</label>
+                <label className="mb-2 block text-sm font-bold text-gray-700">Password</label>
                 <input
-                  required
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -739,6 +747,7 @@ export default function AtyantLoginPage() {
               {tab === 'chat' && <ChatSessionsTab />}
               {tab === 'mentors' && <MentorsTab />}
               {tab === 'roadmap' && <RoadmapContentTab />}
+              {tab === 'courses' && <CourseContentTab />}
             </div>
           </>
         )}

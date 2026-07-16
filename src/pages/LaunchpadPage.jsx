@@ -32,6 +32,7 @@ import 'swiper/css/pagination';
 import TestimonialCard from '../components/TestimonialCard';
 import TestimonialVideoCard from '../components/TestimonialVideoCard';
 import LiveCounsellingBanner from '../components/LiveCounsellingBanner';
+import CoursePricingCards from '../components/CoursePricingCards';
 import FAQItem from '../components/FAQItem';
 
 import {
@@ -230,6 +231,8 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
             <HeroGraphic />
           </motion.div>
         </div>
+
+        <CoursePricingCards />
 
         {/* 3. Counselling Path Section */}
         <div className="py-12 lg:py-16">

@@ -68,13 +68,9 @@ export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, on
 
     setLoading(true);
 
-    const planId = PLAN_ID_MAP[planTitle];
-    if (!planId) {
-      window.open(getWhatsAppLink(planTitle), '_blank');
-      onClose?.();
-      setLoading(false);
-      return;
-    }
+    // If planTitle is in PLAN_ID_MAP, it's a counselling plan. Otherwise, treat it as a course slug (which is used as planId).
+    // The backend handles resolving both static planIds and course slugs.
+    const planId = PLAN_ID_MAP[planTitle] || planTitle;
 
     try {
       const payload = { planId, name, email, phone };

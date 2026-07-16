@@ -504,3 +504,22 @@ export const adminGetCareerDetail = (slug) =>
 export const adminUpdateCareerDetail = (id, payload) =>
   request(`/api/admin/career-paths/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
 
+// ─── Courses (Public) ─────────────────────────────────────────────────────────
+export const getActiveCourses = () => request('/api/courses');
+export const getCourseDetails = (slug) => request(`/api/courses/${slug}`);
+
+// ─── Courses (Admin) ──────────────────────────────────────────────────────────
+export const adminListCourses = () => request('/api/admin/courses', { headers: adminAuthHeader() });
+export const adminCreateCourse = (payload) => request('/api/admin/courses', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateCourse = (id, payload) => request(`/api/admin/courses/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteCourse = (id) => request(`/api/admin/courses/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+export const adminListModules = (courseId) => request(`/api/admin/course-modules${courseId ? `?courseId=${courseId}` : ''}`, { headers: adminAuthHeader() });
+export const adminCreateModule = (payload) => request('/api/admin/course-modules', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateModule = (id, payload) => request(`/api/admin/course-modules/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteModule = (id) => request(`/api/admin/course-modules/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+
+export const adminListCourseItems = (moduleId) => request(`/api/admin/course-items${moduleId ? `?moduleId=${moduleId}` : ''}`, { headers: adminAuthHeader() });
+export const adminCreateCourseItem = (payload) => request('/api/admin/course-items', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminUpdateCourseItem = (id, payload) => request(`/api/admin/course-items/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+export const adminDeleteCourseItem = (id) => request(`/api/admin/course-items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });

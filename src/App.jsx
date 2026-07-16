@@ -25,6 +25,7 @@ const ProgramsPage = lazy(() => import('./pages/ProgramsPage'));
 const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
 const CareerPathDetailPage = lazy(() => import('./pages/CareerPathDetailPage'));
+const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
 const PaymentStatusPage = lazy(() => import('./pages/PaymentStatusPage'));
 
 // Lightweight fallback shown while a route chunk downloads. Deliberately
@@ -275,12 +276,17 @@ function AppContent() {
                   <QuizPage />
                 </motion.div>
               } />
-              <Route path="/careers/:slug" element={
+              <Route path="/career-path/:slug" element={
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
                   <CareerPathDetailPage user={user} />
                 </motion.div>
               } />
-              <Route path="/payment/status" element={
+              <Route path="/courses/:slug" element={
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
+                  <CourseDetailPage />
+                </motion.div>
+              } />
+              <Route path="/payment-status" element={
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
                   <PaymentStatusPage />
                 </motion.div>
