@@ -679,6 +679,7 @@ function CareerPathContentPanel() {
   const [selectedId, setSelectedId] = useState('');
   const [selectedSlug, setSelectedSlug] = useState('');
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [roadmap, setRoadmap] = useState([1, 2, 3, 4].map(y => ({ year: y, focus: '', milestone: '', learn: '', build: '' })));
   const [form, setForm] = useState({
     tagline: '',
     idealFor: '',
@@ -726,6 +727,17 @@ function CareerPathContentPanel() {
       const sk = c.skillTree || {};
       const res = c.resources || {};
       const ep = c.entryPoints || {};
+      const rmap = c.roadmap || [];
+      setRoadmap([1, 2, 3, 4].map(y => {
+        const yr = rmap.find(r => r.year === y) || {};
+        return {
+          year: y,
+          focus: yr.focus || '',
+          milestone: yr.milestone || '',
+          learn: (yr.learn || []).join('\n'),
+          build: (yr.build || []).join('\n'),
+        };
+      }));
       setForm({
         tagline: c.tagline || '',
         idealFor: c.snapshot?.idealFor || '',
@@ -777,6 +789,13 @@ function CareerPathContentPanel() {
           bestFitTraits: splitComma(form.bestFitTraits),
           idealFor: form.idealFor,
         },
+        roadmap: roadmap.map(r => ({
+          year: r.year,
+          focus: r.focus,
+          milestone: r.milestone,
+          learn: splitLines(r.learn),
+          build: splitLines(r.build),
+        })),
         skillTree: {
           foundational: splitLines(form.foundational),
           intermediate: splitLines(form.intermediate),
@@ -854,6 +873,23 @@ function CareerPathContentPanel() {
               </Field>
               <Field label="Best Fit Traits (comma-separated)"><input value={form.bestFitTraits} onChange={e => setForm(f => ({...f, bestFitTraits: e.target.value}))} className={inputCls} placeholder="Logical thinker, Patient debugger" /></Field>
             </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 p-4 space-y-3">
+            <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">4-Year Roadmap</p>
+            {roadmap.map((yr, idx) => (
+              <div key={yr.year} className="mb-4 rounded-lg bg-gray-50 p-4 border border-gray-100">
+                <p className="font-bold text-gray-700 mb-2">Year {yr.year}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <Field label="Focus"><input value={yr.focus} onChange={e => { const newR = [...roadmap]; newR[idx].focus = e.target.value; setRoadmap(newR); }} className={inputCls} placeholder="e.g. Master the basics" /></Field>
+                  <Field label="Milestone"><input value={yr.milestone} onChange={e => { const newR = [...roadmap]; newR[idx].milestone = e.target.value; setRoadmap(newR); }} className={inputCls} placeholder="e.g. Land your first internship" /></Field>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Field label="Learn (one per line)"><textarea rows={3} value={yr.learn} onChange={e => { const newR = [...roadmap]; newR[idx].learn = e.target.value; setRoadmap(newR); }} className={inputCls} /></Field>
+                  <Field label="Build (one per line)"><textarea rows={3} value={yr.build} onChange={e => { const newR = [...roadmap]; newR[idx].build = e.target.value; setRoadmap(newR); }} className={inputCls} /></Field>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="rounded-xl border border-gray-200 p-4 space-y-3">

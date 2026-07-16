@@ -48,7 +48,7 @@ function CareerPathCard({ path, isLoggedIn }) {
   const IconComponent = getCareerPathIcon(path.slug);
 
   return (
-    <Link to={`/careers/${path.slug}`}>
+    <Link to={isLoggedIn ? `/careers/${path.slug}` : '/login'}>
       <motion.div
         whileHover={{ y: -2 }}
         className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-5 py-4 text-left transition hover:border-[#FF6B2B]/40 hover:bg-white/[0.05] cursor-pointer"
