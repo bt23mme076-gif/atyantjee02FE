@@ -710,8 +710,9 @@ export default function CareerPathDetailPage({ user }) {
 
       if (!data.paymentSessionId) throw new Error(data.message || "Failed to create order session");
 
-      // 2. Initialize Cashfree
-      const cashfree = await load({ mode: "sandbox" });
+      // 2. Initialize Cashfree with correct environment
+      const mode = data.cashfreeEnvironment === 'production' ? 'production' : 'sandbox';
+      const cashfree = await load({ mode });
 
       // 3. Trigger checkout
       await cashfree.checkout({
