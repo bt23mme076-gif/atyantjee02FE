@@ -2,20 +2,64 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import {
-  ArrowLeft, ArrowRight, ChevronDown, ChevronRight, AlertTriangle,
-  Settings, Zap, Building, LineChart, DollarSign, GraduationCap, Award,
-  Globe, Rocket, Gamepad2, Megaphone, Coins, Truck, Bot, Brain,
-  Link2, PenTool, Handshake, Users, Scale, FlaskConical, Leaf, HelpCircle,
-  Loader2, Users2, TrendingUp, Star, MessageSquare, RotateCcw,
-  PlayCircle, FileText, ClipboardCheck, ExternalLink, X, Check, Wrench, Ban, Code, BookOpen, Lock
+  ArrowLeft,
+  ArrowRight,
+  ChevronDown,
+  ChevronRight,
+  AlertTriangle,
+  Settings,
+  Zap,
+  Building,
+  LineChart,
+  DollarSign,
+  GraduationCap,
+  Award,
+  Globe,
+  Rocket,
+  Gamepad2,
+  Megaphone,
+  Coins,
+  Truck,
+  Bot,
+  Brain,
+  Link2,
+  PenTool,
+  Handshake,
+  Users,
+  Scale,
+  FlaskConical,
+  Leaf,
+  HelpCircle,
+  Loader2,
+  Users2,
+  TrendingUp,
+  Star,
+  MessageSquare,
+  RotateCcw,
+  PlayCircle,
+  FileText,
+  ClipboardCheck,
+  ExternalLink,
+  X,
+  Check,
+  Wrench,
+  Ban,
+  Code,
+  BookOpen,
+  Lock,
 } from 'lucide-react';
-import { getCareerDetail, getRelatedCareers, createPaymentOrder } from '../utils/api';
+import {
+  getCareerDetail,
+  getRelatedCareers,
+  createPaymentOrder,
+  buildReturnUrl,
+} from '../utils/api';
 import ItemViewerModal from '../components/roadmap/ItemViewerModal';
 import { ICON_MAP } from '../data/careerIcons';
 import { load } from '@cashfreepayments/cashfree-js';
 
 function formatSlug(slug) {
-  return (slug || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return (slug || '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // ─── Skill Node with tooltip ──────────────────────────────────────────────────
@@ -47,10 +91,17 @@ function SkillNode({ skill, levelId, color, shadow, isActive, onToggle, onClose 
               <div className="min-w-0">
                 <p className="text-sm font-bold text-white leading-snug mb-1">{skill}</p>
                 <p className="text-xs text-white/55 leading-relaxed">
-                  {levelId.charAt(0).toUpperCase() + levelId.slice(1)} skill — essential for this career path.
+                  {levelId.charAt(0).toUpperCase() + levelId.slice(1)} skill — essential for this
+                  career path.
                 </p>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="shrink-0 text-white/35 hover:text-white/80 transition-colors">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                className="shrink-0 text-white/35 hover:text-white/80 transition-colors"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -73,10 +124,17 @@ function SkillNode({ skill, levelId, color, shadow, isActive, onToggle, onClose 
               <div className="min-w-0">
                 <p className="text-sm font-bold text-white leading-snug mb-1">{skill}</p>
                 <p className="text-xs text-white/55 leading-relaxed">
-                  {levelId.charAt(0).toUpperCase() + levelId.slice(1)} skill — essential for this career path.
+                  {levelId.charAt(0).toUpperCase() + levelId.slice(1)} skill — essential for this
+                  career path.
                 </p>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="shrink-0 text-white/35 hover:text-white/80 transition-colors">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                className="shrink-0 text-white/35 hover:text-white/80 transition-colors"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -142,7 +200,7 @@ function SkillTreeGraph({ tree }) {
       shadow: 'shadow-[0_0_12px_rgba(16,185,129,0.12)]',
       iconColor: 'text-emerald-400',
     },
-  ].filter(l => l.items.length > 0);
+  ].filter((l) => l.items.length > 0);
 
   return (
     <div className="relative py-6 w-full" ref={containerRef}>
@@ -152,7 +210,9 @@ function SkillTreeGraph({ tree }) {
             {/* Tier label */}
             <div className="flex items-center gap-2 bg-white/[0.04] px-4 py-1.5 rounded-full border border-white/10 shadow">
               <level.Icon className={`w-3.5 h-3.5 ${level.iconColor}`} />
-              <span className="text-xs font-bold text-white/60 uppercase tracking-wider">{level.title}</span>
+              <span className="text-xs font-bold text-white/60 uppercase tracking-wider">
+                {level.title}
+              </span>
             </div>
 
             {/* Skill pills */}
@@ -189,13 +249,12 @@ function SkillTreeGraph({ tree }) {
   );
 }
 
-
 // ─── Roadmap Stepper ────────────────────────────────────────────────────────
 function RoadmapStepper({ roadmap }) {
   const [completed, setCompleted] = useState(new Set());
 
   const toggleItem = (id) => {
-    setCompleted(prev => {
+    setCompleted((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -203,7 +262,10 @@ function RoadmapStepper({ roadmap }) {
     });
   };
 
-  const totalItems = roadmap.reduce((acc, yr) => acc + (yr.learn?.length || 0) + (yr.build?.length || 0), 0);
+  const totalItems = roadmap.reduce(
+    (acc, yr) => acc + (yr.learn?.length || 0) + (yr.build?.length || 0),
+    0
+  );
   const overallProgress = totalItems === 0 ? 0 : (completed.size / totalItems) * 100;
 
   return (
@@ -211,11 +273,13 @@ function RoadmapStepper({ roadmap }) {
       {/* Overall Progress Bar */}
       <div className="mb-12 p-5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
         <div className="flex justify-between items-center mb-3">
-          <span className="text-sm font-bold text-white uppercase tracking-wider">Journey Progress</span>
+          <span className="text-sm font-bold text-white uppercase tracking-wider">
+            Journey Progress
+          </span>
           <span className="text-lg font-black text-[#FF6B2B]">{Math.round(overallProgress)}%</span>
         </div>
         <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden shadow-inner">
-          <motion.div 
+          <motion.div
             className="h-full bg-gradient-to-r from-[#FF6B2B] to-violet-500 rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${overallProgress}%` }}
@@ -227,41 +291,52 @@ function RoadmapStepper({ roadmap }) {
       {/* Stepper Timeline */}
       <div className="relative">
         <div className="absolute left-[27px] md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-1 bg-white/10 rounded-full z-0" />
-        
+
         <div className="space-y-12">
           {roadmap.map((yr, yIdx) => {
             const yrTotal = (yr.learn?.length || 0) + (yr.build?.length || 0);
             let yrCompletedCount = 0;
-            if (yr.learn) yr.learn.forEach((_, i) => completed.has(`${yIdx}-learn-${i}`) && yrCompletedCount++);
-            if (yr.build) yr.build.forEach((_, i) => completed.has(`${yIdx}-build-${i}`) && yrCompletedCount++);
+            if (yr.learn)
+              yr.learn.forEach((_, i) => completed.has(`${yIdx}-learn-${i}`) && yrCompletedCount++);
+            if (yr.build)
+              yr.build.forEach((_, i) => completed.has(`${yIdx}-build-${i}`) && yrCompletedCount++);
             const yrProgress = yrTotal === 0 ? 0 : (yrCompletedCount / yrTotal) * 100;
-            
+
             const isLeft = yIdx % 2 === 0;
 
             return (
-              <div key={yIdx} className="relative flex flex-col md:flex-row items-start md:items-center w-full z-10">
+              <div
+                key={yIdx}
+                className="relative flex flex-col md:flex-row items-start md:items-center w-full z-10"
+              >
                 {/* Node */}
                 <div className="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-14 h-14 rounded-full border-4 border-[#0B0F2E] bg-gradient-to-br from-[#FF6B2B] to-violet-500 flex items-center justify-center shadow-[0_0_20px_rgba(255,107,43,0.4)]">
                   <span className="text-lg font-black text-white">{yr.year}</span>
                 </div>
 
                 {/* Content Card */}
-                <div className={`w-full pl-20 md:w-1/2 ${isLeft ? 'md:pr-12 md:pl-0' : 'md:ml-auto md:pl-12 md:pr-0'}`}>
+                <div
+                  className={`w-full pl-20 md:w-1/2 ${isLeft ? 'md:pr-12 md:pl-0' : 'md:ml-auto md:pl-12 md:pr-0'}`}
+                >
                   <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all backdrop-blur-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                       <Gamepad2 className="w-20 h-20" />
                     </div>
-                    
+
                     <div className="flex justify-between items-start mb-5 relative z-10">
                       <div>
-                        <h3 className="text-lg font-bold text-white">{yr.focus || `Year ${yr.year}`}</h3>
+                        <h3 className="text-lg font-bold text-white">
+                          {yr.focus || `Year ${yr.year}`}
+                        </h3>
                         <p className="text-sm text-white/50 mt-1">{yr.milestone}</p>
                       </div>
-                      <span className="text-sm font-bold text-white/40">{Math.round(yrProgress)}%</span>
+                      <span className="text-sm font-bold text-white/40">
+                        {Math.round(yrProgress)}%
+                      </span>
                     </div>
-                    
+
                     <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden mb-6 relative z-10">
-                      <motion.div 
+                      <motion.div
                         className="h-full bg-violet-400 rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${yrProgress}%` }}
@@ -280,24 +355,35 @@ function RoadmapStepper({ roadmap }) {
                               const id = `${yIdx}-learn-${i}`;
                               const isDone = completed.has(id);
                               return (
-                                <label key={i} className="flex items-start gap-3 cursor-pointer group">
-                                  <input 
-                                    type="checkbox" 
-                                    className="hidden" 
-                                    checked={isDone} 
-                                    onChange={() => toggleItem(id)} 
+                                <label
+                                  key={i}
+                                  className="flex items-start gap-3 cursor-pointer group"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={isDone}
+                                    onChange={() => toggleItem(id)}
                                   />
-                                  <div className={`mt-0.5 shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${isDone ? 'bg-emerald-500 border-emerald-500' : 'border-white/20 group-hover:border-white/40 bg-white/5'}`}>
-                                    {isDone && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                                  <div
+                                    className={`mt-0.5 shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${isDone ? 'bg-emerald-500 border-emerald-500' : 'border-white/20 group-hover:border-white/40 bg-white/5'}`}
+                                  >
+                                    {isDone && (
+                                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                    )}
                                   </div>
-                                  <span className={`text-sm leading-snug transition-colors ${isDone ? 'text-white/30 line-through' : 'text-white/75 group-hover:text-white'}`}>{l}</span>
+                                  <span
+                                    className={`text-sm leading-snug transition-colors ${isDone ? 'text-white/30 line-through' : 'text-white/75 group-hover:text-white'}`}
+                                  >
+                                    {l}
+                                  </span>
                                 </label>
                               );
                             })}
                           </div>
                         </div>
                       )}
-                      
+
                       {yr.build?.length > 0 && (
                         <div>
                           <p className="flex items-center gap-1.5 text-xs font-bold text-[#FF9E6B] uppercase tracking-wider mb-3">
@@ -308,17 +394,28 @@ function RoadmapStepper({ roadmap }) {
                               const id = `${yIdx}-build-${i}`;
                               const isDone = completed.has(id);
                               return (
-                                <label key={i} className="flex items-start gap-3 cursor-pointer group">
-                                  <input 
-                                    type="checkbox" 
-                                    className="hidden" 
-                                    checked={isDone} 
-                                    onChange={() => toggleItem(id)} 
+                                <label
+                                  key={i}
+                                  className="flex items-start gap-3 cursor-pointer group"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={isDone}
+                                    onChange={() => toggleItem(id)}
                                   />
-                                  <div className={`mt-0.5 shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${isDone ? 'bg-[#FF6B2B] border-[#FF6B2B]' : 'border-white/20 group-hover:border-white/40 bg-white/5'}`}>
-                                    {isDone && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                                  <div
+                                    className={`mt-0.5 shrink-0 w-5 h-5 rounded border flex items-center justify-center transition-colors ${isDone ? 'bg-[#FF6B2B] border-[#FF6B2B]' : 'border-white/20 group-hover:border-white/40 bg-white/5'}`}
+                                  >
+                                    {isDone && (
+                                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                    )}
                                   </div>
-                                  <span className={`text-sm leading-snug transition-colors ${isDone ? 'text-white/30 line-through' : 'text-white/75 group-hover:text-white'}`}>{b}</span>
+                                  <span
+                                    className={`text-sm leading-snug transition-colors ${isDone ? 'text-white/30 line-through' : 'text-white/75 group-hover:text-white'}`}
+                                  >
+                                    {b}
+                                  </span>
                                 </label>
                               );
                             })}
@@ -334,7 +431,8 @@ function RoadmapStepper({ roadmap }) {
                           <ul className="space-y-1.5">
                             {yr.skip.map((s, i) => (
                               <li key={i} className="text-sm text-white/50 flex items-start gap-2">
-                                <span className="mt-0.5 text-rose-500/60">•</span>{s}
+                                <span className="mt-0.5 text-rose-500/60">•</span>
+                                {s}
                               </li>
                             ))}
                           </ul>
@@ -368,13 +466,13 @@ function StoriesCarousel({ stories }) {
 
   return (
     <div className="relative overflow-hidden w-full pb-2">
-      <motion.div 
+      <motion.div
         className="flex"
         animate={{ x: `-${idx * 100}%` }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         {stories.map((story, i) => (
-          <motion.div 
+          <motion.div
             key={i}
             className="w-full shrink-0 px-2"
             drag="x"
@@ -384,18 +482,20 @@ function StoriesCarousel({ stories }) {
           >
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 h-full cursor-grab active:cursor-grabbing backdrop-blur-sm hover:border-white/20 transition-all">
               <div className="flex items-center justify-between mb-5">
-                 <div className="flex items-center gap-3">
-                   <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-[#FF6B2B] to-violet-500 flex items-center justify-center text-white font-black shadow-lg">
-                     {story.name ? story.name[0].toUpperCase() : 'S'}
-                   </div>
-                   <div>
-                     <p className="text-sm font-bold text-white">{story.name}</p>
-                     <div className="flex items-center mt-0.5">
-                       <span className="text-[10px] font-bold text-[#FF9E6B] bg-[#FF6B2B]/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">{story.collegeType}</span>
-                     </div>
-                   </div>
-                 </div>
-                 <MessageSquare className="h-5 w-5 text-white/10 shrink-0" />
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-[#FF6B2B] to-violet-500 flex items-center justify-center text-white font-black shadow-lg">
+                    {story.name ? story.name[0].toUpperCase() : 'S'}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{story.name}</p>
+                    <div className="flex items-center mt-0.5">
+                      <span className="text-[10px] font-bold text-[#FF9E6B] bg-[#FF6B2B]/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                        {story.collegeType}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <MessageSquare className="h-5 w-5 text-white/10 shrink-0" />
               </div>
               <p className="text-sm text-white/70 leading-relaxed italic relative">
                 <span className="text-2xl text-white/10 absolute -top-3 -left-2">"</span>
@@ -424,7 +524,9 @@ function StoriesCarousel({ stories }) {
 // ─── Resource Card ───────────────────────────────────────────────────────────
 function ResourceCard({ icon, label, title, url, description }) {
   const Inner = (
-    <div className={`rounded-xl border border-white/10 bg-white/[0.03] p-5 h-full ${url ? 'hover:border-white/20 hover:bg-white/[0.06] transition-all cursor-pointer group' : ''}`}>
+    <div
+      className={`rounded-xl border border-white/10 bg-white/[0.03] p-5 h-full ${url ? 'hover:border-white/20 hover:bg-white/[0.06] transition-all cursor-pointer group' : ''}`}
+    >
       <div className="flex items-center gap-2 mb-2">
         <span className="text-base">{icon}</span>
         <span className="text-xs font-bold text-white/40 uppercase tracking-wider">{label}</span>
@@ -437,7 +539,12 @@ function ResourceCard({ icon, label, title, url, description }) {
       )}
     </div>
   );
-  if (url) return <a href={url} target="_blank" rel="noreferrer">{Inner}</a>;
+  if (url)
+    return (
+      <a href={url} target="_blank" rel="noreferrer">
+        {Inner}
+      </a>
+    );
   return Inner;
 }
 
@@ -450,7 +557,9 @@ function RelatedCard({ career }) {
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FF6B2B]/10 ring-1 ring-[#FF6B2B]/20">
           <Icon className="h-3.5 w-3.5 text-[#FF6B2B]" />
         </div>
-        <span className="text-sm font-semibold text-white/80 truncate">{career.title || formatSlug(career.slug)}</span>
+        <span className="text-sm font-semibold text-white/80 truncate">
+          {career.title || formatSlug(career.slug)}
+        </span>
         <ArrowRight className="h-3.5 w-3.5 text-white/20 ml-auto shrink-0 group-hover:text-white/40 transition" />
       </div>
     </Link>
@@ -460,25 +569,27 @@ function RelatedCard({ career }) {
 // ─── Visual Components ────────────────────────────────────────────────────────
 function SalaryGauge({ min, max, note }) {
   // Assume a scale up to 50L for the visual gauge to keep it meaningful
-  const maxScale = 50; 
+  const maxScale = 50;
   const minL = min / 100000;
   const maxL = max / 100000;
-  
+
   const minPercent = Math.min((minL / maxScale) * 100, 100);
   const maxPercent = Math.min((maxL / maxScale) * 100, 100);
-  
+
   return (
     <div className="w-48 sm:w-56">
       <div className="flex justify-between items-end mb-1.5">
         <p className="text-xs font-bold text-white/35 uppercase tracking-wider">Salary Range</p>
-        <span className="text-xs font-bold text-white">₹{minL.toFixed(1)}L – {maxL.toFixed(1)}L</span>
+        <span className="text-xs font-bold text-white">
+          ₹{minL.toFixed(1)}L – {maxL.toFixed(1)}L
+        </span>
       </div>
       <div className="relative h-2 w-full bg-white/10 rounded-full overflow-hidden">
-        <motion.div 
+        <motion.div
           initial={{ left: 0, width: 0 }}
           animate={{ left: `${minPercent}%`, width: `${maxPercent - minPercent}%` }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="absolute top-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full" 
+          transition={{ duration: 1, ease: 'easeOut' }}
+          className="absolute top-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
         />
       </div>
       {note && <p className="text-[10px] text-white/30 mt-1 text-left leading-tight">{note}</p>}
@@ -493,10 +604,12 @@ function DifficultyMeter({ difficulty }) {
     High: { color: 'text-rose-400', fill: 'fill-rose-500', percent: 100 },
   };
   const level = levels[difficulty] || levels.Medium;
-  
+
   return (
     <div className="w-32">
-      <p className="text-xs font-bold text-white/35 uppercase tracking-wider mb-2 text-left">Difficulty</p>
+      <p className="text-xs font-bold text-white/35 uppercase tracking-wider mb-2 text-left">
+        Difficulty
+      </p>
       <div className="flex items-center gap-2">
         <svg viewBox="0 0 36 36" className="h-6 w-6 transform -rotate-90">
           <path
@@ -517,9 +630,9 @@ function DifficultyMeter({ difficulty }) {
             stroke="currentColor"
             strokeWidth="4"
             strokeDasharray={`${level.percent}, 100`}
-            initial={{ strokeDasharray: "0, 100" }}
+            initial={{ strokeDasharray: '0, 100' }}
             animate={{ strokeDasharray: `${level.percent}, 100` }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 1, ease: 'easeOut' }}
           />
         </svg>
         <span className={`text-sm font-bold ${level.color}`}>{difficulty}</span>
@@ -532,52 +645,73 @@ function TraitsRadar({ traits }) {
   if (!traits || traits.length === 0) return null;
   const size = 160;
   const center = size / 2;
-  const radius = (size / 2) - 25; // Leave room for labels
+  const radius = size / 2 - 25; // Leave room for labels
   const angleStep = (Math.PI * 2) / traits.length;
-  
+
   const getPoint = (index, r) => {
-    const angle = (index * angleStep) - (Math.PI / 2);
+    const angle = index * angleStep - Math.PI / 2;
     return { x: center + r * Math.cos(angle), y: center + r * Math.sin(angle) };
   };
 
-  const bgPoints = traits.map((_, i) => `${getPoint(i, radius).x},${getPoint(i, radius).y}`).join(' ');
+  const bgPoints = traits
+    .map((_, i) => `${getPoint(i, radius).x},${getPoint(i, radius).y}`)
+    .join(' ');
   // Create a slight pseudo-random variation in values so it looks like a real chart
-  const dataPoints = traits.map((_, i) => {
-    const r = radius * (0.6 + (Math.abs(Math.sin(i * 13)) * 0.4)); // fake data 60-100%
-    return `${getPoint(i, r).x},${getPoint(i, r).y}`;
-  }).join(' ');
+  const dataPoints = traits
+    .map((_, i) => {
+      const r = radius * (0.6 + Math.abs(Math.sin(i * 13)) * 0.4); // fake data 60-100%
+      return `${getPoint(i, r).x},${getPoint(i, r).y}`;
+    })
+    .join(' ');
 
   return (
     <div className="flex flex-col items-center sm:items-start mt-4 sm:mt-0">
-      <p className="text-xs font-bold text-white/35 uppercase tracking-wider mb-2">Best-Fit Traits</p>
+      <p className="text-xs font-bold text-white/35 uppercase tracking-wider mb-2">
+        Best-Fit Traits
+      </p>
       <div className="relative" style={{ width: size, height: size }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-           <polygon points={bgPoints} fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
-           {traits.map((_, i) => {
-              const p = getPoint(i, radius);
-              return <line key={i} x1={center} y1={center} x2={p.x} y2={p.y} stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
-           })}
-           <motion.polygon 
-             initial={{ scale: 0, opacity: 0 }}
-             animate={{ scale: 1, opacity: 1 }}
-             transition={{ duration: 1, ease: "easeOut" }}
-             style={{ transformOrigin: 'center' }}
-             points={dataPoints} 
-             fill="rgba(255, 107, 43, 0.2)" 
-             stroke="#FF6B2B" 
-             strokeWidth="1.5" 
-           />
+          <polygon
+            points={bgPoints}
+            fill="rgba(255, 255, 255, 0.03)"
+            stroke="rgba(255, 255, 255, 0.1)"
+            strokeWidth="1"
+          />
+          {traits.map((_, i) => {
+            const p = getPoint(i, radius);
+            return (
+              <line
+                key={i}
+                x1={center}
+                y1={center}
+                x2={p.x}
+                y2={p.y}
+                stroke="rgba(255, 255, 255, 0.1)"
+                strokeWidth="1"
+              />
+            );
+          })}
+          <motion.polygon
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+            style={{ transformOrigin: 'center' }}
+            points={dataPoints}
+            fill="rgba(255, 107, 43, 0.2)"
+            stroke="#FF6B2B"
+            strokeWidth="1.5"
+          />
         </svg>
         {traits.map((t, i) => {
           const p = getPoint(i, radius + 15);
           return (
-             <div 
-               key={i} 
-               className="absolute text-[9px] text-white/60 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 font-semibold" 
-               style={{ left: p.x, top: p.y }}
-             >
-               {t}
-             </div>
+            <div
+              key={i}
+              className="absolute text-[9px] text-white/60 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 font-semibold"
+              style={{ left: p.x, top: p.y }}
+            >
+              {t}
+            </div>
           );
         })}
       </div>
@@ -588,7 +722,7 @@ function TraitsRadar({ traits }) {
 // ─── Common Mistake Flip Card ────────────────────────────────────────────────
 function MistakeFlipCard({ text }) {
   const [isFlipped, setIsFlipped] = useState(false);
-  
+
   let title = text;
   let explanation = text;
   if (text.includes(':')) {
@@ -604,33 +738,46 @@ function MistakeFlipCard({ text }) {
   }
 
   return (
-    <div 
+    <div
       className="relative w-full h-32 cursor-pointer group"
       style={{ perspective: 1000 }}
       onClick={() => setIsFlipped(!isFlipped)}
     >
-      <motion.div 
+      <motion.div
         className="w-full h-full relative"
         style={{ transformStyle: 'preserve-3d' }}
         animate={{ rotateX: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.5, type: "spring", stiffness: 260, damping: 25 }}
+        transition={{ duration: 0.5, type: 'spring', stiffness: 260, damping: 25 }}
       >
         {/* Front */}
-        <div className="absolute inset-0 w-full h-full rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] p-5 hover:bg-rose-500/[0.06] transition-colors flex items-center gap-4 shadow-lg backdrop-blur-sm" style={{ backfaceVisibility: 'hidden' }}>
+        <div
+          className="absolute inset-0 w-full h-full rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] p-5 hover:bg-rose-500/[0.06] transition-colors flex items-center gap-4 shadow-lg backdrop-blur-sm"
+          style={{ backfaceVisibility: 'hidden' }}
+        >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-400">
             <AlertTriangle className="h-5 w-5" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-white/90 line-clamp-2 leading-snug">{title}</p>
-            <p className="text-[10px] text-rose-400/60 mt-1.5 uppercase tracking-wider font-bold">Tap to flip</p>
+            <p className="text-[10px] text-rose-400/60 mt-1.5 uppercase tracking-wider font-bold">
+              Tap to flip
+            </p>
           </div>
         </div>
 
         {/* Back */}
-        <div className="absolute inset-0 w-full h-full rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-5 hover:bg-emerald-500/[0.06] transition-colors flex items-start gap-4 shadow-lg backdrop-blur-sm" style={{ backfaceVisibility: 'hidden', transform: 'rotateX(180deg)' }}>
+        <div
+          className="absolute inset-0 w-full h-full rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-5 hover:bg-emerald-500/[0.06] transition-colors flex items-start gap-4 shadow-lg backdrop-blur-sm"
+          style={{ backfaceVisibility: 'hidden', transform: 'rotateX(180deg)' }}
+        >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <div className="flex-1 h-full overflow-y-auto custom-scrollbar pr-1">
@@ -650,7 +797,11 @@ export default function CareerPathDetailPage({ user }) {
   const [viewingItem, setViewingItem] = useState(null);
   const [related, setRelated] = useState([]);
   const [showUnlockModal, setShowUnlockModal] = useState(false);
-  const [unlockForm, setUnlockForm] = useState({ name: user?.name || '', email: user?.email || '', phone: user?.phone || '' });
+  const [unlockForm, setUnlockForm] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+  });
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -659,10 +810,7 @@ export default function CareerPathDetailPage({ user }) {
   useEffect(() => {
     setLoading(true);
     setError('');
-    Promise.all([
-      getCareerDetail(slug),
-      getRelatedCareers(slug).catch(() => ({ related: [] })),
-    ])
+    Promise.all([getCareerDetail(slug), getRelatedCareers(slug).catch(() => ({ related: [] }))])
       .then(([careerData, relData]) => {
         setCareer(careerData.career);
         setItems(careerData.items || []);
@@ -680,7 +828,7 @@ export default function CareerPathDetailPage({ user }) {
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
   const handleMaterialClick = (item) => {
@@ -705,10 +853,10 @@ export default function CareerPathDetailPage({ user }) {
         name: unlockForm.name,
         email: unlockForm.email,
         phone: unlockForm.phone,
-        returnUrl: `${window.location.origin}/payment/status?order_id={order_id}`
+        returnUrl: buildReturnUrl('/payment-status', '{order_id}'),
       });
 
-      if (!data.paymentSessionId) throw new Error(data.message || "Failed to create order session");
+      if (!data.paymentSessionId) throw new Error(data.message || 'Failed to create order session');
 
       // 2. Initialize Cashfree with correct environment
       const mode = data.cashfreeEnvironment === 'production' ? 'production' : 'sandbox';
@@ -716,9 +864,8 @@ export default function CareerPathDetailPage({ user }) {
 
       // 3. Trigger checkout
       await cashfree.checkout({
-        paymentSessionId: data.paymentSessionId
+        paymentSessionId: data.paymentSessionId,
       });
-
     } catch (err) {
       console.error(err);
       setPaymentError(err.message || 'Payment initialization failed.');
@@ -739,14 +886,18 @@ export default function CareerPathDetailPage({ user }) {
       <div className="min-h-screen bg-[#0B0F2E] flex flex-col items-center justify-center gap-4 px-4 text-center">
         <AlertTriangle className="h-10 w-10 text-white/20" />
         <p className="text-white/50">{error || 'Career path not found'}</p>
-        <Link to="/roadmap" className="text-sm text-[#FF6B2B] underline">← Back to all paths</Link>
+        <Link to="/roadmap" className="text-sm text-[#FF6B2B] underline">
+          ← Back to all paths
+        </Link>
       </div>
     );
   }
 
   const Icon = ICON_MAP[career.slug] || HelpCircle;
   const diff = career.snapshot?.difficultyToBreakIn;
-  const diffColor = { Low: 'text-emerald-400', Medium: 'text-amber-400', High: 'text-rose-400' }[diff] || 'text-white/50';
+  const diffColor =
+    { Low: 'text-emerald-400', Medium: 'text-amber-400', High: 'text-rose-400' }[diff] ||
+    'text-white/50';
   const salaryMin = career.snapshot?.salaryRangeINR?.min;
   const salaryMax = career.snapshot?.salaryRangeINR?.max;
 
@@ -758,7 +909,7 @@ export default function CareerPathDetailPage({ user }) {
       />
 
       {/* ── 1. Hero ────────────────────────────────────────────────────────── */}
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -766,7 +917,10 @@ export default function CareerPathDetailPage({ user }) {
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,107,43,0.12),transparent_40%)]" />
         <div className="relative mx-auto max-w-4xl">
-          <Link to="/roadmap" className="inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition mb-8">
+          <Link
+            to="/roadmap"
+            className="inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition mb-8"
+          >
             <ArrowLeft className="h-3.5 w-3.5" /> All career paths
           </Link>
 
@@ -775,42 +929,46 @@ export default function CareerPathDetailPage({ user }) {
               <Icon className="h-7 w-7 text-[#FF6B2B]" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">{career.title}</h1>
-              {career.tagline && (
-                <p className="mt-1 text-base text-white/55">{career.tagline}</p>
-              )}
+              <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                {career.title}
+              </h1>
+              {career.tagline && <p className="mt-1 text-base text-white/55">{career.tagline}</p>}
             </div>
           </div>
 
           {/* Stat bar */}
           <div className="mt-8 flex flex-wrap justify-center sm:justify-start gap-8 sm:gap-12 items-start text-center sm:text-left">
             {salaryMin > 0 && (
-              <SalaryGauge 
-                min={salaryMin} 
-                max={salaryMax} 
-                note={career.snapshot?.salaryRangeINR?.note} 
+              <SalaryGauge
+                min={salaryMin}
+                max={salaryMax}
+                note={career.snapshot?.salaryRangeINR?.note}
               />
             )}
-            {diff && (
-              <DifficultyMeter difficulty={diff} />
-            )}
+            {diff && <DifficultyMeter difficulty={diff} />}
             {career.snapshot?.bestFitTraits?.length > 0 && (
               <TraitsRadar traits={career.snapshot.bestFitTraits} />
             )}
           </div>
           {career.snapshot?.idealFor && (
             <div className="mt-6 border-l-0 sm:border-l-2 border-[#FF6B2B]/40 pl-0 sm:pl-4 text-center sm:text-left">
-              <p className="text-sm text-white/50 max-w-2xl leading-relaxed italic">"{career.snapshot.idealFor}"</p>
+              <p className="text-sm text-white/50 max-w-2xl leading-relaxed italic">
+                "{career.snapshot.idealFor}"
+              </p>
             </div>
           )}
         </div>
       </motion.section>
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 pb-32 space-y-16">
-
         {/* ── 2. Roadmap Timeline ──────────────────────────────────────────── */}
         {career.roadmap?.length > 0 && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
             <SectionHeader icon={<TrendingUp className="h-4 w-4" />} label="4-Year Roadmap" />
             <RoadmapStepper roadmap={career.roadmap} />
           </motion.section>
@@ -818,7 +976,12 @@ export default function CareerPathDetailPage({ user }) {
 
         {/* ── 3. Skill Tree ────────────────────────────────────────────────── */}
         {career.skillTree && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
             <SectionHeader icon={<Code className="h-4 w-4" />} label="Skill Tree" />
             <SkillTreeGraph tree={career.skillTree} />
           </motion.section>
@@ -826,7 +989,12 @@ export default function CareerPathDetailPage({ user }) {
 
         {/* ── 4. Real Stories ──────────────────────────────────────────────── */}
         {career.realStories?.length > 0 && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
             <SectionHeader icon={<MessageSquare className="h-4 w-4" />} label="From the Field" />
             <StoriesCarousel stories={career.realStories} />
           </motion.section>
@@ -834,15 +1002,27 @@ export default function CareerPathDetailPage({ user }) {
 
         {/* ── 5. Entry Points ──────────────────────────────────────────────── */}
         {career.entryPoints && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
             <SectionHeader icon={<Users2 className="h-4 w-4" />} label="Getting In" />
             <div className="grid sm:grid-cols-2 gap-5">
               {career.entryPoints.hiringCompanies?.length > 0 && (
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                  <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Companies That Hire (Tier-2 Friendly)</p>
+                  <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">
+                    Companies That Hire (Tier-2 Friendly)
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {career.entryPoints.hiringCompanies.map((c) => (
-                      <span key={c} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-white/60">{c}</span>
+                      <span
+                        key={c}
+                        className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-white/60"
+                      >
+                        {c}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -850,14 +1030,22 @@ export default function CareerPathDetailPage({ user }) {
               <div className="space-y-4">
                 {career.entryPoints.onCampusVsOffCampus && (
                   <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                    <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Campus vs Off-Campus</p>
-                    <p className="text-sm text-white/65 leading-relaxed">{career.entryPoints.onCampusVsOffCampus}</p>
+                    <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-2">
+                      Campus vs Off-Campus
+                    </p>
+                    <p className="text-sm text-white/65 leading-relaxed">
+                      {career.entryPoints.onCampusVsOffCampus}
+                    </p>
                   </div>
                 )}
                 {career.entryPoints.referralTips && (
                   <div className="rounded-2xl border border-[#FF6B2B]/20 bg-[#FF6B2B]/[0.04] p-5">
-                    <p className="text-xs font-bold text-[#FF9E6B] uppercase tracking-wider mb-2">💡 Referral Tips</p>
-                    <p className="text-sm text-white/65 leading-relaxed">{career.entryPoints.referralTips}</p>
+                    <p className="text-xs font-bold text-[#FF9E6B] uppercase tracking-wider mb-2">
+                      💡 Referral Tips
+                    </p>
+                    <p className="text-sm text-white/65 leading-relaxed">
+                      {career.entryPoints.referralTips}
+                    </p>
                   </div>
                 )}
               </div>
@@ -867,7 +1055,12 @@ export default function CareerPathDetailPage({ user }) {
 
         {/* ── 6. Common Mistakes ───────────────────────────────────────────── */}
         {career.commonMistakes?.length > 0 && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
             <SectionHeader icon={<AlertTriangle className="h-4 w-4" />} label="Common Mistakes" />
             <div className="grid sm:grid-cols-2 gap-5">
               {career.commonMistakes.map((m, i) => (
@@ -879,20 +1072,44 @@ export default function CareerPathDetailPage({ user }) {
 
         {/* ── 7. Resources ─────────────────────────────────────────────────── */}
         {career.resources && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
             <SectionHeader icon={<BookOpen className="h-4 w-4" />} label="Start Here" />
             <div className="grid sm:grid-cols-2 gap-4">
               {career.resources.course?.title && (
-                <ResourceCard icon="🎥" label="Course" title={career.resources.course.title} url={career.resources.course.url} />
+                <ResourceCard
+                  icon="🎥"
+                  label="Course"
+                  title={career.resources.course.title}
+                  url={career.resources.course.url}
+                />
               )}
               {career.resources.book?.title && (
-                <ResourceCard icon="📗" label="Book" title={career.resources.book.title} url={career.resources.book.url} />
+                <ResourceCard
+                  icon="📗"
+                  label="Book"
+                  title={career.resources.book.title}
+                  url={career.resources.book.url}
+                />
               )}
               {career.resources.projectIdea && (
-                <ResourceCard icon="🛠️" label="Project Idea" description={career.resources.projectIdea} />
+                <ResourceCard
+                  icon="🛠️"
+                  label="Project Idea"
+                  description={career.resources.projectIdea}
+                />
               )}
               {career.resources.community?.name && (
-                <ResourceCard icon="💬" label="Community" title={career.resources.community.name} url={career.resources.community.url} />
+                <ResourceCard
+                  icon="💬"
+                  label="Community"
+                  title={career.resources.community.name}
+                  url={career.resources.community.url}
+                />
               )}
             </div>
           </motion.section>
@@ -900,8 +1117,16 @@ export default function CareerPathDetailPage({ user }) {
 
         {/* ── 8. Custom Learning & Preparation Material ─────────────────────── */}
         {items.length > 0 && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
-            <SectionHeader icon={<BookOpen className="h-4 w-4" />} label="Learning & Preparation Materials" />
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionHeader
+              icon={<BookOpen className="h-4 w-4" />}
+              label="Learning & Preparation Materials"
+            />
             <div className="grid sm:grid-cols-2 gap-4">
               {items.map((item) => {
                 const isVideo = item.type === 'video';
@@ -910,13 +1135,14 @@ export default function CareerPathDetailPage({ user }) {
                 const isTask = item.type === 'task';
                 const isQuiz = item.type === 'quiz';
 
-                const typeLabel = {
-                  video: '🎬 Video',
-                  document: '📄 Document',
-                  article: '🔗 Article',
-                  task: '📋 Task',
-                  quiz: '🧩 Quiz',
-                }[item.type] || item.type;
+                const typeLabel =
+                  {
+                    video: '🎬 Video',
+                    document: '📄 Document',
+                    article: '🔗 Article',
+                    task: '📋 Task',
+                    quiz: '🧩 Quiz',
+                  }[item.type] || item.type;
 
                 return (
                   <div
@@ -933,7 +1159,9 @@ export default function CareerPathDetailPage({ user }) {
                         {isQuiz && <HelpCircle className="h-5 w-5" />}
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-white group-hover:text-[#FF9E6B] transition">{item.title}</p>
+                        <p className="truncate text-sm font-semibold text-white group-hover:text-[#FF9E6B] transition">
+                          {item.title}
+                        </p>
                         <p className="text-xs text-white/45 capitalize">
                           {typeLabel} {item.durationLabel ? ` · ${item.durationLabel}` : ''}
                         </p>
@@ -953,10 +1181,17 @@ export default function CareerPathDetailPage({ user }) {
 
         {/* ── 9. Related Paths ─────────────────────────────────────────────── */}
         {related.length > 0 && (
-          <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.5 }}>
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5 }}
+          >
             <SectionHeader icon={<Star className="h-4 w-4" />} label="You Might Also Like" />
             <div className="grid sm:grid-cols-2 gap-3">
-              {related.map((r) => <RelatedCard key={r.slug} career={r} />)}
+              {related.map((r) => (
+                <RelatedCard key={r.slug} career={r} />
+              ))}
             </div>
           </motion.section>
         )}
@@ -979,27 +1214,26 @@ export default function CareerPathDetailPage({ user }) {
       </div>
 
       {/* Item Viewer Modal */}
-      <ItemViewerModal
-        item={viewingItem}
-        onClose={() => setViewingItem(null)}
-      />
+      <ItemViewerModal item={viewingItem} onClose={() => setViewingItem(null)} />
 
       {/* Unlock Premium Modal */}
       <AnimatePresence>
         {showUnlockModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setShowUnlockModal(false)}
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-md bg-[#0B0F2E] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden"
             >
-              <button 
+              <button
                 onClick={() => setShowUnlockModal(false)}
                 className="absolute top-4 right-4 text-white/40 hover:text-white transition"
               >
@@ -1010,8 +1244,13 @@ export default function CareerPathDetailPage({ user }) {
                 <div className="w-14 h-14 bg-[#FF6B2B]/10 text-[#FF6B2B] rounded-full flex items-center justify-center mb-4">
                   <Star className="w-7 h-7" />
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black text-white mb-2">Unlock Premium Materials</h2>
-                <p className="text-sm text-white/60">Get lifetime access to exclusive study materials, interview prep, and roadmaps for {career.title} for just <span className="font-bold text-white">₹249</span>.</p>
+                <h2 className="text-xl sm:text-2xl font-black text-white mb-2">
+                  Unlock Premium Materials
+                </h2>
+                <p className="text-sm text-white/60">
+                  Get lifetime access to exclusive study materials, interview prep, and roadmaps for{' '}
+                  {career.title} for just <span className="font-bold text-white">₹249</span>.
+                </p>
               </div>
 
               <form onSubmit={handlePayment} className="space-y-4">
@@ -1021,36 +1260,47 @@ export default function CareerPathDetailPage({ user }) {
                   </div>
                 )}
                 <div>
-                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">Full Name</label>
+                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">
+                    Full Name
+                  </label>
                   <input
                     required
                     type="text"
                     value={unlockForm.name}
-                    onChange={e => setUnlockForm(f => ({ ...f, name: e.target.value }))}
+                    onChange={(e) => setUnlockForm((f) => ({ ...f, name: e.target.value }))}
                     className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:border-[#FF6B2B] focus:ring-1 focus:ring-[#FF6B2B] transition-all outline-none"
                     placeholder="Enter your name"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">Email Address</label>
+                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">
+                    Email Address
+                  </label>
                   <input
                     required
                     type="email"
                     value={unlockForm.email}
-                    onChange={e => setUnlockForm(f => ({ ...f, email: e.target.value }))}
+                    onChange={(e) => setUnlockForm((f) => ({ ...f, email: e.target.value }))}
                     className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:border-[#FF6B2B] focus:ring-1 focus:ring-[#FF6B2B] transition-all outline-none"
                     placeholder="student@example.com"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">Phone Number</label>
+                  <label className="block text-xs font-semibold text-white/60 mb-1.5 ml-1 uppercase tracking-wider">
+                    Phone Number
+                  </label>
                   <input
                     required
                     type="tel"
                     pattern="[0-9]{10}"
                     title="10-digit mobile number"
                     value={unlockForm.phone}
-                    onChange={e => setUnlockForm(f => ({ ...f, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
+                    onChange={(e) =>
+                      setUnlockForm((f) => ({
+                        ...f,
+                        phone: e.target.value.replace(/\D/g, '').slice(0, 10),
+                      }))
+                    }
                     className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:border-[#FF6B2B] focus:ring-1 focus:ring-[#FF6B2B] transition-all outline-none"
                     placeholder="9876543210"
                   />
@@ -1060,9 +1310,15 @@ export default function CareerPathDetailPage({ user }) {
                   disabled={isProcessingPayment}
                   className="w-full mt-2 bg-gradient-to-r from-[#FF6B2B] to-[#ff8c59] text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition shadow-lg shadow-[#FF6B2B]/20 flex justify-center items-center gap-2"
                 >
-                  {isProcessingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Pay ₹249 & Unlock'}
+                  {isProcessingPayment ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    'Pay ₹249 & Unlock'
+                  )}
                 </button>
-                <p className="text-[10px] text-white/40 text-center mt-3">Secured by Cashfree Payments</p>
+                <p className="text-[10px] text-white/40 text-center mt-3">
+                  Secured by Cashfree Payments
+                </p>
               </form>
             </motion.div>
           </div>

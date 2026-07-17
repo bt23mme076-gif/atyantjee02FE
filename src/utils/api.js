@@ -3,10 +3,21 @@
 // VITE_API_URL is used in production (e.g. https://api.atyant.in).
 // In dev, Vite proxies /api → http://localhost:5000 so we use '' (empty base).
 
-const API_BASE =
-  import.meta.env.VITE_API_URL
-    ? import.meta.env.VITE_API_URL.replace(/\/$/, '') // strip trailing slash
-    : '';
+const API_BASE = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/$/, '') // strip trailing slash
+  : '';
+
+if (import.meta.env.DEV && API_BASE) {
+  const isProductionBackend =
+    API_BASE.includes('atyant.in') ||
+    (!API_BASE.includes('localhost') && !API_BASE.includes('127.0.0.1'));
+  if (isProductionBackend) {
+    console.warn(
+      `[Warning] VITE_API_URL (${API_BASE}) points to a production or remote backend while the app is running locally. ` +
+        `Please ensure this is intentional as actions may affect live data.`
+    );
+  }
+}
 
 export const resolveAssetUrl = (url) => {
   if (!url) return '';
@@ -15,10 +26,33 @@ export const resolveAssetUrl = (url) => {
   }
   return url;
 };
+export const getReturnUrlBase = () => {
+  const configured = import.meta.env.VITE_APP_URL;
+  if (configured) return configured.replace(/\/$/, '');
+
+  if (typeof window !== 'undefined' && window.location.origin.startsWith('https://')) {
+    return window.location.origin;
+  }
+
+  if (import.meta.env.DEV) {
+    console.warn(
+      '[Cashfree] No VITE_APP_URL set and window.location.origin is not https — ' +
+        'set VITE_APP_URL in your .env to test payments locally.'
+    );
+  }
+
+  return typeof window !== 'undefined' ? window.location.origin : '';
+};
+
+export const buildReturnUrl = (path, orderId) => {
+  const base = getReturnUrlBase();
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${base}${normalizedPath}?order_id=${orderId}`;
+};
 
 // ─── Core fetch wrapper ───────────────────────────────────────────────────────
 
-async function request(endpoint, options = {}) {
+export async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
 
   const headers = {
@@ -26,7 +60,11 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  const res = await fetch(url, { ...options, headers });
+  const res = await fetch(url, {
+    ...options,
+    headers,
+    credentials: options.credentials || 'include',
+  });
 
   // Try to parse JSON even on error so we can surface backend messages
   let data;
@@ -37,8 +75,7 @@ async function request(endpoint, options = {}) {
   }
 
   if (!res.ok) {
-    const message =
-      data?.error || data?.message || `API error ${res.status}`;
+    const message = data?.error || data?.message || `API error ${res.status}`;
     const err = new Error(message);
     err.status = res.status;
     err.data = data;
@@ -48,6 +85,7 @@ async function request(endpoint, options = {}) {
     // elsewhere" notice instead of a raw error.
     if (data?.code === 'SESSION_INVALIDATED') {
       localStorage.removeItem('user_token');
+      localStorage.removeItem('user_logged_in');
       window.dispatchEvent(new CustomEvent('sessionInvalidated', { detail: { message } }));
     }
 
@@ -56,6 +94,14 @@ async function request(endpoint, options = {}) {
 
   return data;
 }
+
+export const isUserLoggedIn = () => {
+  return !!(localStorage.getItem('user_token') || localStorage.getItem('user_logged_in'));
+};
+
+export const isAdminLoggedIn = () => {
+  return !!(localStorage.getItem('admin_token') || localStorage.getItem('admin_logged_in'));
+};
 
 // Helper for user auth header (kept alongside adminAuthHeader for consistency)
 const userAuthHeader = () => {
@@ -86,15 +132,18 @@ export const listLeads = (params = {}) => {
 
 /** Admin: update lead status */
 export const updateLead = (id, data) =>
-  request(`/api/leads/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(data) });
+  request(`/api/leads/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(data),
+  });
 
 /** Admin: delete lead */
 export const deleteLead = (id) =>
   request(`/api/leads/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
 /** Admin: list all registered mentors */
-export const listMentorsAdmin = () =>
-  request('/api/admin/mentors', { headers: adminAuthHeader() });
+export const listMentorsAdmin = () => request('/api/admin/mentors', { headers: adminAuthHeader() });
 
 /** Admin: delete any user or mentor account by ID */
 export const deleteUserAdmin = (id) =>
@@ -207,6 +256,7 @@ export const adminLogin = async (payload) => {
     body: JSON.stringify(payload),
   });
   if (data.token) localStorage.setItem('admin_token', data.token);
+  localStorage.setItem('admin_logged_in', 'true');
   return data;
 };
 
@@ -216,7 +266,9 @@ export const getMe = () => request('/api/auth/me', { headers: adminAuthHeader() 
 /** Clear stored token */
 export const adminLogout = () => {
   localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin_logged_in');
   localStorage.removeItem('user_token');
+  localStorage.removeItem('user_logged_in');
 };
 
 export const userSignup = async (payload) => {
@@ -225,6 +277,7 @@ export const userSignup = async (payload) => {
     body: JSON.stringify(payload),
   });
   if (data.token) localStorage.setItem('user_token', data.token);
+  localStorage.setItem('user_logged_in', 'true');
   return data;
 };
 
@@ -234,6 +287,7 @@ export const userLogin = async (payload) => {
     body: JSON.stringify(payload),
   });
   if (data.token) localStorage.setItem('user_token', data.token);
+  localStorage.setItem('user_logged_in', 'true');
   return data;
 };
 
@@ -243,6 +297,7 @@ export const googleLogin = async (credential) => {
     body: JSON.stringify({ credential }),
   });
   if (data.token) localStorage.setItem('user_token', data.token);
+  localStorage.setItem('user_logged_in', 'true');
   return data;
 };
 
@@ -252,13 +307,14 @@ export const googleSignup = async (payload) => {
     body: JSON.stringify(payload),
   });
   if (data.token) localStorage.setItem('user_token', data.token);
+  localStorage.setItem('user_logged_in', 'true');
   return data;
 };
 
 export const getUserMe = () => {
   const token = localStorage.getItem('user_token');
   return request('/api/users/me', {
-    headers: token ? { Authorization: `Bearer ${token}` } : {}
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 };
 
@@ -267,7 +323,7 @@ export const updateUser = (payload) => {
   return request('/api/users/me', {
     method: 'PATCH',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 };
 
@@ -287,7 +343,11 @@ export const uploadProfilePhoto = async (file) => {
   });
 
   let data;
-  try { data = await res.json(); } catch { data = {}; }
+  try {
+    data = await res.json();
+  } catch {
+    data = {};
+  }
   if (!res.ok) throw new Error(data.error || 'Upload failed');
   return data;
 };
@@ -304,7 +364,11 @@ export const uploadIdDoc = async (file) => {
   });
 
   let data;
-  try { data = await res.json(); } catch { data = {}; }
+  try {
+    data = await res.json();
+  } catch {
+    data = {};
+  }
   if (!res.ok) throw new Error(data.error || 'Upload failed');
   return data;
 };
@@ -316,7 +380,11 @@ export const deleteIdDoc = async () => {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   let data;
-  try { data = await res.json(); } catch { data = {}; }
+  try {
+    data = await res.json();
+  } catch {
+    data = {};
+  }
   if (!res.ok) throw new Error(data.error || 'Delete failed');
   return data;
 };
@@ -326,11 +394,15 @@ export const viewIdDocAdmin = async (mentorId) => {
   const token = localStorage.getItem('admin_token');
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const res = await fetch(`${API_BASE}/api/upload/id-doc/${mentorId}`, {
-    headers
+    headers,
   });
   if (!res.ok) {
     let errData;
-    try { errData = await res.json(); } catch { errData = {}; }
+    try {
+      errData = await res.json();
+    } catch {
+      errData = {};
+    }
     throw new Error(errData.error || `Failed to fetch document: ${res.status}`);
   }
   const blob = await res.blob();
@@ -341,22 +413,20 @@ export const viewIdDocAdmin = async (mentorId) => {
 export const verifyIdDocAdmin = (mentorId) =>
   request(`/api/upload/id-doc/${mentorId}/verify`, {
     method: 'PATCH',
-    headers: adminAuthHeader()
+    headers: adminAuthHeader(),
   });
 
 export const rejectIdDocAdmin = (mentorId) =>
   request(`/api/upload/id-doc/${mentorId}/reject`, {
     method: 'PATCH',
-    headers: adminAuthHeader()
+    headers: adminAuthHeader(),
   });
-
 
 // ─── Health ───────────────────────────────────────────────────────────────────
 
 export const healthCheck = () => request('/health');
 
 export default API_BASE;
-
 
 // ─── Roadmap (progress, streaks, batch/cohort, pillars & content) ───────
 
@@ -372,11 +442,9 @@ export const completeRoadmapItem = (itemId) =>
 export const roadmapCheckIn = () =>
   request('/api/roadmap/checkin', { method: 'POST', headers: userAuthHeader() });
 
-export const getStreak = () =>
-  request('/api/roadmap/streak', { headers: userAuthHeader() });
+export const getStreak = () => request('/api/roadmap/streak', { headers: userAuthHeader() });
 
-export const getMyBatch = () =>
-  request('/api/roadmap/batch/me', { headers: userAuthHeader() });
+export const getMyBatch = () => request('/api/roadmap/batch/me', { headers: userAuthHeader() });
 
 // ─── Session ────────────────────────────────────────────────────────────
 
@@ -385,12 +453,11 @@ export const logoutUser = async () => {
     await request('/api/users/logout', { method: 'POST', headers: userAuthHeader() });
   } finally {
     localStorage.removeItem('user_token');
+    localStorage.removeItem('user_logged_in');
   }
 };
 
-
 export const getCareerPaths = () => request('/api/roadmap/career-paths');
-
 
 // ─── Referral & FAQ videos (public + student) ────────────────────────────
 
@@ -401,46 +468,93 @@ export const getReferralStatus = () =>
 
 // ─── Admin: Roadmap content management ──────────────────────────────────
 
-export const adminListPillars = () => request('/api/admin/roadmap/pillars', { headers: adminAuthHeader() });
+export const adminListPillars = () =>
+  request('/api/admin/roadmap/pillars', { headers: adminAuthHeader() });
 export const adminCreatePillar = (payload) =>
-  request('/api/admin/roadmap/pillars', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request('/api/admin/roadmap/pillars', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminUpdatePillar = (id, payload) =>
-  request(`/api/admin/roadmap/pillars/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request(`/api/admin/roadmap/pillars/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminDeletePillar = (id) =>
   request(`/api/admin/roadmap/pillars/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
 export const adminListItems = (pillarId) =>
-  request(`/api/admin/roadmap/items${pillarId ? `?pillar=${pillarId}` : ''}`, { headers: adminAuthHeader() });
+  request(`/api/admin/roadmap/items${pillarId ? `?pillar=${pillarId}` : ''}`, {
+    headers: adminAuthHeader(),
+  });
 export const adminCreateItem = (payload) =>
-  request('/api/admin/roadmap/items', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request('/api/admin/roadmap/items', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminUpdateItem = (id, payload) =>
-  request(`/api/admin/roadmap/items/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request(`/api/admin/roadmap/items/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminDeleteItem = (id) =>
   request(`/api/admin/roadmap/items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
-export const adminListCareerPaths = () => request('/api/admin/career-paths', { headers: adminAuthHeader() });
+export const adminListCareerPaths = () =>
+  request('/api/admin/career-paths', { headers: adminAuthHeader() });
 export const adminCreateCareerPath = (payload) =>
-  request('/api/admin/career-paths', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request('/api/admin/career-paths', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminUpdateCareerPath = (id, payload) =>
-  request(`/api/admin/career-paths/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request(`/api/admin/career-paths/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminDeleteCareerPath = (id) =>
   request(`/api/admin/career-paths/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
 // ─── Admin: Career Path Content Items ────────────────────────────────────────
 export const adminListCareerPathItems = (careerPathId) =>
-  request(`/api/admin/career-path-items${careerPathId ? `?careerPath=${careerPathId}` : ''}`, { headers: adminAuthHeader() });
+  request(`/api/admin/career-path-items${careerPathId ? `?careerPath=${careerPathId}` : ''}`, {
+    headers: adminAuthHeader(),
+  });
 export const adminCreateCareerPathItem = (payload) =>
-  request('/api/admin/career-path-items', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request('/api/admin/career-path-items', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminUpdateCareerPathItem = (id, payload) =>
-  request(`/api/admin/career-path-items/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request(`/api/admin/career-path-items/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminDeleteCareerPathItem = (id) =>
   request(`/api/admin/career-path-items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
-export const adminListFaqVideos = () => request('/api/admin/faq-videos', { headers: adminAuthHeader() });
+export const adminListFaqVideos = () =>
+  request('/api/admin/faq-videos', { headers: adminAuthHeader() });
 export const adminCreateFaqVideo = (payload) =>
-  request('/api/admin/faq-videos', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request('/api/admin/faq-videos', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminUpdateFaqVideo = (id, payload) =>
-  request(`/api/admin/faq-videos/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request(`/api/admin/faq-videos/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminDeleteFaqVideo = (id) =>
   request(`/api/admin/faq-videos/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
@@ -458,7 +572,11 @@ export const uploadRoadmapContent = async (file) => {
   });
 
   let data;
-  try { data = await res.json(); } catch { data = {}; }
+  try {
+    data = await res.json();
+  } catch {
+    data = {};
+  }
   if (!res.ok) throw new Error(data.error || 'Upload failed');
   return data;
 };
@@ -491,9 +609,17 @@ export const submitQuizEmail = (id, email) =>
 export const adminListQuizQuestions = () =>
   request('/api/admin/quiz-questions', { headers: adminAuthHeader() });
 export const adminCreateQuizQuestion = (payload) =>
-  request('/api/admin/quiz-questions', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request('/api/admin/quiz-questions', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminUpdateQuizQuestion = (id, payload) =>
-  request(`/api/admin/quiz-questions/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request(`/api/admin/quiz-questions/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 export const adminDeleteQuizQuestion = (id) =>
   request(`/api/admin/quiz-questions/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
@@ -502,7 +628,11 @@ export const adminDeleteQuizQuestion = (id) =>
 export const adminGetCareerDetail = (slug) =>
   request(`/api/careers/${slug}`, { headers: adminAuthHeader() });
 export const adminUpdateCareerDetail = (id, payload) =>
-  request(`/api/admin/career-paths/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
+  request(`/api/admin/career-paths/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 
 // ─── Courses (Public) ─────────────────────────────────────────────────────────
 export const getActiveCourses = () => request('/api/courses');
@@ -510,16 +640,55 @@ export const getCourseDetails = (slug) => request(`/api/courses/${slug}`);
 
 // ─── Courses (Admin) ──────────────────────────────────────────────────────────
 export const adminListCourses = () => request('/api/admin/courses', { headers: adminAuthHeader() });
-export const adminCreateCourse = (payload) => request('/api/admin/courses', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
-export const adminUpdateCourse = (id, payload) => request(`/api/admin/courses/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
-export const adminDeleteCourse = (id) => request(`/api/admin/courses/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+export const adminCreateCourse = (payload) =>
+  request('/api/admin/courses', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+export const adminUpdateCourse = (id, payload) =>
+  request(`/api/admin/courses/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+export const adminDeleteCourse = (id) =>
+  request(`/api/admin/courses/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
-export const adminListModules = (courseId) => request(`/api/admin/course-modules${courseId ? `?courseId=${courseId}` : ''}`, { headers: adminAuthHeader() });
-export const adminCreateModule = (payload) => request('/api/admin/course-modules', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
-export const adminUpdateModule = (id, payload) => request(`/api/admin/course-modules/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
-export const adminDeleteModule = (id) => request(`/api/admin/course-modules/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+export const adminListModules = (courseId) =>
+  request(`/api/admin/course-modules${courseId ? `?courseId=${courseId}` : ''}`, {
+    headers: adminAuthHeader(),
+  });
+export const adminCreateModule = (payload) =>
+  request('/api/admin/course-modules', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+export const adminUpdateModule = (id, payload) =>
+  request(`/api/admin/course-modules/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+export const adminDeleteModule = (id) =>
+  request(`/api/admin/course-modules/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
 
-export const adminListCourseItems = (moduleId) => request(`/api/admin/course-items${moduleId ? `?moduleId=${moduleId}` : ''}`, { headers: adminAuthHeader() });
-export const adminCreateCourseItem = (payload) => request('/api/admin/course-items', { method: 'POST', headers: adminAuthHeader(), body: JSON.stringify(payload) });
-export const adminUpdateCourseItem = (id, payload) => request(`/api/admin/course-items/${id}`, { method: 'PATCH', headers: adminAuthHeader(), body: JSON.stringify(payload) });
-export const adminDeleteCourseItem = (id) => request(`/api/admin/course-items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });
+export const adminListCourseItems = (moduleId) =>
+  request(`/api/admin/course-items${moduleId ? `?moduleId=${moduleId}` : ''}`, {
+    headers: adminAuthHeader(),
+  });
+export const adminCreateCourseItem = (payload) =>
+  request('/api/admin/course-items', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+export const adminUpdateCourseItem = (id, payload) =>
+  request(`/api/admin/course-items/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+export const adminDeleteCourseItem = (id) =>
+  request(`/api/admin/course-items/${id}`, { method: 'DELETE', headers: adminAuthHeader() });

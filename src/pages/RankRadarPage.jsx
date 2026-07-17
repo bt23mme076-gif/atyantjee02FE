@@ -1,15 +1,44 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Check, ChevronDown, ChevronUp, Frown, Trophy, ClipboardList, User } from 'lucide-react';
+import {
+  Search,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Frown,
+  Trophy,
+  ClipboardList,
+  User,
+} from 'lucide-react';
 import { STATES_INDIA, INST_STATE, DB } from '../data/rankRadarData';
 
 // ─── Wizard step definitions ─────────────────────────────────────
 const STEPS = [
-  { id: 'exam', title: 'Exam Type', info: 'IIT predictions use JEE Advanced ranks. NIT/IIIT/GFTI predictions use JEE Main CRL.' },
+  {
+    id: 'exam',
+    title: 'Exam Type',
+    info: 'IIT predictions use JEE Advanced ranks. NIT/IIIT/GFTI predictions use JEE Main CRL.',
+  },
   { id: 'rank', title: 'Your Rank', info: 'Enter your rank exactly as shown on your scorecard.' },
-  { id: 'category', title: 'Category & PwD', info: 'Category determines the cutoff pool used for matching.' },
-  { id: 'gender', title: 'Gender', info: 'Female candidates also see Female-Only seat pools which have relaxed cutoffs.' },
-  { id: 'homeState', title: 'Home State', info: 'Applicable for NIT/IIIT quota. Home State quota typically has lower cutoffs.' },
-  { id: 'counselling', title: 'Counselling Type', info: 'JoSAA is the primary round. CSAB fills remaining seats with relaxed cutoffs.' },
+  {
+    id: 'category',
+    title: 'Category & PwD',
+    info: 'Category determines the cutoff pool used for matching.',
+  },
+  {
+    id: 'gender',
+    title: 'Gender',
+    info: 'Female candidates also see Female-Only seat pools which have relaxed cutoffs.',
+  },
+  {
+    id: 'homeState',
+    title: 'Home State',
+    info: 'Applicable for NIT/IIIT quota. Home State quota typically has lower cutoffs.',
+  },
+  {
+    id: 'counselling',
+    title: 'Counselling Type',
+    info: 'JoSAA is the primary round. CSAB fills remaining seats with relaxed cutoffs.',
+  },
 ];
 
 const CATEGORIES = [
@@ -24,20 +53,40 @@ const R_PAGE_SIZE = 15;
 const ORDER = { safe: 0, moderate: 1, borderline: 2, unlikely: 3 };
 
 const INITIAL = {
-  examType: null, rank: null, category: null, pwd: false,
-  gender: null, homeState: null, counselling: null,
+  examType: null,
+  rank: null,
+  category: null,
+  pwd: false,
+  gender: null,
+  homeState: null,
+  counselling: null,
 };
 
 // ─── Prediction helpers ──────────────────────────────────────────
 function getConfidence(rank, openRank, closeRank) {
   const margin = closeRank - rank;
   const range = closeRank - openRank;
-  if (margin < 0) return { label: 'Unlikely', pct: Math.max(5, Math.round(20 * (1 + margin / closeRank))), cls: 'unlikely' };
-  const safeMargin = closeRank * 0.10;
-  const modMargin = closeRank * 0.20;
-  if (margin >= modMargin) return { label: 'Safe', pct: Math.min(99, Math.round(85 + 15 * (margin / range))), cls: 'safe' };
-  if (margin >= safeMargin) return { label: 'Moderate', pct: Math.round(60 + 25 * (margin / modMargin)), cls: 'moderate' };
-  return { label: 'Borderline', pct: Math.round(40 + 20 * (margin / safeMargin)), cls: 'borderline' };
+  if (margin < 0)
+    return {
+      label: 'Unlikely',
+      pct: Math.max(5, Math.round(20 * (1 + margin / closeRank))),
+      cls: 'unlikely',
+    };
+  const safeMargin = closeRank * 0.1;
+  const modMargin = closeRank * 0.2;
+  if (margin >= modMargin)
+    return {
+      label: 'Safe',
+      pct: Math.min(99, Math.round(85 + 15 * (margin / range))),
+      cls: 'safe',
+    };
+  if (margin >= safeMargin)
+    return { label: 'Moderate', pct: Math.round(60 + 25 * (margin / modMargin)), cls: 'moderate' };
+  return {
+    label: 'Borderline',
+    pct: Math.round(40 + 20 * (margin / safeMargin)),
+    cls: 'borderline',
+  };
 }
 
 function computeResults(state) {
@@ -59,7 +108,11 @@ function computeResults(state) {
     return true;
   });
 
-  results = results.map((r) => ({ ...r, conf: getConfidence(rank, r.openRank, r.closeRank), diff: r.closeRank - rank }));
+  results = results.map((r) => ({
+    ...r,
+    conf: getConfidence(rank, r.openRank, r.closeRank),
+    diff: r.closeRank - rank,
+  }));
   results.sort((a, b) => {
     const oc = ORDER[a.conf.cls] - ORDER[b.conf.cls];
     if (oc !== 0) return oc;
@@ -115,7 +168,10 @@ export default function RankRadarPage() {
           <div className="rr-brand">
             <div className="rr-logo">
               <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 1.5L11.5 7H16L12.5 10.5L14 16.5L9 13.5L4 16.5L5.5 10.5L2 7H6.5L9 1.5Z" fill="#e8d5b7" />
+                <path
+                  d="M9 1.5L11.5 7H16L12.5 10.5L14 16.5L9 13.5L4 16.5L5.5 10.5L2 7H6.5L9 1.5Z"
+                  fill="#e8d5b7"
+                />
               </svg>
             </div>
             <div>
@@ -183,7 +239,9 @@ function Wizard({ state, step, totalSteps, set, goNext, goBack }) {
         <span className="rr-footer-info">{stepDef.info}</span>
         <div style={{ display: 'flex', gap: 10 }}>
           {step > 0 && (
-            <button className="rr-btn rr-btn-secondary" onClick={goBack}>← Back</button>
+            <button className="rr-btn rr-btn-secondary" onClick={goBack}>
+              ← Back
+            </button>
           )}
           <button className="rr-btn rr-btn-primary" onClick={goNext}>
             {step === totalSteps - 1 ? 'See Predictions →' : 'Continue →'}
@@ -197,7 +255,9 @@ function Wizard({ state, step, totalSteps, set, goNext, goBack }) {
 function StepIntro({ title, sub }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--rr-text)', marginBottom: 6 }}>{title}</div>
+      <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--rr-text)', marginBottom: 6 }}>
+        {title}
+      </div>
       <div style={{ fontSize: 13, color: 'var(--rr-text3)' }}>{sub}</div>
     </div>
   );
@@ -206,16 +266,25 @@ function StepIntro({ title, sub }) {
 function ExamStep({ state, set }) {
   return (
     <>
-      <StepIntro title="Which exam did you give?" sub="This determines which colleges and cutoffs are shown." />
+      <StepIntro
+        title="Which exam did you give?"
+        sub="This determines which colleges and cutoffs are shown."
+      />
       <div className="rr-option-grid rr-cols-2">
-        <div className={`rr-opt-card ${state.examType === 'JEE Adv' ? 'selected' : ''}`} onClick={() => set({ examType: 'JEE Adv' })}>
+        <div
+          className={`rr-opt-card ${state.examType === 'JEE Adv' ? 'selected' : ''}`}
+          onClick={() => set({ examType: 'JEE Adv' })}
+        >
           <div className="rr-opt-icon">
             <Trophy className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
           </div>
           <div className="rr-opt-label">JEE Advanced</div>
           <div className="rr-opt-desc">IITs only — rank from JEE Adv scorecard</div>
         </div>
-        <div className={`rr-opt-card ${state.examType === 'JEE Main' ? 'selected' : ''}`} onClick={() => set({ examType: 'JEE Main' })}>
+        <div
+          className={`rr-opt-card ${state.examType === 'JEE Main' ? 'selected' : ''}`}
+          onClick={() => set({ examType: 'JEE Main' })}
+        >
           <div className="rr-opt-icon">
             <ClipboardList className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
           </div>
@@ -229,7 +298,10 @@ function ExamStep({ state, set }) {
 
 function RankStep({ state, set }) {
   const label = state.examType === 'JEE Adv' ? 'JEE Advanced Rank (AIR)' : 'JEE Main CRL Rank';
-  const hint = state.examType === 'JEE Adv' ? 'Ranks typically range from 1 to ~25,000' : 'Ranks range from 1 to ~11,00,000';
+  const hint =
+    state.examType === 'JEE Adv'
+      ? 'Ranks typically range from 1 to ~25,000'
+      : 'Ranks range from 1 to ~11,00,000';
   return (
     <>
       <StepIntro title="Enter your rank" sub="Use the rank from your official scorecard." />
@@ -255,10 +327,17 @@ function RankStep({ state, set }) {
 function CategoryStep({ state, set }) {
   return (
     <>
-      <StepIntro title="Category & PwD Status" sub="Determines which cutoff pool is used for your prediction." />
+      <StepIntro
+        title="Category & PwD Status"
+        sub="Determines which cutoff pool is used for your prediction."
+      />
       <div className="rr-option-grid rr-cols-5" style={{ marginBottom: 20 }}>
         {CATEGORIES.map((c) => (
-          <div key={c.v} className={`rr-opt-card ${state.category === c.v ? 'selected' : ''}`} onClick={() => set({ category: c.v })}>
+          <div
+            key={c.v}
+            className={`rr-opt-card ${state.category === c.v ? 'selected' : ''}`}
+            onClick={() => set({ category: c.v })}
+          >
             <div className="rr-opt-icon">{c.icon}</div>
             <div className="rr-opt-label">{c.label}</div>
             <div className="rr-opt-desc">{c.desc}</div>
@@ -266,10 +345,22 @@ function CategoryStep({ state, set }) {
         ))}
       </div>
       <div style={{ marginTop: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--rr-text2)', marginBottom: 10 }}>PwD (Persons with Disability)</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--rr-text2)', marginBottom: 10 }}>
+          PwD (Persons with Disability)
+        </div>
         <div className="rr-chips">
-          <div className={`rr-chip ${!state.pwd ? 'selected' : ''}`} onClick={() => set({ pwd: false })}>No PwD</div>
-          <div className={`rr-chip ${state.pwd ? 'selected' : ''}`} onClick={() => set({ pwd: true })}>Yes, I have PwD certificate</div>
+          <div
+            className={`rr-chip ${!state.pwd ? 'selected' : ''}`}
+            onClick={() => set({ pwd: false })}
+          >
+            No PwD
+          </div>
+          <div
+            className={`rr-chip ${state.pwd ? 'selected' : ''}`}
+            onClick={() => set({ pwd: true })}
+          >
+            Yes, I have PwD certificate
+          </div>
         </div>
       </div>
       {state.pwd && (
@@ -284,16 +375,25 @@ function CategoryStep({ state, set }) {
 function GenderStep({ state, set }) {
   return (
     <>
-      <StepIntro title="Gender" sub="Female candidates are eligible for both Gender Neutral and Female Only seat pools." />
+      <StepIntro
+        title="Gender"
+        sub="Female candidates are eligible for both Gender Neutral and Female Only seat pools."
+      />
       <div className="rr-option-grid rr-cols-2">
-        <div className={`rr-opt-card ${state.gender === 'Male' ? 'selected' : ''}`} onClick={() => set({ gender: 'Male' })}>
+        <div
+          className={`rr-opt-card ${state.gender === 'Male' ? 'selected' : ''}`}
+          onClick={() => set({ gender: 'Male' })}
+        >
           <div className="rr-opt-icon">
             <User className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
           </div>
           <div className="rr-opt-label">Male</div>
           <div className="rr-opt-desc">Gender Neutral pool only</div>
         </div>
-        <div className={`rr-opt-card ${state.gender === 'Female' ? 'selected' : ''}`} onClick={() => set({ gender: 'Female' })}>
+        <div
+          className={`rr-opt-card ${state.gender === 'Female' ? 'selected' : ''}`}
+          onClick={() => set({ gender: 'Female' })}
+        >
           <div className="rr-opt-icon">
             <User className="w-5 h-5 text-[#FF6B2B]" strokeWidth={2} />
           </div>
@@ -308,14 +408,26 @@ function GenderStep({ state, set }) {
 function HomeStateStep({ state, set }) {
   return (
     <>
-      <StepIntro title="Your Home State" sub="Used to determine Home State (HS) quota eligibility for NITs and IIITs. HS quota seats have lower cutoffs." />
-      <select className="rr-state-select" value={state.homeState || ''} onChange={(e) => set({ homeState: e.target.value || null })}>
+      <StepIntro
+        title="Your Home State"
+        sub="Used to determine Home State (HS) quota eligibility for NITs and IIITs. HS quota seats have lower cutoffs."
+      />
+      <select
+        className="rr-state-select"
+        value={state.homeState || ''}
+        onChange={(e) => set({ homeState: e.target.value || null })}
+      >
         <option value="">— Select your home state —</option>
-        {STATES_INDIA.map((s) => <option key={s} value={s}>{s}</option>)}
+        {STATES_INDIA.map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
       </select>
       {state.homeState && (
         <div className="rr-note rr-note-green" style={{ marginTop: 12 }}>
-          Home State: <strong>{state.homeState}</strong> — You qualify for HS quota in NITs/IIITs of this state.
+          Home State: <strong>{state.homeState}</strong> — You qualify for HS quota in NITs/IIITs of
+          this state.
         </div>
       )}
     </>
@@ -325,17 +437,26 @@ function HomeStateStep({ state, set }) {
 function CounsellingStep({ state, set }) {
   return (
     <>
-      <StepIntro title="Counselling Type" sub="JoSAA is the main joint seat allocation. CSAB runs special rounds with typically relaxed cutoffs for remaining seats." />
+      <StepIntro
+        title="Counselling Type"
+        sub="JoSAA is the main joint seat allocation. CSAB runs special rounds with typically relaxed cutoffs for remaining seats."
+      />
       <div className="rr-chips">
         {['JoSAA', 'CSAB', 'Both'].map((c) => (
-          <div key={c} className={`rr-chip ${state.counselling === c ? 'selected' : ''}`} onClick={() => set({ counselling: c })}>
+          <div
+            key={c}
+            className={`rr-chip ${state.counselling === c ? 'selected' : ''}`}
+            onClick={() => set({ counselling: c })}
+          >
             {c === 'Both' ? 'Both (combined view)' : `${c} 2025`}
           </div>
         ))}
       </div>
       <div className="rr-info-block" style={{ marginTop: 16 }}>
-        <strong>JoSAA:</strong> Primary counselling. Runs 6 rounds. Higher competition.<br />
-        <strong>CSAB:</strong> Supplemental counselling after JoSAA. Typically lower cutoffs.<br />
+        <strong>JoSAA:</strong> Primary counselling. Runs 6 rounds. Higher competition.
+        <br />
+        <strong>CSAB:</strong> Supplemental counselling after JoSAA. Typically lower cutoffs.
+        <br />
         <strong>Both:</strong> Shows all available options from both systems.
       </div>
     </>
@@ -357,12 +478,15 @@ function Results({ state, results, onReset }) {
       if (rType && r.type !== rType) return false;
       if (rConf && r.conf.cls !== rConf) return false;
       if (rCounsel && r.counselling !== rCounsel) return false;
-      if (q && !r.institute.toLowerCase().includes(q) && !r.branch.toLowerCase().includes(q)) return false;
+      if (q && !r.institute.toLowerCase().includes(q) && !r.branch.toLowerCase().includes(q))
+        return false;
       return true;
     });
   }, [results, rSearch, rType, rConf, rCounsel]);
 
-  useEffect(() => { setRPage(0); }, [rSearch, rType, rConf, rCounsel]);
+  useEffect(() => {
+    setRPage(0);
+  }, [rSearch, rType, rConf, rCounsel]);
 
   const stats = useMemo(() => {
     const safe = results.filter((r) => r.conf.cls === 'safe').length;
@@ -389,35 +513,92 @@ function Results({ state, results, onReset }) {
           <div className="rr-results-sub">Based on 2024 JoSAA/CSAB cutoffs · 2025 estimates</div>
         </div>
         <div className="rr-profile-chip">
-          <span>{state.examType}</span><span>·</span>
-          <strong>Rank {state.rank?.toLocaleString()}</strong><span>·</span>
-          <span>{catDisplay}</span><span>·</span>
+          <span>{state.examType}</span>
+          <span>·</span>
+          <strong>Rank {state.rank?.toLocaleString()}</strong>
+          <span>·</span>
+          <span>{catDisplay}</span>
+          <span>·</span>
           <span>{state.gender}</span>
-          {state.homeState && state.homeState !== 'All India' && (<><span>·</span><span>{state.homeState}</span></>)}
+          {state.homeState && state.homeState !== 'All India' && (
+            <>
+              <span>·</span>
+              <span>{state.homeState}</span>
+            </>
+          )}
         </div>
       </div>
-      <button className="rr-btn rr-btn-secondary rr-btn-sm" onClick={onReset} style={{ marginBottom: 16 }}>← New Prediction</button>
+      <button
+        className="rr-btn rr-btn-secondary rr-btn-sm"
+        onClick={onReset}
+        style={{ marginBottom: 16 }}
+      >
+        ← New Prediction
+      </button>
 
       <div className="rr-stats-row">
-        <div className="rr-stat-box"><div className="rr-stat-label">Total Options</div><div className="rr-stat-val">{stats.total}</div></div>
-        <div className="rr-stat-box"><div className="rr-stat-label">Safe Picks</div><div className="rr-stat-val" style={{ color: 'var(--rr-green)' }}>{stats.safe}</div></div>
-        <div className="rr-stat-box"><div className="rr-stat-label">Institutes</div><div className="rr-stat-val">{stats.institutes}</div></div>
-        <div className="rr-stat-box"><div className="rr-stat-label">Best Chance</div><div className="rr-stat-val" style={{ fontSize: 14 }}>{stats.best}</div></div>
+        <div className="rr-stat-box">
+          <div className="rr-stat-label">Total Options</div>
+          <div className="rr-stat-val">{stats.total}</div>
+        </div>
+        <div className="rr-stat-box">
+          <div className="rr-stat-label">Safe Picks</div>
+          <div className="rr-stat-val" style={{ color: 'var(--rr-green)' }}>
+            {stats.safe}
+          </div>
+        </div>
+        <div className="rr-stat-box">
+          <div className="rr-stat-label">Institutes</div>
+          <div className="rr-stat-val">{stats.institutes}</div>
+        </div>
+        <div className="rr-stat-box">
+          <div className="rr-stat-label">Best Chance</div>
+          <div className="rr-stat-val" style={{ fontSize: 14 }}>
+            {stats.best}
+          </div>
+        </div>
       </div>
 
       <div className="rr-filters-bar">
         <div className="rr-search-box">
           <Search size={15} />
-          <input type="text" placeholder="Search institute or branch..." value={rSearch} onChange={(e) => setRSearch(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Search institute or branch..."
+            value={rSearch}
+            onChange={(e) => setRSearch(e.target.value)}
+          />
         </div>
-        <select className="rr-filter-select" value={rType} onChange={(e) => setRType(e.target.value)}>
-          <option value="">All types</option><option value="IIT">IITs</option><option value="NIT">NITs</option><option value="IIIT">IIITs</option><option value="GFTI">GFTIs</option>
+        <select
+          className="rr-filter-select"
+          value={rType}
+          onChange={(e) => setRType(e.target.value)}
+        >
+          <option value="">All types</option>
+          <option value="IIT">IITs</option>
+          <option value="NIT">NITs</option>
+          <option value="IIIT">IIITs</option>
+          <option value="GFTI">GFTIs</option>
         </select>
-        <select className="rr-filter-select" value={rConf} onChange={(e) => setRConf(e.target.value)}>
-          <option value="">All chances</option><option value="safe">Safe</option><option value="moderate">Moderate</option><option value="borderline">Borderline</option><option value="unlikely">Unlikely</option>
+        <select
+          className="rr-filter-select"
+          value={rConf}
+          onChange={(e) => setRConf(e.target.value)}
+        >
+          <option value="">All chances</option>
+          <option value="safe">Safe</option>
+          <option value="moderate">Moderate</option>
+          <option value="borderline">Borderline</option>
+          <option value="unlikely">Unlikely</option>
         </select>
-        <select className="rr-filter-select" value={rCounsel} onChange={(e) => setRCounsel(e.target.value)}>
-          <option value="">All rounds</option><option value="JoSAA">JoSAA</option><option value="CSAB">CSAB</option>
+        <select
+          className="rr-filter-select"
+          value={rCounsel}
+          onChange={(e) => setRCounsel(e.target.value)}
+        >
+          <option value="">All rounds</option>
+          <option value="JoSAA">JoSAA</option>
+          <option value="CSAB">CSAB</option>
         </select>
       </div>
 
@@ -428,14 +609,34 @@ function Results({ state, results, onReset }) {
         </div>
       ) : (
         <div className="rr-cards-list">
-          {slice.map((r, i) => <ResultCard key={`${r.institute}-${r.branch}-${r.counselling}-${start + i}`} r={r} rank={state.rank} />)}
+          {slice.map((r, i) => (
+            <ResultCard
+              key={`${r.institute}-${r.branch}-${r.counselling}-${start + i}`}
+              r={r}
+              rank={state.rank}
+            />
+          ))}
         </div>
       )}
 
       <div className="rr-pagination">
-        <span className="rr-page-info">{filtered.length ? `${start + 1}–${end} of ${filtered.length}` : ''}</span>
-        <button className="rr-page-btn" disabled={rPage === 0} onClick={() => setRPage((p) => p - 1)}>← Prev</button>
-        <button className="rr-page-btn" disabled={end >= filtered.length} onClick={() => setRPage((p) => p + 1)}>Next →</button>
+        <span className="rr-page-info">
+          {filtered.length ? `${start + 1}–${end} of ${filtered.length}` : ''}
+        </span>
+        <button
+          className="rr-page-btn"
+          disabled={rPage === 0}
+          onClick={() => setRPage((p) => p - 1)}
+        >
+          ← Prev
+        </button>
+        <button
+          className="rr-page-btn"
+          disabled={end >= filtered.length}
+          onClick={() => setRPage((p) => p + 1)}
+        >
+          Next →
+        </button>
       </div>
 
       <div className="rr-data-docs">
@@ -445,17 +646,28 @@ function Results({ state, results, onReset }) {
         </div>
         {docsOpen && (
           <div className="rr-data-docs-body open">
-            <strong>Category codes:</strong> OPEN, EWS, OBC-NCL, SC, ST (append -PwD for PwD pools)<br />
-            <strong>Gender pools:</strong> GN (Gender Neutral), FO (Female Only)<br />
-            <strong>Quota codes:</strong> AI (All India / IITs), OS (Other State), HS (Home State)<br />
-            <strong>Counselling:</strong> JoSAA, CSAB<br /><br />
-            <strong>Prediction confidence bands:</strong><br />
-            🟢 <strong>Safe:</strong> Your rank is ≥20% below closing rank (high confidence)<br />
-            🔵 <strong>Moderate:</strong> Your rank is 10–20% below closing rank<br />
-            🟠 <strong>Borderline:</strong> Your rank is within 10% of closing rank<br />
-            🔴 <strong>Unlikely:</strong> Your rank exceeds the closing rank<br /><br />
-            Cutoffs are based on 2024 JoSAA/CSAB closing ranks and used as estimates for 2025.
-            Treat these as guidance, not a guarantee.
+            <strong>Category codes:</strong> OPEN, EWS, OBC-NCL, SC, ST (append -PwD for PwD pools)
+            <br />
+            <strong>Gender pools:</strong> GN (Gender Neutral), FO (Female Only)
+            <br />
+            <strong>Quota codes:</strong> AI (All India / IITs), OS (Other State), HS (Home State)
+            <br />
+            <strong>Counselling:</strong> JoSAA, CSAB
+            <br />
+            <br />
+            <strong>Prediction confidence bands:</strong>
+            <br />
+            🟢 <strong>Safe:</strong> Your rank is ≥20% below closing rank (high confidence)
+            <br />
+            🔵 <strong>Moderate:</strong> Your rank is 10–20% below closing rank
+            <br />
+            🟠 <strong>Borderline:</strong> Your rank is within 10% of closing rank
+            <br />
+            🔴 <strong>Unlikely:</strong> Your rank exceeds the closing rank
+            <br />
+            <br />
+            Cutoffs are based on 2024 JoSAA/CSAB closing ranks and used as estimates for 2025. Treat
+            these as guidance, not a guarantee.
           </div>
         )}
       </div>
@@ -465,13 +677,24 @@ function Results({ state, results, onReset }) {
 
 function ResultCard({ r, rank }) {
   const diff = r.closeRank - rank;
-  const diffStr = diff >= 0 ? `+${diff.toLocaleString()} buffer` : `${Math.abs(diff).toLocaleString()} above cutoff`;
+  const diffStr =
+    diff >= 0
+      ? `+${diff.toLocaleString()} buffer`
+      : `${Math.abs(diff).toLocaleString()} above cutoff`;
   const diffCls = diff >= 0 ? 'good' : 'bad';
-  const typeBadge = r.type === 'IIT' ? 'rr-badge-iit' : r.type === 'NIT' ? 'rr-badge-nit' : r.type === 'IIIT' ? 'rr-badge-iiit' : 'rr-badge-gfti';
+  const typeBadge =
+    r.type === 'IIT'
+      ? 'rr-badge-iit'
+      : r.type === 'NIT'
+        ? 'rr-badge-nit'
+        : r.type === 'IIIT'
+          ? 'rr-badge-iiit'
+          : 'rr-badge-gfti';
   const couBadge = r.counselling === 'JoSAA' ? 'rr-badge-josaa' : 'rr-badge-csab';
   const barWidth = Math.min(100, Math.max(5, r.conf.pct));
   const poolLabel = r.genderPool === 'FO' ? 'Female Only' : 'Gender Neutral';
-  const quotaLabel = r.quota === 'AI' ? 'All India' : r.quota === 'HS' ? 'Home State' : 'Other State';
+  const quotaLabel =
+    r.quota === 'AI' ? 'All India' : r.quota === 'HS' ? 'Home State' : 'Other State';
 
   return (
     <div className="rr-result-card">
@@ -486,9 +709,14 @@ function ResultCard({ r, rank }) {
           <div className="rr-branch-name">{r.branch}</div>
         </div>
         <div className="rr-card-right">
-          <span className={`rr-confidence-pill rr-conf-${r.conf.cls}`}>{r.conf.label} · {r.conf.pct}%</span>
+          <span className={`rr-confidence-pill rr-conf-${r.conf.cls}`}>
+            {r.conf.label} · {r.conf.pct}%
+          </span>
           <div className="rr-progress-bar-wrap" style={{ width: 90 }}>
-            <div className={`rr-progress-bar rr-bar-${r.conf.cls}`} style={{ width: `${barWidth}%` }} />
+            <div
+              className={`rr-progress-bar rr-bar-${r.conf.cls}`}
+              style={{ width: `${barWidth}%` }}
+            />
           </div>
         </div>
       </div>
@@ -509,7 +737,9 @@ function ResultCard({ r, rank }) {
         </div>
         <div className="rr-rank-item">
           <div className="rr-rank-item-label">Your Rank / Diff</div>
-          <div className={`rr-rank-item-val ${diffCls}`}>{rank.toLocaleString()} ({diffStr})</div>
+          <div className={`rr-rank-item-val ${diffCls}`}>
+            {rank.toLocaleString()} ({diffStr})
+          </div>
         </div>
       </div>
     </div>

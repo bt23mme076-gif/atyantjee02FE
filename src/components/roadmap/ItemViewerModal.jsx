@@ -1,6 +1,14 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, CheckCircle2, ClipboardCheck, HelpCircle, FileText, PlayCircle } from 'lucide-react';
+import {
+  X,
+  ExternalLink,
+  CheckCircle2,
+  ClipboardCheck,
+  HelpCircle,
+  FileText,
+  PlayCircle,
+} from 'lucide-react';
 import { resolveAssetUrl } from '../../utils/api';
 
 /**
@@ -48,7 +56,9 @@ function VideoViewer({ item }) {
   const isUploaded = isHostedFile(item.url);
 
   if (!item.url) {
-    return <p className="text-center text-sm text-white/50 py-8">No video attached to this item yet.</p>;
+    return (
+      <p className="text-center text-sm text-white/50 py-8">No video attached to this item yet.</p>
+    );
   }
 
   if (youtubeEmbed) {
@@ -68,13 +78,7 @@ function VideoViewer({ item }) {
   if (isUploaded) {
     return (
       <div className="aspect-video w-full overflow-hidden rounded-xl bg-black">
-        <video
-          src={resolved}
-          controls
-          preload="auto"
-          className="h-full w-full"
-          title={item.title}
-        >
+        <video src={resolved} controls preload="auto" className="h-full w-full" title={item.title}>
           Your browser does not support the video tag.
         </video>
       </div>
@@ -106,15 +110,23 @@ function DocumentViewer({ item }) {
   const isDoc = ['doc', 'docx', 'ppt', 'pptx'].includes(ext);
 
   if (!item.url) {
-    return <p className="text-center text-sm text-white/50 py-8">No document attached to this item yet.</p>;
+    return (
+      <p className="text-center text-sm text-white/50 py-8">
+        No document attached to this item yet.
+      </p>
+    );
   }
 
   // ── Google Drive link ──────────────────────────────────────────
   if (driveEmbed) {
     return (
       <div className="flex flex-col gap-3">
-        <a href={resolved} target="_blank" rel="noopener noreferrer"
-          className="inline-flex self-end items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700">
+        <a
+          href={resolved}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex self-end items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700"
+        >
           <ExternalLink className="h-3.5 w-3.5" /> Open in new tab
         </a>
         <div className="h-[60vh] w-full overflow-hidden rounded-xl bg-gray-900">
@@ -155,7 +167,9 @@ function DocumentViewer({ item }) {
           <div className="flex h-full flex-col items-center justify-center gap-4 rounded-xl bg-gray-900 py-12">
             <FileText className="h-14 w-14 text-blue-400/50" />
             <p className="text-center text-sm text-white/60">
-              Your browser can&apos;t preview PDFs here.<br />Use the button above to open it.
+              Your browser can&apos;t preview PDFs here.
+              <br />
+              Use the button above to open it.
             </p>
           </div>
         </object>
@@ -168,7 +182,9 @@ function DocumentViewer({ item }) {
     <div className="flex flex-col items-center gap-4 py-8">
       <FileText className="h-16 w-16 text-blue-400/60" />
       <p className="text-center text-sm text-white/70">
-        {isDoc ? 'This Office document opens best in a new tab or in Google Docs.' : 'This document opens in a new tab.'}
+        {isDoc
+          ? 'This Office document opens best in a new tab or in Google Docs.'
+          : 'This document opens in a new tab.'}
       </p>
       <a
         href={resolved}
@@ -257,7 +273,9 @@ function QuizViewer({ item }) {
 export default function ItemViewerModal({ item, onClose, onComplete }) {
   useEffect(() => {
     if (!item) return;
-    const onKeyDown = (e) => { if (e.key === 'Escape') onClose(); };
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [item, onClose]);
@@ -309,11 +327,11 @@ export default function ItemViewerModal({ item, onClose, onComplete }) {
             </div>
 
             {/* Type-specific content */}
-            {item.type === 'video'    && <VideoViewer    item={item} />}
+            {item.type === 'video' && <VideoViewer item={item} />}
             {item.type === 'document' && <DocumentViewer item={item} />}
-            {item.type === 'article'  && <ArticleViewer  item={item} />}
-            {item.type === 'task'     && <TaskViewer     item={item} />}
-            {item.type === 'quiz'     && <QuizViewer     item={item} />}
+            {item.type === 'article' && <ArticleViewer item={item} />}
+            {item.type === 'task' && <TaskViewer item={item} />}
+            {item.type === 'quiz' && <QuizViewer item={item} />}
 
             {/* Completion note */}
             <p className="mt-4 text-center text-xs text-white/30">

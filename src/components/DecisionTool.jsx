@@ -10,9 +10,11 @@ function mockSuggestion(stream, rank, confusion) {
   let direction = 'Explore nearby tier colleges and branch-fit options.';
   if (stream === 'PCM') direction = 'Consider strong CSE/IT options and build coding practice.';
   if (stream === 'PCB') direction = 'Explore biotech, allied health, and strong biology programs.';
-  if (stream === 'Commerce') direction = 'Look at commerce + analytics pathways and secure internships.';
+  if (stream === 'Commerce')
+    direction = 'Look at commerce + analytics pathways and secure internships.';
 
-  if (confusion && confusion.toLowerCase().includes('branch')) direction = 'Prioritise branch-fit over college brand.';
+  if (confusion && confusion.toLowerCase().includes('branch'))
+    direction = 'Prioritise branch-fit over college brand.';
 
   return { risk, direction, next: 'Talk to a senior for a 20-min clarity call.' };
 }
@@ -29,7 +31,11 @@ export default function DecisionTool() {
   }
 
   return (
-    <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="bg-white px-4 py-8 sm:px-6 lg:px-8">
+    <motion.section
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      className="bg-white px-4 py-8 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-4xl">
         <div className="rounded-2xl bg-gradient-to-r from-white/60 to-white/40 p-6 shadow-lg">
           <div className="flex items-center justify-between">
@@ -38,24 +44,53 @@ export default function DecisionTool() {
           </div>
 
           <div className="mt-4 grid gap-3 grid-cols-1 sm:grid-cols-3">
-            <select value={stream} onChange={(e) => setStream(e.target.value)} className="rounded-md border px-3 py-2.5 text-sm">
+            <select
+              value={stream}
+              onChange={(e) => setStream(e.target.value)}
+              className="rounded-md border px-3 py-2.5 text-sm"
+            >
               <option>PCM</option>
               <option>PCB</option>
               <option>Commerce</option>
             </select>
-            <input value={rank} onChange={(e) => setRank(e.target.value)} placeholder="Rank / Marks" className="rounded-md border px-3 py-2.5 text-sm" />
-            <input value={confusion} onChange={(e) => setConfusion(e.target.value)} placeholder="Main confusion (optional)" className="rounded-md border px-3 py-2.5 text-sm" />
+            <input
+              value={rank}
+              onChange={(e) => setRank(e.target.value)}
+              placeholder="Rank / Marks"
+              className="rounded-md border px-3 py-2.5 text-sm"
+            />
+            <input
+              value={confusion}
+              onChange={(e) => setConfusion(e.target.value)}
+              placeholder="Main confusion (optional)"
+              className="rounded-md border px-3 py-2.5 text-sm"
+            />
           </div>
 
           <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-            <button onClick={handleGet} className="rounded-full bg-[#FF6B2B] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#ff7a42] transition">Get My Best Option</button>
-            <button onClick={() => window.dispatchEvent(new CustomEvent('openLeadModal'))} className="rounded-full border px-4 py-2.5 text-sm hover:bg-[#FF6B2B]/10 transition">Talk to a senior</button>
+            <button
+              onClick={handleGet}
+              className="rounded-full bg-[#FF6B2B] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#ff7a42] transition"
+            >
+              Get My Best Option
+            </button>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('openLeadModal'))}
+              className="rounded-full border px-4 py-2.5 text-sm hover:bg-[#FF6B2B]/10 transition"
+            >
+              Talk to a senior
+            </button>
           </div>
 
           {result && (
             <div className="mt-4 rounded-lg border p-4">
-              <div className="text-sm text-[#FF6B2B] font-semibold">Your Risk Level: <span className="text-black">{result.risk}</span></div>
-              <div className="mt-2 text-lg font-bold">Suggested Direction: <span className="text-[#0B0F2E] font-semibold">{result.direction}</span></div>
+              <div className="text-sm text-[#FF6B2B] font-semibold">
+                Your Risk Level: <span className="text-black">{result.risk}</span>
+              </div>
+              <div className="mt-2 text-lg font-bold">
+                Suggested Direction:{' '}
+                <span className="text-[#0B0F2E] font-semibold">{result.direction}</span>
+              </div>
               <div className="mt-1 text-sm text-gray-700">Next Step: {result.next}</div>
             </div>
           )}

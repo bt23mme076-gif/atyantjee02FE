@@ -1,7 +1,7 @@
 /**
  * Atyant Design Tokens
  * Shared design system for main site (atyant.in) and launchpad vertical
- * 
+ *
  * These tokens ensure visual consistency across all verticals and should be
  * updated in this centralized location, then referenced in tailwind.config.js
  */
@@ -11,14 +11,14 @@ export const designTokens = {
   colors: {
     // Core Brand
     primary: {
-      dark: '#0B0F2E',      // Dark navy background (main site header)
-      darkAlt: '#1a1f3a',   // Alternative dark navy
-      purple: '#8B5CF6',    // Main purple accent
+      dark: '#0B0F2E', // Dark navy background (main site header)
+      darkAlt: '#1a1f3a', // Alternative dark navy
+      purple: '#8B5CF6', // Main purple accent
       purpleAlt: '#7C3AED', // Alternative purple
-      orange: '#FF6B2B',    // Accent orange
+      orange: '#FF6B2B', // Accent orange
       orangeAlt: '#ff8a57', // Alternative orange
     },
-    
+
     // Neutrals
     neutral: {
       white: '#FFFFFF',
@@ -36,7 +36,7 @@ export const designTokens = {
         900: '#111827',
       },
     },
-    
+
     // Semantic Colors
     semantic: {
       success: '#10B981',
@@ -45,7 +45,7 @@ export const designTokens = {
       info: '#3B82F6',
       blue: '#0B72FF', // Alternative blue
     },
-    
+
     // Gradients (for Tailwind via arbitrary values)
     gradients: {
       purpleToOrange: 'linear-gradient(to right, #8B5CF6, #FF6B2B)',
@@ -53,14 +53,14 @@ export const designTokens = {
       orangeGlow: 'linear-gradient(to bottom right, #FF6B2B, #ff8a57)',
     },
   },
-  
+
   // Typography System
   typography: {
     fontFamily: {
       sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
       mono: ['Menlo', 'Monaco', 'Courier New', 'monospace'],
     },
-    
+
     fontSizes: {
       xs: ['12px', { lineHeight: '1.5rem' }],
       sm: ['14px', { lineHeight: '1.5rem' }],
@@ -73,7 +73,7 @@ export const designTokens = {
       '5xl': ['48px', { lineHeight: '3rem' }],
       '6xl': ['60px', { lineHeight: '3.5rem' }],
     },
-    
+
     fontWeights: {
       thin: 100,
       extralight: 200,
@@ -85,7 +85,7 @@ export const designTokens = {
       extrabold: 800,
       black: 900,
     },
-    
+
     lineHeights: {
       tight: 1.25,
       snug: 1.375,
@@ -93,7 +93,7 @@ export const designTokens = {
       relaxed: 1.625,
       loose: 2,
     },
-    
+
     letterSpacing: {
       tighter: '-0.05em',
       tight: '-0.025em',
@@ -103,7 +103,7 @@ export const designTokens = {
       widest: '0.1em',
     },
   },
-  
+
   // Spacing Scale
   spacing: {
     0: '0',
@@ -135,7 +135,7 @@ export const designTokens = {
     80: '20rem',
     96: '24rem',
   },
-  
+
   // Border Radius
   borderRadius: {
     none: '0',
@@ -148,7 +148,7 @@ export const designTokens = {
     '3xl': '1.5rem',
     full: '9999px',
   },
-  
+
   // Shadows
   shadows: {
     none: 'none',
@@ -163,7 +163,7 @@ export const designTokens = {
     orangeGlow: '0 0 20px rgba(255, 107, 43, 0.25)',
     purpleGlow: '0 0 20px rgba(139, 92, 246, 0.25)',
   },
-  
+
   // Breakpoints (for responsive design)
   breakpoints: {
     xs: '320px',
@@ -173,7 +173,7 @@ export const designTokens = {
     xl: '1280px',
     '2xl': '1536px',
   },
-  
+
   // Z-Index Scale
   zIndex: {
     hide: '-1',
@@ -196,14 +196,7 @@ export const designTokens = {
 };
 
 // Export individual token categories for easier consumption
-export const {
-  colors,
-  typography,
-  spacing,
-  borderRadius,
-  shadows,
-  breakpoints,
-  zIndex,
-} = designTokens;
+export const { colors, typography, spacing, borderRadius, shadows, breakpoints, zIndex } =
+  designTokens;
 
 export default designTokens;

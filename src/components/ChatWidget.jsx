@@ -6,7 +6,11 @@ const SESSION_KEY = 'atyant_chat_session_id';
 
 const INITIAL_MESSAGES = [
   { id: 1, from: 'bot', text: 'Hey there! How can I help with your career decision today?' },
-  { id: 2, from: 'bot', text: "To give you the best advice, what stream are you in, and do you have a recent exam rank you're working with?" },
+  {
+    id: 2,
+    from: 'bot',
+    text: "To give you the best advice, what stream are you in, and do you have a recent exam rank you're working with?",
+  },
 ];
 
 export default function ChatWidget() {
@@ -75,7 +79,6 @@ export default function ChatWidget() {
     <>
       {open ? (
         <div className="fixed top-0 right-0 z-[99999] h-screen w-full md:w-96 bg-white shadow-2xl border-l border-gray-100 flex flex-col transition-all duration-300 ease-in-out">
-
           {/* Header */}
           <div className="p-4 bg-[#09102b] text-white flex items-center justify-between shadow-sm shrink-0">
             <div>
@@ -97,7 +100,10 @@ export default function ChatWidget() {
           {/* Scrollable Messages Area */}
           <div className="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50">
             {messages.map((m) => (
-              <div key={m.id} className={`flex ${m.from === 'bot' ? 'justify-start' : 'justify-end'}`}>
+              <div
+                key={m.id}
+                className={`flex ${m.from === 'bot' ? 'justify-start' : 'justify-end'}`}
+              >
                 <div
                   className={`rounded-2xl px-4 py-2.5 text-sm max-w-[85%] break-words shadow-sm ${
                     m.from === 'bot'
@@ -143,8 +149,8 @@ export default function ChatWidget() {
           aria-label="Open AI chat"
         >
           <svg className="h-4 w-4 text-white fill-current" viewBox="0 0 16 16">
-            <path d="M5.5 0a.5.5 0 0 1 .5.5v2A.5.5 0 0 1 5.5 3h-2a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 3.5 0h2zm5 12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h2zm-5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h1zm9-9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h1zm-4-1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h3z"/>
-            <path d="M9.646 5.354a.5.5 0 0 0-.708 0L5.146 9.146a.5.5 0 1 0 .708.708L9.646 6.062a.5.5 0 0 0 0-.708z"/>
+            <path d="M5.5 0a.5.5 0 0 1 .5.5v2A.5.5 0 0 1 5.5 3h-2a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 3.5 0h2zm5 12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h2zm-5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h1zm9-9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h1zm-4-1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h3z" />
+            <path d="M9.646 5.354a.5.5 0 0 0-.708 0L5.146 9.146a.5.5 0 1 0 .708.708L9.646 6.062a.5.5 0 0 0 0-.708z" />
           </svg>
           <span>Ask AI Assistant</span>
         </button>

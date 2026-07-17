@@ -12,7 +12,10 @@ export default function BatchBanner({ batch, memberCount }) {
       <span>
         You're in <span className="font-semibold text-white">{batch.name}</span>
         {memberCount ? (
-          <span className="text-white/50"> · {memberCount.toLocaleString('en-IN')} students journeying with you</span>
+          <span className="text-white/50">
+            {' '}
+            · {memberCount.toLocaleString('en-IN')} students journeying with you
+          </span>
         ) : null}
       </span>
     </div>

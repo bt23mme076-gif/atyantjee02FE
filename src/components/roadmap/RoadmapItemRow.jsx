@@ -1,5 +1,15 @@
 import React from 'react';
-import { PlayCircle, FileText, ClipboardCheck, HelpCircle, CheckCircle2, Lock, ExternalLink, Loader2, Gift } from 'lucide-react';
+import {
+  PlayCircle,
+  FileText,
+  ClipboardCheck,
+  HelpCircle,
+  CheckCircle2,
+  Lock,
+  ExternalLink,
+  Loader2,
+  Gift,
+} from 'lucide-react';
 
 const typeIconMap = {
   video: PlayCircle,
@@ -17,7 +27,14 @@ const typeIconMap = {
 // Referral-gated items (requiresReferralUnlock) show a lock instead, and
 // clicking them calls onLockedClick so the page can point the student at
 // their referral progress instead of trying to open/complete anything.
-export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpening, onOpen, onLockedClick }) {
+export default function RoadmapItemRow({
+  item,
+  isLoggedIn,
+  isCompleted,
+  isOpening,
+  onOpen,
+  onLockedClick,
+}) {
   const TypeIcon = typeIconMap[item.type] || FileText;
   const isLocked = isLoggedIn && item.locked;
 
@@ -30,8 +47,8 @@ export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpenin
         isCompleted
           ? 'border-emerald-400/30 bg-emerald-500/5'
           : isLocked
-          ? 'border-[#8B5CF6]/25 bg-[#8B5CF6]/5 hover:border-[#8B5CF6]/40'
-          : 'border-white/10 bg-white/[0.03] hover:border-white/20'
+            ? 'border-[#8B5CF6]/25 bg-[#8B5CF6]/5 hover:border-[#8B5CF6]/40'
+            : 'border-white/10 bg-white/[0.03] hover:border-white/20'
       } ${!isLoggedIn ? 'cursor-not-allowed opacity-70' : ''}`}
     >
       <div className="flex min-w-0 items-center gap-3">
@@ -40,8 +57,8 @@ export default function RoadmapItemRow({ item, isLoggedIn, isCompleted, isOpenin
             isCompleted
               ? 'bg-emerald-500/15 text-emerald-400'
               : isLocked
-              ? 'bg-[#8B5CF6]/15 text-[#C4B5FD]'
-              : 'bg-white/5 text-[#FF9E6B]'
+                ? 'bg-[#8B5CF6]/15 text-[#C4B5FD]'
+                : 'bg-white/5 text-[#FF9E6B]'
           }`}
         >
           <TypeIcon className="h-5 w-5" />

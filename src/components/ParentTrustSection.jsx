@@ -7,7 +7,7 @@ export default function ParentTrustSection() {
     'No fake promises',
     'Senior-based support',
     'Risk-based shortlisting',
-    'Clear explanation for parents'
+    'Clear explanation for parents',
   ];
 
   return (
@@ -15,12 +15,18 @@ export default function ParentTrustSection() {
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-black">Why Parents Trust Atyant</h2>
-          <p className="mt-2 text-sm text-slate-600">Practical, evidence-backed guidance that parents can rely on.</p>
+          <p className="mt-2 text-sm text-slate-600">
+            Practical, evidence-backed guidance that parents can rely on.
+          </p>
         </div>
 
         <div className="mt-8 grid gap-6 md:grid-cols-4">
           {points.map((p, i) => (
-            <motion.div whileHover={{ y: -8 }} key={p} className="rounded-xl border p-6 text-center bg-gradient-to-br from-white to-white/80">
+            <motion.div
+              whileHover={{ y: -8 }}
+              key={p}
+              className="rounded-xl border p-6 text-center bg-gradient-to-br from-white to-white/80"
+            >
               <div className="text-2xl font-bold text-[#FF6B2B]">{i === 0 ? '✓' : ''}</div>
               <div className="mt-3 font-semibold text-[#0B0F2E]">{p}</div>
             </motion.div>

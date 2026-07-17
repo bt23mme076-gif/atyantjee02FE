@@ -2,21 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Star, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { isUserLoggedIn } from '../utils/api';
 import { PaymentModal, PLAN_ID_MAP } from './PricingCard';
 import { pricingPlans, admissionPrograms } from '../data/siteContent';
 import { getWhatsAppLink } from '../utils/whatsapp';
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { MessageCircle, ArrowRight } from 'lucide-react';
 
 const COLLEGES = [
-  'COEP Pune', 'VJTI Mumbai', 'SPIT Mumbai', 'PICT Pune',
-  'Walchand College of Engineering', 'VIT Pune', 'PCCOE Pune',
-  'DJSCE Mumbai', 'TSEC Mumbai', 'VIIT Pune',
+  'COEP Pune',
+  'VJTI Mumbai',
+  'SPIT Mumbai',
+  'PICT Pune',
+  'Walchand College of Engineering',
+  'VIT Pune',
+  'PCCOE Pune',
+  'DJSCE Mumbai',
+  'TSEC Mumbai',
+  'VIIT Pune',
   '+100 Other Colleges Across Maharashtra',
 ];
 
 const TOPICS = [
-  'MHT-CET CAP Rounds', 'Spot Rounds', 'Institute Level Rounds',
-  'College Selection', 'Branch Selection', 'Internships', 'Career Planning',
+  'MHT-CET CAP Rounds',
+  'Spot Rounds',
+  'Institute Level Rounds',
+  'College Selection',
+  'Branch Selection',
+  'Internships',
+  'Career Planning',
 ];
 
 const THEME_MAP = {
@@ -42,8 +55,10 @@ function pricingPlanToFlipCard(plan) {
     price: plan.price,
     oldPrice: plan.originalPrice,
     shortDesc: plan.bestFor,
-    valueCallout: plan.valueCallout || (plan.colorTheme === 'navy-glow' ? '🏆 Best Choice' : undefined),
-    comparisonHint: plan.colorTheme === 'navy-glow' ? 'Most chosen by students & parents' : undefined,
+    valueCallout:
+      plan.valueCallout || (plan.colorTheme === 'navy-glow' ? '🏆 Best Choice' : undefined),
+    comparisonHint:
+      plan.colorTheme === 'navy-glow' ? 'Most chosen by students & parents' : undefined,
     features: plan.features,
     bonusLabel: plan.bonusLabel?.replace(/^🎁\s*/, '') || 'Bonus Guides',
     bonusItems: plan.bonus || [],
@@ -77,7 +92,7 @@ function FlipCard({ card, index }) {
     if (!pending) return;
     try {
       const { bundleId } = JSON.parse(pending);
-      if (bundleId === planId && localStorage.getItem('user_token')) {
+      if (bundleId === planId && isUserLoggedIn()) {
         setShowPayment(true);
         localStorage.removeItem('atyant_pending_booking');
       }
@@ -90,15 +105,15 @@ function FlipCard({ card, index }) {
   const isPremium = card.colorTheme === 'premium';
   const isGreen = card.colorTheme === 'green';
 
-  const cardH = (isCenter || isPremium) ? 'h-[560px]' : 'h-[520px]';
+  const cardH = isCenter || isPremium ? 'h-[560px]' : 'h-[520px]';
 
-const frontBorder = isCenter
-  ? 'border-2 border-black shadow-[0_0_40px_6px_rgba(255,107,43,0.25)]'
-  : isPremium
-    ? 'border-2 border-black shadow-[0_0_40px_6px_rgba(99,102,241,0.3)]'
-    : isGreen
-      ? 'border-[1.5px] border-black shadow-[0_15px_50px_rgba(16,185,129,0.08)]'
-      : 'border-[1.5px] border-black shadow-lg';
+  const frontBorder = isCenter
+    ? 'border-2 border-black shadow-[0_0_40px_6px_rgba(255,107,43,0.25)]'
+    : isPremium
+      ? 'border-2 border-black shadow-[0_0_40px_6px_rgba(99,102,241,0.3)]'
+      : isGreen
+        ? 'border-[1.5px] border-black shadow-[0_15px_50px_rgba(16,185,129,0.08)]'
+        : 'border-[1.5px] border-black shadow-lg';
 
   const backBg = isCenter
     ? 'bg-gradient-to-br from-[#1c1200] to-[#3d2a00]'
@@ -161,10 +176,11 @@ const frontBorder = isCenter
         window.open(getWhatsAppLink(card.planTitle), '_blank');
         return;
       }
-      const token = localStorage.getItem('user_token');
-      if (!token) {
+      if (!isUserLoggedIn()) {
         localStorage.setItem('atyant_pending_booking', JSON.stringify({ bundleId: planId }));
-        navigate('/login', { state: { message: 'Please sign up or log in as a Student to buy this mentorship plan.' } });
+        navigate('/login', {
+          state: { message: 'Please sign up or log in as a Student to buy this mentorship plan.' },
+        });
         return;
       }
       setShowPayment(true);
@@ -183,8 +199,12 @@ const frontBorder = isCenter
         viewport={{ once: true, margin: '-80px' }}
         className={`relative w-full ${cardH} ${isCenter ? '-mt-6' : ''}`}
         style={{ perspective: '1200px' }}
-        onHoverStart={() => { if (!isTouchDevice) setFlipped(true); }}
-        onHoverEnd={() => { if (!isTouchDevice) setFlipped(false); }}
+        onHoverStart={() => {
+          if (!isTouchDevice) setFlipped(true);
+        }}
+        onHoverEnd={() => {
+          if (!isTouchDevice) setFlipped(false);
+        }}
         onClick={() => setFlipped((v) => !v)}
       >
         {card.badgeFloating && (
@@ -212,12 +232,22 @@ const frontBorder = isCenter
             {...(isCenter && {
               animate: 'pulse',
               variants: pulseVariants,
-              transition: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
+              transition: {
+                duration: 2,
+                repeat: Infinity,
+                repeatType: 'reverse',
+                ease: 'easeInOut',
+              },
             })}
             {...(isPremium && {
               animate: 'pulse',
               variants: pulseVariantsPremium,
-              transition: { duration: 2, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' },
+              transition: {
+                duration: 2,
+                repeat: Infinity,
+                repeatType: 'reverse',
+                ease: 'easeInOut',
+              },
             })}
           >
             {!card.badgeFloating && card.badge && (
@@ -227,9 +257,15 @@ const frontBorder = isCenter
             )}
 
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className={`self-start rounded-full px-3 py-1 text-[10px] font-black ${
-                isCenter ? 'bg-amber-100 text-amber-700' : isGreen ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-500/10 text-orange-600'
-              }`}>
+              <span
+                className={`self-start rounded-full px-3 py-1 text-[10px] font-black ${
+                  isCenter
+                    ? 'bg-amber-100 text-amber-700'
+                    : isGreen
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-orange-500/10 text-orange-600'
+                }`}
+              >
                 {card.discount}
               </span>
               {card.discountLabel && (
@@ -245,32 +281,36 @@ const frontBorder = isCenter
               </span>
             )}
 
-            <h3 className={`font-black leading-tight tracking-tight text-[#0B0F2E] ${isCenter ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'}`}>
+            <h3
+              className={`font-black leading-tight tracking-tight text-[#0B0F2E] ${isCenter ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'}`}
+            >
               {card.title}
             </h3>
 
             {card.subtitle && (
-              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">{card.subtitle}</p>
+              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">
+                {card.subtitle}
+              </p>
             )}
 
-          <div className="mt-3 flex-1">
-            <p className="text-base font-medium leading-relaxed text-slate-500">
-              {card.shortDesc}
-            </p>
+            <div className="mt-3 flex-1">
+              <p className="text-base font-medium leading-relaxed text-slate-500">
+                {card.shortDesc}
+              </p>
 
-            {!flipped && isTouchDevice && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFlipped(true);
-                }}
-                className="mt-2 text-sm font-semibold text-[#FF6B2B] underline underline-offset-4 hover:text-[#ff7b48]"
-              >
-                Read more...
-              </button>
-            )}
-          </div>
+              {!flipped && isTouchDevice && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFlipped(true);
+                  }}
+                  className="mt-2 text-sm font-semibold text-[#FF6B2B] underline underline-offset-4 hover:text-[#ff7b48]"
+                >
+                  Read more...
+                </button>
+              )}
+            </div>
 
             {card.comparisonHint && (
               <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
@@ -283,7 +323,9 @@ const frontBorder = isCenter
                 ₹{card.price}
               </span>
               {card.oldPrice && (
-                <span className="text-base font-bold line-through text-slate-400">₹{card.oldPrice}</span>
+                <span className="text-base font-bold line-through text-slate-400">
+                  ₹{card.oldPrice}
+                </span>
               )}
             </div>
 
@@ -308,9 +350,17 @@ const frontBorder = isCenter
             }}
           >
             <div className="mb-4">
-              <p className={`mb-1 text-xs font-black uppercase tracking-[0.2em] ${
-                isCenter ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-[#FF6B2B]'
-              }`}>
+              <p
+                className={`mb-1 text-xs font-black uppercase tracking-[0.2em] ${
+                  isCenter
+                    ? 'text-amber-300'
+                    : isPremium
+                      ? 'text-indigo-300'
+                      : isGreen
+                        ? 'text-emerald-300'
+                        : 'text-[#FF6B2B]'
+                }`}
+              >
                 What&apos;s included
               </p>
               <h4 className="text-lg font-black text-white">{card.title}</h4>
@@ -326,31 +376,57 @@ const frontBorder = isCenter
             </div>
 
             {card.bonusItems?.length > 0 && (
-              <div className={`mt-4 rounded-2xl border p-4 ${
-                isCenter
-                  ? 'border-amber-700/40 bg-amber-900/30'
-                  : isPremium
-                    ? 'border-indigo-700/40 bg-indigo-900/40'
-                    : isGreen
-                      ? 'border-emerald-700/40 bg-emerald-900/30'
-                      : 'border-white/10 bg-white/5'
-              }`}>
+              <div
+                className={`mt-4 rounded-2xl border p-4 ${
+                  isCenter
+                    ? 'border-amber-700/40 bg-amber-900/30'
+                    : isPremium
+                      ? 'border-indigo-700/40 bg-indigo-900/40'
+                      : isGreen
+                        ? 'border-emerald-700/40 bg-emerald-900/30'
+                        : 'border-white/10 bg-white/5'
+                }`}
+              >
                 <div className="mb-2 flex items-center gap-2">
-                  <Sparkles className={`h-3.5 w-3.5 ${
-                    isCenter ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-400'
-                  }`} />
-                  <p className={`text-[10px] font-black uppercase tracking-wider ${
-                    isCenter ? 'text-amber-300' : isPremium ? 'text-indigo-300' : isGreen ? 'text-emerald-300' : 'text-amber-300'
-                  }`}>
+                  <Sparkles
+                    className={`h-3.5 w-3.5 ${
+                      isCenter
+                        ? 'text-amber-300'
+                        : isPremium
+                          ? 'text-indigo-300'
+                          : isGreen
+                            ? 'text-emerald-300'
+                            : 'text-amber-400'
+                    }`}
+                  />
+                  <p
+                    className={`text-[10px] font-black uppercase tracking-wider ${
+                      isCenter
+                        ? 'text-amber-300'
+                        : isPremium
+                          ? 'text-indigo-300'
+                          : isGreen
+                            ? 'text-emerald-300'
+                            : 'text-amber-300'
+                    }`}
+                  >
                     {card.bonusLabel}
                   </p>
                 </div>
                 <div className="space-y-1.5">
                   {card.bonusItems.map((item) => (
                     <div key={item} className="flex items-center gap-2">
-                      <Star className={`h-3 w-3 shrink-0 fill-current ${
-                        isCenter ? 'text-amber-400' : isPremium ? 'text-indigo-400' : isGreen ? 'text-emerald-400' : 'text-amber-400'
-                      }`} />
+                      <Star
+                        className={`h-3 w-3 shrink-0 fill-current ${
+                          isCenter
+                            ? 'text-amber-400'
+                            : isPremium
+                              ? 'text-indigo-400'
+                              : isGreen
+                                ? 'text-emerald-400'
+                                : 'text-amber-400'
+                        }`}
+                      />
                       <span className="text-xs font-medium text-white/75">{item}</span>
                     </div>
                   ))}
@@ -402,7 +478,9 @@ function TrustStrip() {
         <div className="pointer-events-none absolute -left-10 top-0 h-56 w-56 rounded-full bg-[#FF6B2B]/10 blur-3xl" />
         <div className="pointer-events-none absolute -right-10 bottom-0 h-56 w-56 rounded-full bg-indigo-500/10 blur-3xl" />
         <div className="relative z-10 text-center">
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.22em] text-[#FF6B2B]">Our Coverage</p>
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.22em] text-[#FF6B2B]">
+            Our Coverage
+          </p>
           <h3 className="mb-8 text-xl font-black text-white sm:text-2xl">
             🎯 Colleges We Help Students Evaluate
           </h3>
@@ -439,7 +517,9 @@ function InfoBanner() {
         <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-[#FF6B2B] to-[#ff8a57]" />
         <div className="flex flex-wrap items-center justify-center gap-3 pl-2">
           <span className="flex items-center gap-2 text-sm font-black text-[#0B0F2E]">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#FF6B2B] text-xs text-white">✦</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#FF6B2B] text-xs text-white">
+              ✦
+            </span>
             Guidance available for:
           </span>
           {TOPICS.map((topic) => (
@@ -460,7 +540,10 @@ function InfoBanner() {
 
 export default function AdmissionProgramsSection({ user }) {
   return (
-    <section id="programs" className="relative overflow-x-hidden bg-[#f6f7fb] px-4 py-12 font-sans sm:px-6 lg:px-8">
+    <section
+      id="programs"
+      className="relative overflow-x-hidden bg-[#f6f7fb] px-4 py-12 font-sans sm:px-6 lg:px-8"
+    >
       <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[800px] -translate-x-1/2 bg-gradient-to-b from-blue-500/10 to-transparent blur-[100px]" />
 
       <div className="relative z-10 mx-auto max-w-7xl">
@@ -480,12 +563,14 @@ export default function AdmissionProgramsSection({ user }) {
             <div className="flex items-center justify-center rounded-full bg-[#0B0F2E] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md">
               <span className="mr-1.5 animate-pulse">🔥</span> Early Bird
             </div>
-            <span className="text-xs font-bold text-slate-700">Join now for personalized college matching</span>
+            <span className="text-xs font-bold text-slate-700">
+              Join now for personalized college matching
+            </span>
           </motion.div>
 
           <div className="mb-5 flex justify-center">
             <span className="rounded-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
-             CSAB Counselling Plans
+              CSAB Counselling Plans
             </span>
           </div>
           <h2 className="mt-3 text-4xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl lg:text-6xl">
@@ -507,7 +592,7 @@ export default function AdmissionProgramsSection({ user }) {
               onClick={() =>
                 window.open(
                   'https://wa.me/919579040183?text=Hi%2C%20I%20have%20already%20purchased%20a%20plan%20and%20would%20like%20to%20upgrade.%20Please%20guide%20me.',
-                  '_blank',
+                  '_blank'
                 )
               }
               className="rounded-xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700"
@@ -526,11 +611,11 @@ export default function AdmissionProgramsSection({ user }) {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             viewport={{ once: true, margin: '-80px' }}
           >
-          <div className="mb-5 flex justify-center">
-            <span className="rounded-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
-              MHT-CET Counselling Plans
-            </span>
-          </div>
+            <div className="mb-5 flex justify-center">
+              <span className="rounded-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
+                MHT-CET Counselling Plans
+              </span>
+            </div>
             <h2 className="mt-3 text-3xl font-black text-[#0B0F2E] sm:text-5xl">
               Get the Guidance Your Admission Deserves
             </h2>
@@ -553,14 +638,15 @@ export default function AdmissionProgramsSection({ user }) {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <div id="othercounselling" className="relative overflow-hidden rounded-[2.5rem] border border-emerald-200/60 bg-white/90 p-10 shadow-[0_35px_80px_rgba(16,185,129,0.15)] backdrop-blur-xl">
-
+          <div
+            id="othercounselling"
+            className="relative overflow-hidden rounded-[2.5rem] border border-emerald-200/60 bg-white/90 p-10 shadow-[0_35px_80px_rgba(16,185,129,0.15)] backdrop-blur-xl"
+          >
             {/* Background Glow */}
             <div className="absolute -left-16 -top-16 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" />
             <div className="absolute -right-20 bottom-0 h-64 w-64 rounded-full bg-[#FF6B2B]/10 blur-3xl" />
 
             <div className="relative z-10">
-
               {/* Badge */}
               <div className="mb-6 flex justify-center">
                 <span className="rounded-full bg-gradient-to-r from-emerald-500 to-green-600 px-5 py-2 text-xs font-black uppercase tracking-[0.18em] text-white shadow-lg">
@@ -577,37 +663,27 @@ export default function AdmissionProgramsSection({ user }) {
 
               <p className="mx-auto mt-5 max-w-3xl text-center text-base sm:text-lg leading-relaxed text-slate-600">
                 We guide students for
-                <span>
-                  {" "}any college, any state,
-                  private universities,
-                  spot rounds, and more.
-                </span>
+                <span> any college, any state, private universities, spot rounds, and more.</span>
               </p>
 
               {/* Pills */}
 
               <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:justify-center">
-
-                {[
-                  "Private Colleges",
-                  "Spot Round",
-                  "College Selection",
-                  "Career Advice Plan"
-                ].map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs sm:text-sm font-semibold text-center text-emerald-700 transition-all duration-300 hover:scale-105 hover:bg-emerald-100"
-                  >
-                    {item}
-                  </span>
-                ))}
-
+                {['Private Colleges', 'Spot Round', 'College Selection', 'Career Advice Plan'].map(
+                  (item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs sm:text-sm font-semibold text-center text-emerald-700 transition-all duration-300 hover:scale-105 hover:bg-emerald-100"
+                    >
+                      {item}
+                    </span>
+                  )
+                )}
               </div>
 
               {/* CTA */}
 
               <div className="mt-12 flex justify-center">
-
                 <motion.a
                   href="https://wa.me/919753324876"
                   target="_blank"
@@ -621,11 +697,9 @@ export default function AdmissionProgramsSection({ user }) {
                   }}
                   className="group relative w-full max-w-sm sm:max-w-md overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 px-6 py-4 text-white shadow-[0_20px_60px_rgba(16,185,129,0.35)] transition-all duration-300"
                 >
-
                   <div className="absolute inset-0 bg-white/10 opacity-0 transition group-hover:opacity-100" />
 
                   <div className="relative flex items-center justify-between gap-4">
-
                     <motion.div
                       animate={{
                         y: [0, -4, 0],
@@ -639,26 +713,17 @@ export default function AdmissionProgramsSection({ user }) {
                     </motion.div>
 
                     <div className="flex-1 text-left">
+                      <div className="text-xl font-black">Chat on WhatsApp</div>
 
-                      <div className="text-xl font-black">
-                        Chat on WhatsApp
-                      </div>
-
-                      <div className="mt-1 text-sm text-white/90">
-                        Replies within a few minutes
-                      </div>
-
+                      <div className="mt-1 text-sm text-white/90">Replies within a few minutes</div>
                     </div>
 
                     <ArrowRight
                       size={24}
                       className="transition-transform duration-300 group-hover:translate-x-2"
                     />
-
                   </div>
-
                 </motion.a>
-
               </div>
 
               {/* Footer */}
@@ -666,19 +731,20 @@ export default function AdmissionProgramsSection({ user }) {
               <p className="mt-6 text-center text-sm text-slate-500">
                 💬 Get one-to-one guidance from experienced mentors for admissions not listed above.
               </p>
-
             </div>
-
           </div>
         </motion.div>
       </div>
-        <TrustStrip />
-        <InfoBanner />
-        <div className="mt-16 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">🔥 Limited Time Early Launch Offer</p>
-          <p className="mt-2 text-base font-semibold text-slate-600">Trusted Seniors. Real Insights. Better Decisions.</p>
-        </div>
+      <TrustStrip />
+      <InfoBanner />
+      <div className="mt-16 text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
+          🔥 Limited Time Early Launch Offer
+        </p>
+        <p className="mt-2 text-base font-semibold text-slate-600">
+          Trusted Seniors. Real Insights. Better Decisions.
+        </p>
+      </div>
     </section>
   );
 }
-

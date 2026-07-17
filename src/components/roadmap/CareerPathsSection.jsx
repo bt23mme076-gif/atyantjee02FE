@@ -2,10 +2,39 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowRight, ChevronDown, Code, Database, Briefcase, Palette, Shield, Cloud, Settings, Zap,
-  Building, LineChart, DollarSign, GraduationCap, Award, Globe, Rocket, Gamepad2,
-  Megaphone, Coins, Truck, Bot, Brain, Cpu, Link2, PenTool, Handshake, Users, Scale,
-  FlaskConical, Leaf, HelpCircle, Lock
+  ArrowRight,
+  ChevronDown,
+  Code,
+  Database,
+  Briefcase,
+  Palette,
+  Shield,
+  Cloud,
+  Settings,
+  Zap,
+  Building,
+  LineChart,
+  DollarSign,
+  GraduationCap,
+  Award,
+  Globe,
+  Rocket,
+  Gamepad2,
+  Megaphone,
+  Coins,
+  Truck,
+  Bot,
+  Brain,
+  Cpu,
+  Link2,
+  PenTool,
+  Handshake,
+  Users,
+  Scale,
+  FlaskConical,
+  Leaf,
+  HelpCircle,
+  Lock,
 } from 'lucide-react';
 
 const iconMap = {
@@ -13,22 +42,22 @@ const iconMap = {
   'data-science': Database,
   'product-management': Briefcase,
   'ui-ux-design': Palette,
-  'cybersecurity': Shield,
+  cybersecurity: Shield,
   'cloud-and-devops': Cloud,
   'mechanical-core': Settings,
   'electronics-and-vlsi': Zap,
   'civil-and-infra': Building,
-  'consulting': LineChart,
+  consulting: LineChart,
   'investment-banking': DollarSign,
   'mba-prep': GraduationCap,
   'gate-prep': Award,
   'ms-abroad': Globe,
-  'entrepreneurship': Rocket,
+  entrepreneurship: Rocket,
   'game-development': Gamepad2,
   'digital-marketing': Megaphone,
   'finance-and-fpanda': Coins,
   'supply-chain-and-operations': Truck,
-  'robotics': Bot,
+  robotics: Bot,
   'ai-ml-research': Brain,
   'embedded-systems': Cpu,
   'blockchain-and-web3': Link2,
@@ -37,7 +66,7 @@ const iconMap = {
   'hr-and-people-ops': Users,
   'legal-and-compliance': Scale,
   'biotech-and-pharma': FlaskConical,
-  'renewable-energy': Leaf
+  'renewable-energy': Leaf,
 };
 
 function getCareerPathIcon(slug) {
@@ -74,7 +103,13 @@ function CareerPathCard({ path, isLoggedIn }) {
 // RoadmapHero), not the light-mode reference design. The "+N more" control
 // is a real toggle: it expands the grid to reveal every remaining path
 // instead of being static text.
-export default function CareerPathsSection({ featured = [], more = [], totalCount = 0, remainingCount = 0, isLoggedIn = false }) {
+export default function CareerPathsSection({
+  featured = [],
+  more = [],
+  totalCount = 0,
+  remainingCount = 0,
+  isLoggedIn = false,
+}) {
   const [expanded, setExpanded] = useState(false);
 
   if (!featured.length) return null;
@@ -85,7 +120,9 @@ export default function CareerPathsSection({ featured = [], more = [], totalCoun
       <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF9E6B]">Career Exploration</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF9E6B]">
+              Career Exploration
+            </p>
             <h2 className="mt-2 max-w-xl text-3xl font-black leading-tight text-white sm:text-4xl">
               {totalCount || featured.length} career paths. One platform.
             </h2>
@@ -132,7 +169,9 @@ export default function CareerPathsSection({ featured = [], more = [], totalCoun
             className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-white/60 transition hover:text-white"
           >
             {expanded ? 'Show fewer paths' : `+ ${remainingCount} more paths inside the platform`}
-            <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
+            />
           </button>
         )}
       </div>

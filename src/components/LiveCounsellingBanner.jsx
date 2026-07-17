@@ -61,18 +61,24 @@ export default function LiveCounsellingBanner() {
               >
                 <div className="flex items-center gap-3">
                   <span className="relative flex h-2.5 w-2.5 shrink-0">
-                    <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${theme.dot} opacity-75`} />
-                    <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${theme.dot}`} />
+                    <span
+                      className={`absolute inline-flex h-full w-full animate-ping rounded-full ${theme.dot} opacity-75`}
+                    />
+                    <span
+                      className={`relative inline-flex h-2.5 w-2.5 rounded-full ${theme.dot}`}
+                    />
                   </span>
-                  <span className={`flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest ${theme.text}`}>
+                  <span
+                    className={`flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest ${theme.text}`}
+                  >
                     <Radio className="h-3.5 w-3.5" />
                     Live Now
                   </span>
-                  <span className="text-sm font-bold text-white">
-                    {exam.fullName} 
-                  </span>
+                  <span className="text-sm font-bold text-white">{exam.fullName}</span>
                 </div>
-                <span className={`inline-flex shrink-0 items-center gap-1 rounded-full ${theme.button} px-3.5 py-1.5 text-xs font-bold text-white transition`}>
+                <span
+                  className={`inline-flex shrink-0 items-center gap-1 rounded-full ${theme.button} px-3.5 py-1.5 text-xs font-bold text-white transition`}
+                >
                   View Plans
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>

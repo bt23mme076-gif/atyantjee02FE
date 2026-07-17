@@ -26,7 +26,9 @@ export default function TrustMetrics() {
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 sm:gap-6 sm:grid-cols-3 text-center">
           <div className="rounded-xl border p-4 sm:p-6 bg-white">
-            <div className="text-xl sm:text-2xl font-black text-[#0B0F2E]">{a.toLocaleString()}+</div>
+            <div className="text-xl sm:text-2xl font-black text-[#0B0F2E]">
+              {a.toLocaleString()}+
+            </div>
             <div className="text-xs sm:text-sm text-slate-600 mt-1">Students Guided</div>
           </div>
           <div className="rounded-xl border p-4 sm:p-6 bg-white">

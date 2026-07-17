@@ -64,10 +64,17 @@ export default function RoadmapHero({ user, streak, overallProgress, batch, memb
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            {isLoggedIn && <StreakBadge currentStreak={streak?.currentStreak} longestStreak={streak?.longestStreak} />}
+            {isLoggedIn && (
+              <StreakBadge
+                currentStreak={streak?.currentStreak}
+                longestStreak={streak?.longestStreak}
+              />
+            )}
             {isLoggedIn && batch && <BatchBanner batch={batch} memberCount={memberCount} />}
             {!isLoggedIn && (
-              <p className="text-sm text-white/50">Join thousands of students already on their path</p>
+              <p className="text-sm text-white/50">
+                Join thousands of students already on their path
+              </p>
             )}
           </div>
 

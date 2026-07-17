@@ -4,36 +4,36 @@ import { MessageCircle, X, Send } from 'lucide-react';
 
 const botResponses = {
   greeting: "Hi! 👋 I'm the Atyant Assistant. What would you like help with today?",
-  confused: "Feeling confused about college choice? Tell me your stream and rank, and I'll suggest the best path for you!",
+  confused:
+    "Feeling confused about college choice? Tell me your stream and rank, and I'll suggest the best path for you!",
   rank: "Got it! Based on your profile, I'm preparing personalized recommendations. Check your email shortly!",
-  default: "Thanks for that! 📌 We're preparing a detailed analysis for you. You'll get an email soon with college, branch, and career suggestions.",
+  default:
+    "Thanks for that! 📌 We're preparing a detailed analysis for you. You'll get an email soon with college, branch, and career suggestions.",
 };
 
 export default function WhatsAppFloatingButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, from: 'bot', text: botResponses.greeting }
-  ]);
+  const [messages, setMessages] = useState([{ id: 1, from: 'bot', text: botResponses.greeting }]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
   const sendMessage = (msg) => {
     if (!msg.trim()) return;
 
-    setMessages(prev => [...prev, { id: Date.now(), from: 'user', text: msg }]);
+    setMessages((prev) => [...prev, { id: Date.now(), from: 'user', text: msg }]);
     setInput('');
     setIsTyping(true);
 
     setTimeout(() => {
       let botReply = botResponses.default;
-      
+
       if (msg.toLowerCase().includes('confused') || msg.toLowerCase().includes('help')) {
         botReply = botResponses.confused;
       } else if (msg.toLowerCase().includes('rank') || msg.toLowerCase().includes('stream')) {
         botReply = botResponses.rank;
       }
 
-      setMessages(prev => [...prev, { id: Date.now() + 1, from: 'bot', text: botReply }]);
+      setMessages((prev) => [...prev, { id: Date.now() + 1, from: 'bot', text: botReply }]);
       setIsTyping(false);
     }, 800);
   };
@@ -88,7 +88,7 @@ export default function WhatsAppFloatingButton() {
                   </div>
                 </motion.div>
               ))}
-              
+
               {isTyping && (
                 <motion.div
                   initial={{ opacity: 0 }}

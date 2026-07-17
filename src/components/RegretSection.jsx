@@ -1,7 +1,16 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom'; // 1. Imported the router hook
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { AlertCircle, BookOpen, Building2, Users, Clock, ArrowRight, Sparkles, Quote } from 'lucide-react';
+import {
+  AlertCircle,
+  BookOpen,
+  Building2,
+  Users,
+  Clock,
+  ArrowRight,
+  Sparkles,
+  Quote,
+} from 'lucide-react';
 
 const regretStories = [
   {
@@ -18,8 +27,7 @@ const regretStories = [
   },
   {
     title: 'Choose college blindly after rank',
-    description:
-      'Got rank 45k, chose XYZ college just because it was in the merit list.',
+    description: 'Got rank 45k, chose XYZ college just because it was in the merit list.',
     icon: Building2,
     accent: 'amber',
     gradient: 'from-amber-500/20 via-amber-500/5 to-transparent',
@@ -30,8 +38,7 @@ const regretStories = [
   },
   {
     title: 'Followed friends instead of data',
-    description:
-      'All my friends picked Delhi colleges, so I did too instead of choosing wisely.',
+    description: 'All my friends picked Delhi colleges, so I did too instead of choosing wisely.',
     icon: Users,
     accent: 'indigo',
     gradient: 'from-indigo-500/20 via-indigo-500/5 to-transparent',
@@ -42,8 +49,7 @@ const regretStories = [
   },
   {
     title: 'Skipped senior advice & wasted time',
-    description:
-      'Ignored seniors who warned me about the branch and college combo.',
+    description: 'Ignored seniors who warned me about the branch and college combo.',
     icon: Clock,
     accent: 'emerald',
     gradient: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
@@ -77,7 +83,7 @@ const itemVariants = {
 // ─── INTERACTIVE CARD COMPONENT ─────────────────────────────────────────────
 function InteractiveCard({ story, idx }) {
   const ref = useRef(null);
-  
+
   // Mouse position values for 3D tilt
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -87,20 +93,20 @@ function InteractiveCard({ story, idx }) {
   const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
 
   // Map mouse position to rotation degrees
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['7deg', '-7deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-7deg', '7deg']);
 
   const handleMouseMove = (e) => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
-    
+
     // Calculate mouse position relative to card center (-0.5 to 0.5)
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    
+
     const xPct = mouseX / rect.width - 0.5;
     const yPct = mouseY / rect.height - 0.5;
-    
+
     x.set(xPct);
     y.set(yPct);
   };
@@ -123,23 +129,32 @@ function InteractiveCard({ story, idx }) {
         style={{
           rotateX,
           rotateY,
-          transformStyle: "preserve-3d",
+          transformStyle: 'preserve-3d',
         }}
         className={`relative h-full overflow-hidden rounded-[2rem] bg-white p-6 border border-slate-100 shadow-sm transition-shadow duration-300 group-hover:${story.glow} group-hover:${story.borderColor}`}
       >
         {/* Dynamic Gradient Top Edge */}
-        <div className={`absolute top-0 left-0 h-1 w-full bg-gradient-to-r ${story.gradient} opacity-50`} />
-        
+        <div
+          className={`absolute top-0 left-0 h-1 w-full bg-gradient-to-r ${story.gradient} opacity-50`}
+        />
+
         {/* Corner Glow Background */}
-        <div className={`absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br ${story.gradient} blur-2xl transition-opacity duration-500 group-hover:opacity-100 opacity-0`} />
+        <div
+          className={`absolute -right-12 -top-12 h-32 w-32 rounded-full bg-gradient-to-br ${story.gradient} blur-2xl transition-opacity duration-500 group-hover:opacity-100 opacity-0`}
+        />
 
         {/* 3D Content Container */}
-        <div style={{ transform: "translateZ(30px)" }} className="relative z-10 flex flex-col h-full">
+        <div
+          style={{ transform: 'translateZ(30px)' }}
+          className="relative z-10 flex flex-col h-full"
+        >
           <div className="flex items-start justify-between mb-6">
-            <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${story.iconBg} ${story.iconColor} ring-4 ring-white shadow-sm`}>
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${story.iconBg} ${story.iconColor} ring-4 ring-white shadow-sm`}
+            >
               <story.icon className="h-6 w-6" strokeWidth={2} />
             </div>
-            
+
             {/* Subtle Big Number */}
             <div className="text-[48px] font-black leading-none text-slate-50 transition-colors duration-500 group-hover:text-slate-100/50">
               0{idx + 1}
@@ -150,7 +165,7 @@ function InteractiveCard({ story, idx }) {
             <h3 className="text-lg font-bold tracking-tight text-slate-900 mb-3 leading-snug">
               {story.title}
             </h3>
-            
+
             <div className="relative">
               <Quote className="absolute -left-2 -top-2 h-6 w-6 text-slate-100 -z-10 rotate-180" />
               <p className="text-sm leading-relaxed text-slate-600 font-medium">
@@ -168,10 +183,13 @@ export default function RegretSection() {
   const navigate = useNavigate(); // 2. Initialized the hook at the top of the component
 
   return (
-    <section className="relative bg-slate-50 px-4 py-12 lg:py-16 sm:px-6 lg:px-8" style={{ overflow: 'hidden' }}>
+    <section
+      className="relative bg-slate-50 px-4 py-12 lg:py-16 sm:px-6 lg:px-8"
+      style={{ overflow: 'hidden' }}
+    >
       {/* Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#000000_2px,transparent_2px),linear-gradient(to_bottom,#000000_2px,transparent_2px)] opacity-[0.05] bg-[size:40px_40px]" />
-      
+
       {/* Decorative Background Elements */}
       <div className="pointer-events-none absolute left-0 top-0 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-200/20 blur-[100px]" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-[500px] w-[500px] translate-x-1/3 translate-y-1/3 rounded-full bg-indigo-200/20 blur-[100px]" />
@@ -179,13 +197,16 @@ export default function RegretSection() {
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
+        viewport={{ once: true, margin: '-50px' }}
         variants={containerVariants}
         className="relative z-10 mx-auto max-w-7xl"
       >
         {/* HEADER */}
         <div className="mx-auto max-w-3xl text-center">
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 ring-1 ring-slate-200/50 shadow-sm">
+          <motion.div
+            variants={itemVariants}
+            className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 ring-1 ring-slate-200/50 shadow-sm"
+          >
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF6B2B] opacity-75"></span>
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#FF6B2B]"></span>
@@ -195,15 +216,22 @@ export default function RegretSection() {
             </span>
           </motion.div>
 
-          <motion.h2 variants={itemVariants} className="mt-4 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+          <motion.h2
+            variants={itemVariants}
+            className="mt-4 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-5xl"
+          >
             Students Like You <br className="hidden sm:block" />
             <span className="bg-gradient-to-r from-[#FF6B2B] to-rose-500 bg-clip-text text-transparent">
               Made These Mistakes
             </span>
           </motion.h2>
 
-          <motion.p variants={itemVariants} className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
-            But they don&apos;t have to be yours. Learn from students who&apos;ve already navigated the confusion.
+          <motion.p
+            variants={itemVariants}
+            className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600"
+          >
+            But they don&apos;t have to be yours. Learn from students who&apos;ve already navigated
+            the confusion.
           </motion.p>
         </div>
 
@@ -222,7 +250,7 @@ export default function RegretSection() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6]/20 to-[#FF6B2B]/20 opacity-50" />
           <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-[#FF6B2B]/30 blur-3xl" />
-          
+
           <div className="relative z-10 flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
             <div>
               <h4 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
@@ -233,9 +261,9 @@ export default function RegretSection() {
                 Join 12,000+ students who got it right the first time
               </p>
             </div>
-            
+
             {/* 3. Added the inline onClick handler here */}
-            <button 
+            <button
               onClick={() => navigate('/programs')}
               className="group inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#FF6B2B] px-6 py-3 text-sm font-bold tracking-wide text-white transition-all hover:bg-[#ff7b48] hover:shadow-[0_0_20px_rgba(255,107,43,0.4)]"
             >
@@ -244,7 +272,6 @@ export default function RegretSection() {
             </button>
           </div>
         </motion.div>
-
       </motion.div>
     </section>
   );

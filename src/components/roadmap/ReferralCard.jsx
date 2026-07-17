@@ -63,7 +63,6 @@
 //   );
 // }
 
-
 import React, { useState } from 'react';
 import { Gift, Copy, Check, Sparkles, PartyPopper } from 'lucide-react';
 
@@ -124,19 +123,21 @@ export default function ReferralCard({ referral }) {
           {/* Milestone chips */}
           <div className="mt-4 flex flex-wrap gap-2">
             <div
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${bonusUnlocked
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                bonusUnlocked
                   ? 'bg-[#8B5CF6]/20 text-[#C4B5FD] ring-1 ring-[#8B5CF6]/40'
                   : 'bg-white/5 text-white/50 ring-1 ring-white/10'
-                }`}
+              }`}
             >
               <Sparkles className="h-3.5 w-3.5" />
               Bonus at {bonusThreshold} {bonusUnlocked && '✓'}
             </div>
             <div
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${freeUnlocked
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                freeUnlocked
                   ? 'bg-[#FF6B2B]/20 text-[#FF6B2B] ring-1 ring-[#FF6B2B]/40'
                   : 'bg-white/5 text-white/50 ring-1 ring-white/10'
-                }`}
+              }`}
             >
               <PartyPopper className="h-3.5 w-3.5" />
               Free at {freeThreshold} {freeUnlocked && '✓'}
@@ -148,7 +149,9 @@ export default function ReferralCard({ referral }) {
           {/* Two-milestone progress bar */}
           <div className="relative">
             <div className="flex items-center justify-between text-xs text-white/50 mb-1.5">
-              <span>{referralCount} referral{referralCount === 1 ? '' : 's'}</span>
+              <span>
+                {referralCount} referral{referralCount === 1 ? '' : 's'}
+              </span>
               <span>{freeThreshold} = free</span>
             </div>
             <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-white/10">

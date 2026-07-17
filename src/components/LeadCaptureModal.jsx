@@ -57,8 +57,12 @@ export default function LeadCaptureModal({ open, onClose }) {
 
         {!submitted ? (
           <form onSubmit={handleSubmit} className="space-y-3">
-            <h3 className="text-base sm:text-lg font-semibold text-center">Get personalised guidance</h3>
-            <p className="text-xs sm:text-sm text-gray-600 text-center">Share a few details and we'll suggest the next steps.</p>
+            <h3 className="text-base sm:text-lg font-semibold text-center">
+              Get personalised guidance
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-600 text-center">
+              Share a few details and we'll suggest the next steps.
+            </p>
 
             {error && (
               <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
@@ -86,7 +90,9 @@ export default function LeadCaptureModal({ open, onClose }) {
             </div>
 
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-700">Phone (optional)</label>
+              <label className="mb-1 block text-xs font-medium text-gray-700">
+                Phone (optional)
+              </label>
               <input
                 type="tel"
                 value={phone}
@@ -117,10 +123,26 @@ export default function LeadCaptureModal({ open, onClose }) {
         ) : (
           <div className="py-6 text-center">
             <h4 className="text-base sm:text-lg font-semibold">Thanks — we'll reach out soon</h4>
-            <p className="mt-2 text-xs sm:text-sm text-gray-600">Meanwhile join our WhatsApp community or book a demo.</p>
+            <p className="mt-2 text-xs sm:text-sm text-gray-600">
+              Meanwhile join our WhatsApp community or book a demo.
+            </p>
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
-              <a href="https://calendly.com/your-calendly-link" target="_blank" rel="noreferrer" className="w-full sm:w-auto rounded-full bg-[#0B72FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0B72FF]/90 transition text-center">Book a demo</a>
-              <a href="https://wa.me/919579040183" target="_blank" rel="noreferrer" className="text-sm text-[#FF6B2B]">Join WhatsApp</a>
+              <a
+                href="https://calendly.com/your-calendly-link"
+                target="_blank"
+                rel="noreferrer"
+                className="w-full sm:w-auto rounded-full bg-[#0B72FF] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0B72FF]/90 transition text-center"
+              >
+                Book a demo
+              </a>
+              <a
+                href="https://wa.me/919579040183"
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm text-[#FF6B2B]"
+              >
+                Join WhatsApp
+              </a>
             </div>
           </div>
         )}

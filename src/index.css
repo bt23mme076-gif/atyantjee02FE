@@ -18,9 +18,9 @@ html {
 body {
   margin: 0;
   background: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* Reset Images */
@@ -42,7 +42,7 @@ svg {
     scroll-behavior: auto !important;
   }
   /* Allow framer-motion to handle reduced-motion itself via its own API */
-  [style*="--motion-duration"],
+  [style*='--motion-duration'],
   [data-motion] {
     animation-duration: revert !important;
     transition-duration: revert !important;

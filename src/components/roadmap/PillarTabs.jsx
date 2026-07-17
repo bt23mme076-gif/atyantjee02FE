@@ -16,12 +16,16 @@ export default function PillarTabs({ pillars, activeKey, onChange }) {
 
   return (
     <div className="relative w-full">
-      <div 
+      <div
         className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:px-0 scroll-smooth snap-x snap-mandatory"
-        style={isMobile ? {
-          maskImage: 'linear-gradient(to right, white 85%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, white 85%, transparent 100%)'
-        } : {}}
+        style={
+          isMobile
+            ? {
+                maskImage: 'linear-gradient(to right, white 85%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to right, white 85%, transparent 100%)',
+              }
+            : {}
+        }
       >
         {pillars.map((pillar, idx) => {
           const Icon = getPillarIcon(pillar.icon);

@@ -1,9 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  Sparkles,
-  ArrowRight,
-} from 'lucide-react';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Hero({ activeTab, onTabChange }) {
@@ -17,7 +14,6 @@ export default function Hero({ activeTab, onTabChange }) {
 
       <section className="relative z-10 mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-24">
         <div className="grid items-center gap-16 lg:grid-cols-2">
-
           {/* LEFT SECTION */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -52,18 +48,13 @@ export default function Hero({ activeTab, onTabChange }) {
 
             {/* Description */}
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/80 lg:text-lg font-medium">
-            Talk to real IIT/NIT & top college seniors who recently went through counselling themselves.
-            <br />
-            Don't waste 10-15 lakh on{" "}
-            <span className="font-bold text-[#FF6B2B]">
-              wrong college
-            </span>
-            {" "}and{" "}
-            <span className="font-bold text-[#FF6B2B]">
-              wrong branch
-            </span>
-            .
-          </p>
+              Talk to real IIT/NIT & top college seniors who recently went through counselling
+              themselves.
+              <br />
+              Don't waste 10-15 lakh on{' '}
+              <span className="font-bold text-[#FF6B2B]">wrong college</span> and{' '}
+              <span className="font-bold text-[#FF6B2B]">wrong branch</span>.
+            </p>
 
             {/* Buttons */}
             <div className="mt-8 flex flex-col gap-4 w-full max-w-md">
@@ -80,7 +71,9 @@ export default function Hero({ activeTab, onTabChange }) {
                   </span>
                   <span>
                     <span className="block text-lg font-black text-white leading-tight">CSAB</span>
-                    <span className="block text-sm font-medium text-white/85">Counselling Plans</span>
+                    <span className="block text-sm font-medium text-white/85">
+                      Counselling Plans
+                    </span>
                   </span>
                 </div>
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 transition group-hover:translate-x-0.5">
@@ -100,7 +93,9 @@ export default function Hero({ activeTab, onTabChange }) {
                     🏛️
                   </span>
                   <span>
-                    <span className="block text-lg font-black text-white leading-tight">All India Counselling</span>
+                    <span className="block text-lg font-black text-white leading-tight">
+                      All India Counselling
+                    </span>
                     <span className="block text-sm font-medium text-white/85">
                       MHT-CET • COMEDK • State • Private • Govt Colleges
                     </span>
@@ -121,7 +116,6 @@ export default function Hero({ activeTab, onTabChange }) {
             className="relative hidden lg:flex items-center justify-center"
           >
             <div className="relative h-[520px] w-full max-w-[520px]">
-
               {/* Main Dashboard Card */}
               <motion.div
                 animate={{ y: [0, -10, 0] }}
@@ -221,7 +215,6 @@ export default function Hero({ activeTab, onTabChange }) {
               </motion.div>
             </div>
           </motion.div>
-
         </div>
       </section>
     </div>

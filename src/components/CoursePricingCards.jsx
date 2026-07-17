@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getActiveCourses, getUserMe } from '../utils/api';
+import { getActiveCourses, getUserMe, isUserLoggedIn } from '../utils/api';
 import { BookOpen, Sparkles, Trophy, Users, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,13 +12,14 @@ export default function CoursePricingCards() {
 
   useEffect(() => {
     getActiveCourses()
-      .then(res => setCourses(res.courses || []))
+      .then((res) => setCourses(res.courses || []))
       .catch(() => {})
       .finally(() => setLoading(false));
 
-    const token = localStorage.getItem('user_token');
-    if (token) {
-      getUserMe().then(res => setUser(res.user)).catch(() => {});
+    if (isUserLoggedIn()) {
+      getUserMe()
+        .then((res) => setUser(res.user))
+        .catch(() => {});
     }
   }, []);
 
@@ -46,7 +47,7 @@ export default function CoursePricingCards() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {courses.map((course, idx) => (
-          <div 
+          <div
             key={course.id}
             className="relative overflow-hidden rounded-lg border border-white/10 bg-white/3 p-8 shadow-sm flex flex-col justify-between hover:border-[#FF6B2B]/40 transition duration-300"
           >
@@ -55,7 +56,7 @@ export default function CoursePricingCards() {
                 Most Popular
               </div>
             )}
-            
+
             <div>
               <div className="flex items-center justify-between mb-6">
                 <span className="rounded-full bg-green-500/15 border border-green-500/25 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-green-400">
@@ -66,9 +67,7 @@ export default function CoursePricingCards() {
                 </div>
               </div>
 
-              <h3 className="text-2xl font-bold tracking-tight text-white mb-2">
-                {course.title}
-              </h3>
+              <h3 className="text-2xl font-bold tracking-tight text-white mb-2">{course.title}</h3>
               <div className="mb-2">
                 <span className="text-3xl font-black text-white">₹{course.price}</span>
               </div>

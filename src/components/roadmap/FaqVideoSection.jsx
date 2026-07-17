@@ -13,8 +13,12 @@ export default function FaqVideoSection({ faqVideos = [] }) {
     <section className="bg-[#0B0F2E] pb-20 sm:pb-28">
       <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF9E6B]">Quick Guidance</p>
-          <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">Got questions? Watch the answer.</h2>
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF9E6B]">
+            Quick Guidance
+          </p>
+          <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">
+            Got questions? Watch the answer.
+          </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/60">
             Short videos from the team and mentors, answering the questions students ask most.
           </p>
@@ -32,8 +36,12 @@ export default function FaqVideoSection({ faqVideos = [] }) {
                 <PlayCircle className="h-6 w-6" />
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-white">{faq.question}</span>
-                {faq.shortAnswer && <span className="block truncate text-xs text-white/45">{faq.shortAnswer}</span>}
+                <span className="block truncate text-sm font-semibold text-white">
+                  {faq.question}
+                </span>
+                {faq.shortAnswer && (
+                  <span className="block truncate text-xs text-white/45">{faq.shortAnswer}</span>
+                )}
               </span>
             </button>
           ))}

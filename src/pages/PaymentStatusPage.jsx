@@ -6,8 +6,14 @@ import { verifyPayment } from '../utils/api';
 
 // Static plan IDs that are NOT courses (career path / counselling plans)
 const STATIC_PLAN_IDS = new Set([
-  'complete-round', 'ultimate-peace', 'csab-complete', 'csab-ultimate',
-  'college-clarity', 'admission-success', 'admission-career-growth', 'career-premium',
+  'complete-round',
+  'ultimate-peace',
+  'csab-complete',
+  'csab-ultimate',
+  'college-clarity',
+  'admission-success',
+  'admission-career-growth',
+  'career-premium',
   'dream-seat',
 ]);
 
@@ -43,7 +49,9 @@ export default function PaymentStatusPage() {
 
           if (pending) {
             targetUrl = pending;
-            targetLabel = pending.startsWith('/courses') ? 'Go to Course' : 'Go Back to Career Path';
+            targetLabel = pending.startsWith('/courses')
+              ? 'Go to Course'
+              : 'Go Back to Career Path';
           } else if (planId && !STATIC_PLAN_IDS.has(planId)) {
             // planId is a course slug
             targetUrl = `/courses/${planId}`;
@@ -102,7 +110,9 @@ export default function PaymentStatusPage() {
             <p className="text-sm text-white/70 mb-6">Your content has been unlocked.</p>
 
             <button
-              onClick={() => redirectUrl ? (window.location.href = redirectUrl) : navigate('/roadmap')}
+              onClick={() =>
+                redirectUrl ? (window.location.href = redirectUrl) : navigate('/roadmap')
+              }
               className="w-full bg-gradient-to-r from-[#FF6B2B] to-[#ff8c59] text-white font-semibold py-3 rounded-xl hover:opacity-90 transition shadow-lg shadow-[#FF6B2B]/20"
             >
               {redirectLabel}

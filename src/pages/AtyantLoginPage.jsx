@@ -34,7 +34,6 @@ const ADMIN_BUNDLE_OPTIONS = [
 import RoadmapContentTab from '../components/admin/RoadmapContentTab';
 import CourseContentTab from '../components/admin/CourseContentTab';
 
-
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
@@ -49,7 +48,9 @@ function StatusBadge({ status }) {
     failed: 'bg-red-100 text-red-700',
   };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${map[status] || 'bg-slate-100 text-slate-600'}`}>
+    <span
+      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${map[status] || 'bg-slate-100 text-slate-600'}`}
+    >
       {status}
     </span>
   );
@@ -81,17 +82,27 @@ function LeadsTab() {
     }
   }, [page, search]);
 
-  React.useEffect(() => { fetchLeads(); }, [fetchLeads]);
+  React.useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
 
   async function handleStatusChange(id, status) {
-    try { await updateLead(id, { status }); fetchLeads(); }
-    catch (e) { alert(e.message); }
+    try {
+      await updateLead(id, { status });
+      fetchLeads();
+    } catch (e) {
+      alert(e.message);
+    }
   }
 
   async function handleDelete(id) {
     if (!window.confirm('Delete this lead?')) return;
-    try { await deleteLead(id); fetchLeads(); }
-    catch (e) { alert(e.message); }
+    try {
+      await deleteLead(id);
+      fetchLeads();
+    } catch (e) {
+      alert(e.message);
+    }
   }
 
   async function handleExport() {
@@ -104,8 +115,11 @@ function LeadsTab() {
       a.download = `leads-${Date.now()}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (e) { alert(e.message); }
-    finally { setExporting(false); }
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      setExporting(false);
+    }
   }
 
   const totalPages = Math.max(Math.ceil(total / limit), 1);
@@ -115,12 +129,24 @@ function LeadsTab() {
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <input
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           placeholder="Search name / email…"
           className="rounded-md border px-3 py-1.5 text-sm flex-1 min-w-[140px]"
         />
-        <button onClick={fetchLeads} className="rounded-md bg-slate-100 px-3 py-1.5 text-sm hover:bg-slate-200">Refresh</button>
-        <button onClick={handleExport} disabled={exporting} className="rounded-md bg-[#0B72FF] px-3 py-1.5 text-sm text-white disabled:opacity-60 hover:bg-blue-600">
+        <button
+          onClick={fetchLeads}
+          className="rounded-md bg-slate-100 px-3 py-1.5 text-sm hover:bg-slate-200"
+        >
+          Refresh
+        </button>
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="rounded-md bg-[#0B72FF] px-3 py-1.5 text-sm text-white disabled:opacity-60 hover:bg-blue-600"
+        >
           {exporting ? 'Exporting…' : 'Export CSV'}
         </button>
       </div>
@@ -159,8 +185,10 @@ function LeadsTab() {
                       onChange={(e) => handleStatusChange(l._id, e.target.value)}
                       className="rounded border px-1.5 py-0.5 text-xs bg-white"
                     >
-                      {['new', 'contacted', 'qualified', 'converted', 'lost'].map(s => (
-                        <option key={s} value={s}>{s}</option>
+                      {['new', 'contacted', 'qualified', 'converted', 'lost'].map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
                       ))}
                     </select>
                   </td>
@@ -168,7 +196,12 @@ function LeadsTab() {
                     {new Date(l.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-3 py-2">
-                    <button onClick={() => handleDelete(l._id)} className="text-xs text-red-500 hover:underline">Delete</button>
+                    <button
+                      onClick={() => handleDelete(l._id)}
+                      className="text-xs text-red-500 hover:underline"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -179,9 +212,23 @@ function LeadsTab() {
 
       {/* Pagination */}
       <div className="mt-3 flex items-center gap-2 text-sm">
-        <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50">← Prev</button>
-        <span className="text-gray-500">Page {page} / {totalPages}</span>
-        <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50">Next →</button>
+        <button
+          disabled={page <= 1}
+          onClick={() => setPage((p) => p - 1)}
+          className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50"
+        >
+          ← Prev
+        </button>
+        <span className="text-gray-500">
+          Page {page} / {totalPages}
+        </span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => setPage((p) => p + 1)}
+          className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50"
+        >
+          Next →
+        </button>
       </div>
     </div>
   );
@@ -211,7 +258,9 @@ function PaymentsTab() {
     }
   }, [page]);
 
-  React.useEffect(() => { fetchPayments(); }, [fetchPayments]);
+  React.useEffect(() => {
+    fetchPayments();
+  }, [fetchPayments]);
 
   const totalPages = Math.max(Math.ceil(total / limit), 1);
 
@@ -243,7 +292,9 @@ function PaymentsTab() {
                   <td className="px-3 py-2 text-gray-600">{p.email}</td>
                   <td className="px-3 py-2">{p.planTitle || p.planId}</td>
                   <td className="px-3 py-2">₹{(p.amount / 100).toLocaleString('en-IN')}</td>
-                  <td className="px-3 py-2"><StatusBadge status={p.status} /></td>
+                  <td className="px-3 py-2">
+                    <StatusBadge status={p.status} />
+                  </td>
                   <td className="px-3 py-2 text-gray-400 whitespace-nowrap">
                     {new Date(p.createdAt).toLocaleDateString()}
                   </td>
@@ -254,9 +305,23 @@ function PaymentsTab() {
         </div>
       )}
       <div className="mt-3 flex items-center gap-2 text-sm">
-        <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50">← Prev</button>
-        <span className="text-gray-500">Page {page} / {totalPages}</span>
-        <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50">Next →</button>
+        <button
+          disabled={page <= 1}
+          onClick={() => setPage((p) => p - 1)}
+          className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50"
+        >
+          ← Prev
+        </button>
+        <span className="text-gray-500">
+          Page {page} / {totalPages}
+        </span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => setPage((p) => p + 1)}
+          className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50"
+        >
+          Next →
+        </button>
       </div>
     </div>
   );
@@ -286,7 +351,9 @@ function ChatSessionsTab() {
     }
   }, [page]);
 
-  React.useEffect(() => { fetchSessions(); }, [fetchSessions]);
+  React.useEffect(() => {
+    fetchSessions();
+  }, [fetchSessions]);
 
   const totalPages = Math.max(Math.ceil(total / limit), 1);
 
@@ -312,9 +379,13 @@ function ChatSessionsTab() {
             <tbody className="divide-y divide-gray-100">
               {sessions.map((s) => (
                 <tr key={s.sessionId} className="hover:bg-slate-50">
-                  <td className="px-3 py-2 font-mono text-xs text-gray-500">{s.sessionId.slice(0, 12)}…</td>
+                  <td className="px-3 py-2 font-mono text-xs text-gray-500">
+                    {s.sessionId.slice(0, 12)}…
+                  </td>
                   <td className="px-3 py-2">{s.messageCount}</td>
-                  <td className="px-3 py-2 text-gray-600 max-w-xs truncate">{s.lastMessage || '—'}</td>
+                  <td className="px-3 py-2 text-gray-600 max-w-xs truncate">
+                    {s.lastMessage || '—'}
+                  </td>
                   <td className="px-3 py-2 text-gray-400 whitespace-nowrap">
                     {new Date(s.updatedAt).toLocaleString()}
                   </td>
@@ -325,9 +396,23 @@ function ChatSessionsTab() {
         </div>
       )}
       <div className="mt-3 flex items-center gap-2 text-sm">
-        <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50">← Prev</button>
-        <span className="text-gray-500">Page {page} / {totalPages}</span>
-        <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50">Next →</button>
+        <button
+          disabled={page <= 1}
+          onClick={() => setPage((p) => p - 1)}
+          className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50"
+        >
+          ← Prev
+        </button>
+        <span className="text-gray-500">
+          Page {page} / {totalPages}
+        </span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => setPage((p) => p + 1)}
+          className="rounded border px-2 py-1 disabled:opacity-40 hover:bg-slate-50"
+        >
+          Next →
+        </button>
       </div>
     </div>
   );
@@ -364,7 +449,11 @@ function MentorsTab() {
   }, [fetchMentors]);
 
   async function handleDelete(id, name) {
-    if (!window.confirm(`⚠️ WARNING: Are you absolutely sure you want to permanently delete the mentor account for "${name}"?\nThis action cannot be undone and will delete their active profile!`)) {
+    if (
+      !window.confirm(
+        `⚠️ WARNING: Are you absolutely sure you want to permanently delete the mentor account for "${name}"?\nThis action cannot be undone and will delete their active profile!`
+      )
+    ) {
       return;
     }
     try {
@@ -381,9 +470,7 @@ function MentorsTab() {
   }
 
   function toggleDraftBundle(id) {
-    setDraftBundles((prev) =>
-      prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]
-    );
+    setDraftBundles((prev) => (prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]));
   }
 
   async function saveBundles(mentorId) {
@@ -430,12 +517,13 @@ function MentorsTab() {
   const filtered = React.useMemo(() => {
     if (!search) return mentors;
     const q = search.toLowerCase();
-    return mentors.filter(m => 
-      (m.name || '').toLowerCase().includes(q) ||
-      (m.username || '').toLowerCase().includes(q) ||
-      (m.email || '').toLowerCase().includes(q) ||
-      (m.college || '').toLowerCase().includes(q) ||
-      (m.phone || '').toLowerCase().includes(q)
+    return mentors.filter(
+      (m) =>
+        (m.name || '').toLowerCase().includes(q) ||
+        (m.username || '').toLowerCase().includes(q) ||
+        (m.email || '').toLowerCase().includes(q) ||
+        (m.college || '').toLowerCase().includes(q) ||
+        (m.phone || '').toLowerCase().includes(q)
     );
   }, [mentors, search]);
 
@@ -448,7 +536,10 @@ function MentorsTab() {
           placeholder="Search by name, email, college, phone..."
           className="rounded-md border px-3 py-1.5 text-sm flex-1 min-w-[200px]"
         />
-        <button onClick={fetchMentors} className="rounded-md bg-slate-100 px-3 py-1.5 text-sm hover:bg-slate-200">
+        <button
+          onClick={fetchMentors}
+          className="rounded-md bg-slate-100 px-3 py-1.5 text-sm hover:bg-slate-200"
+        >
           Refresh
         </button>
       </div>
@@ -486,7 +577,9 @@ function MentorsTab() {
                   <td className="px-3 py-2 text-gray-600">{m.email}</td>
                   <td className="px-3 py-2 text-gray-500">{m.phone || '—'}</td>
                   <td className="px-3 py-2">
-                    <div className="text-xs font-semibold text-blue-600 max-w-xs truncate">{m.college || '—'}</div>
+                    <div className="text-xs font-semibold text-blue-600 max-w-xs truncate">
+                      {m.college || '—'}
+                    </div>
                     <div className="text-[11px] text-gray-400 truncate">{m.branch || '—'}</div>
                   </td>
                   <td className="px-3 py-2 text-gray-500">{m.state || '—'}</td>
@@ -495,7 +588,10 @@ function MentorsTab() {
                     {editingBundlesFor === (m._id || m.id) ? (
                       <div className="flex flex-col gap-1.5 max-w-[200px]">
                         {ADMIN_BUNDLE_OPTIONS.map((opt) => (
-                          <label key={opt} className="flex items-center gap-1.5 text-[11px] text-gray-600">
+                          <label
+                            key={opt}
+                            className="flex items-center gap-1.5 text-[11px] text-gray-600"
+                          >
                             <input
                               type="checkbox"
                               checked={draftBundles.includes(opt)}
@@ -526,7 +622,10 @@ function MentorsTab() {
                         <div className="flex flex-wrap gap-1">
                           {(m.bundles || []).length > 0 ? (
                             m.bundles.map((b) => (
-                              <span key={b} className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">
+                              <span
+                                key={b}
+                                className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded"
+                              >
                                 {b}
                               </span>
                             ))
@@ -553,14 +652,19 @@ function MentorsTab() {
                         >
                           📄 View ID Doc
                         </button>
-                        
+
                         <div className="flex items-center justify-between gap-1">
-                          <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded border ${
-                            m.verificationStatus === 'verified' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                            m.verificationStatus === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200 animate-pulse' :
-                            m.verificationStatus === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                            'bg-slate-50 text-slate-600 border-slate-200'
-                          }`}>
+                          <span
+                            className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded border ${
+                              m.verificationStatus === 'verified'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : m.verificationStatus === 'pending'
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200 animate-pulse'
+                                  : m.verificationStatus === 'rejected'
+                                    ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                    : 'bg-slate-50 text-slate-600 border-slate-200'
+                            }`}
+                          >
                             {m.verificationStatus || 'none'}
                           </span>
 
@@ -593,8 +697,8 @@ function MentorsTab() {
                     {m.createdAt ? new Date(m.createdAt).toLocaleDateString() : '—'}
                   </td>
                   <td className="px-3 py-2">
-                    <button 
-                      onClick={() => handleDelete(m._id || m.id, m.name || m.username)} 
+                    <button
+                      onClick={() => handleDelete(m._id || m.id, m.name || m.username)}
                       className="text-xs text-red-500 font-semibold hover:underline bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded transition"
                     >
                       Delete Account
@@ -626,7 +730,7 @@ export default function AtyantLoginPage() {
 
   // Always require manual login when visiting the page to ensure complete security
   React.useEffect(() => {
-    localStorage.removeItem('admin_token');
+    adminLogout();
   }, []);
 
   async function handleLogin(e) {
@@ -657,9 +761,7 @@ export default function AtyantLoginPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 border-b border-slate-100 pb-4">
           <div>
             <h3 className="text-xl font-bold text-[#0B0F2E]">Atyant Admin Dashboard</h3>
-            {adminInfo && (
-              <p className="text-sm text-gray-500 mt-1">{adminInfo.email}</p>
-            )}
+            {adminInfo && <p className="text-sm text-gray-500 mt-1">{adminInfo.email}</p>}
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -682,15 +784,17 @@ export default function AtyantLoginPage() {
         {/* Login Form */}
         {!authed ? (
           <div className="max-w-md mx-auto py-12">
-            <h2 className="text-2xl font-black mb-6 text-center text-[#0B0F2E]">Admin Access Only</h2>
-            
+            <h2 className="text-2xl font-black mb-6 text-center text-[#0B0F2E]">
+              Admin Access Only
+            </h2>
+
             <form onSubmit={handleLogin} className="space-y-4">
               {loginError && (
                 <div className="rounded-lg bg-red-50 p-4 border border-red-100">
                   <p className="text-sm text-red-600 font-medium">{loginError}</p>
                 </div>
               )}
-              
+
               <div>
                 <label className="mb-2 block text-sm font-bold text-gray-700">Email Address</label>
                 <input
@@ -701,7 +805,7 @@ export default function AtyantLoginPage() {
                   className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
                 />
               </div>
-              
+
               <div>
                 <label className="mb-2 block text-sm font-bold text-gray-700">Password</label>
                 <input
@@ -712,7 +816,7 @@ export default function AtyantLoginPage() {
                   className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
                 />
               </div>
-              
+
               <button
                 type="submit"
                 disabled={logging}

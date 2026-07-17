@@ -8,7 +8,14 @@ import RoadmapItemRow from './RoadmapItemRow';
 // Popup shown when a pillar tab is clicked (per the "College Arrival Guide
 // → creates another pop up → has PDFs, videos and all things" flow).
 // Replaces the old always-visible inline section below the tabs.
-export default function PillarModal({ pillar, isLoggedIn, openingItemId, onOpenItem, onLockedClick, onClose }) {
+export default function PillarModal({
+  pillar,
+  isLoggedIn,
+  openingItemId,
+  onOpenItem,
+  onLockedClick,
+  onClose,
+}) {
   useEffect(() => {
     if (!pillar) return;
     const onKeyDown = (e) => {

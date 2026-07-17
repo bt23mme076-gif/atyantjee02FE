@@ -4,7 +4,11 @@ export function getInclusions(planId, planTitle) {
   const normalizedId = (planId || '').toLowerCase();
   const normalizedTitle = (planTitle || '').toLowerCase();
 
-  if (normalizedId.includes('ultimate') || normalizedTitle.includes('ultimate') || normalizedTitle.includes('peace')) {
+  if (
+    normalizedId.includes('ultimate') ||
+    normalizedTitle.includes('ultimate') ||
+    normalizedTitle.includes('peace')
+  ) {
     return [
       'Everything in Complete Round Support',
       'Personal 1-on-1 mentor',
@@ -49,10 +53,10 @@ export function getDetailedWhatsAppLink(booking) {
 
   const planTitle = booking.planTitle || 'Mentorship Package';
   const bookingId = booking._id || booking.id || 'N/A';
-  const amount = booking.amount ? (booking.amount / 100) : 'N/A';
-  
+  const amount = booking.amount ? booking.amount / 100 : 'N/A';
+
   const inclusions = getInclusions(booking.planId, booking.planTitle);
-  const inclusionsText = inclusions.map(item => `✓ ${item}`).join('\n');
+  const inclusionsText = inclusions.map((item) => `✓ ${item}`).join('\n');
 
   let mentorText = '';
   if (booking.mentorId) {
@@ -62,7 +66,8 @@ export function getDetailedWhatsAppLink(booking) {
     mentorText = `*🧑‍🏫 Selected Mentor:*\n• *Mentor:* Not assigned yet (Support will assign soon)`;
   }
 
-  const message = `Hi Atyant, I have purchased the *${planTitle}* package! 🚀\n\n` +
+  const message =
+    `Hi Atyant, I have purchased the *${planTitle}* package! 🚀\n\n` +
     `*💳 Booking Details:*\n` +
     `• *Booking ID:* ${bookingId}\n` +
     `• *Package:* ${planTitle} (₹${amount})\n\n` +
@@ -78,4 +83,3 @@ export function getDetailedWhatsAppLink(booking) {
   const encodedMessage = encodeURIComponent(message);
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
 }
-

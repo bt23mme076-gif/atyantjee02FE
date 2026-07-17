@@ -36,7 +36,12 @@ export default function RoadmapPage({ user }) {
   const [loading, setLoading] = useState(true);
   const [openingItemId, setOpeningItemId] = useState(null);
   const [error, setError] = useState('');
-  const [careerPaths, setCareerPaths] = useState({ featured: [], more: [], totalCount: 0, remainingCount: 0 });
+  const [careerPaths, setCareerPaths] = useState({
+    featured: [],
+    more: [],
+    totalCount: 0,
+    remainingCount: 0,
+  });
   const [referral, setReferral] = useState(null);
   const [faqVideos, setFaqVideos] = useState([]);
   const [viewingItem, setViewingItem] = useState(null); // item currently open in viewer modal
@@ -68,19 +73,25 @@ export default function RoadmapPage({ user }) {
         })
       )
       .catch(() => {});
-    getFaqVideos().then((res) => setFaqVideos(res.faqVideos || [])).catch(() => {});
+    getFaqVideos()
+      .then((res) => setFaqVideos(res.faqVideos || []))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    getStreak().then(setStreak).catch(() => {});
+    getStreak()
+      .then(setStreak)
+      .catch(() => {});
     getMyBatch()
       .then((res) => {
         setBatch(res.batch);
         setMemberCount(res.memberCount || 0);
       })
       .catch(() => {});
-    getReferralStatus().then(setReferral).catch(() => {});
+    getReferralStatus()
+      .then(setReferral)
+      .catch(() => {});
   }, [isLoggedIn]);
 
   const openPillar = useMemo(
@@ -108,7 +119,9 @@ export default function RoadmapPage({ user }) {
       setPillars((prev) =>
         prev.map((p) => {
           if (!p.items.some((i) => i.id === item.id)) return p;
-          const completedItemIds = Array.from(new Set([...(p.progress?.completedItemIds || []), item.id]));
+          const completedItemIds = Array.from(
+            new Set([...(p.progress?.completedItemIds || []), item.id])
+          );
           return { ...p, progress: { percent: res.pillarProgress, completedItemIds } };
         })
       );
@@ -123,7 +136,10 @@ export default function RoadmapPage({ user }) {
   // card so the student can see exactly how many more friends they need.
   const handleLockedClick = () => {
     setOpenPillarKey(null);
-    setTimeout(() => referralRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
+    setTimeout(
+      () => referralRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+      200
+    );
   };
 
   return (
@@ -146,7 +162,9 @@ export default function RoadmapPage({ user }) {
       >
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 text-center">
-            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF9E6B]">The Roadmap</p>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF9E6B]">
+              The Roadmap
+            </p>
             <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">
               Your complete roadmap. All in one place.
             </h2>
@@ -209,10 +227,7 @@ export default function RoadmapPage({ user }) {
       />
 
       {/* Per-item viewer modal: video player / PDF iframe / article link / task / quiz */}
-      <ItemViewerModal
-        item={viewingItem}
-        onClose={() => setViewingItem(null)}
-      />
+      <ItemViewerModal item={viewingItem} onClose={() => setViewingItem(null)} />
     </main>
   );
 }

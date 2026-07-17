@@ -44,7 +44,12 @@ export default function FaqVideoModal({ faq, onClose }) {
                   allowFullScreen
                 />
               ) : faq.videoUrl ? (
-                <video src={resolveAssetUrl(faq.videoUrl)} controls autoPlay className="h-full w-full" />
+                <video
+                  src={resolveAssetUrl(faq.videoUrl)}
+                  controls
+                  autoPlay
+                  className="h-full w-full"
+                />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-white/40">
                   <PlayCircle className="h-10 w-10" />

@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LeadCaptureModal from './components/LeadCaptureModal';
 import WhatsAppFloatingButton from './components/WhatsAppFloatingButton';
-import { getUserMe } from './utils/api';
+import { getUserMe, isUserLoggedIn } from './utils/api';
 
 // Route-level code splitting: each page is only fetched when its route is
 // actually visited, instead of all ~11 pages being bundled into one
@@ -49,11 +49,15 @@ function AppContent() {
 
   React.useEffect(() => {
     // Try to fetch logged in user on mount
-    const token = localStorage.getItem('user_token');
-    if (token) {
+    if (isUserLoggedIn()) {
       getUserMe()
-        .then((res) => {setUser(res.user);})
-        .catch(() => localStorage.removeItem('user_token'));
+        .then((res) => {
+          setUser(res.user);
+        })
+        .catch(() => {
+          localStorage.removeItem('user_token');
+          localStorage.removeItem('user_logged_in');
+        });
     }
   }, []);
 
@@ -63,7 +67,9 @@ function AppContent() {
     // can drop the local session and nudge the user to log back in.
     function sessionInvalidatedHandler(e) {
       setUser(null);
-      const message = e.detail?.message || "You've been logged out because your account was signed in on another device.";
+      const message =
+        e.detail?.message ||
+        "You've been logged out because your account was signed in on another device.";
       navigate('/login', { state: { message } });
     }
     window.addEventListener('sessionInvalidated', sessionInvalidatedHandler);
@@ -114,11 +120,12 @@ function AppContent() {
       iframe.src?.includes('app.getgabs.com');
 
     const observedIframes = new Set();
-    const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver((entries) => {
-          entries.forEach((entry) => classifyHeight(entry.target));
-        })
-      : null;
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver((entries) => {
+            entries.forEach((entry) => classifyHeight(entry.target));
+          })
+        : null;
 
     // MutationObserver fallback, per-iframe, only used when ResizeObserver
     // isn't available or can't be attached (e.g. cross-origin restrictions
@@ -178,12 +185,13 @@ function AppContent() {
   // Set canonical URL for SEO (served from root, will be under /launchpad/ when proxied)
   React.useEffect(() => {
     const baseUrl = 'https://www.atyant.in';
-    const isProduction = window.location.host !== 'localhost:5173' && window.location.host !== 'localhost:5174';
-    
+    const isProduction =
+      window.location.host !== 'localhost:5173' && window.location.host !== 'localhost:5174';
+
     // In production (proxied), URLs are under /launchpad/; in dev/Vercel preview, they're at root
     const path = isProduction ? `/launchpad${window.location.pathname}` : window.location.pathname;
     const canonicalUrl = `${baseUrl}${path === '/launchpad/' ? '/launchpad/' : path}`;
-    
+
     let link = document.querySelector("link[rel='canonical']");
     if (!link) {
       link = document.createElement('link');
@@ -193,7 +201,22 @@ function AppContent() {
     link.href = canonicalUrl;
   }, []);
 
-  const activeTab = location.pathname === '/mentors' ? 'mentors' : location.pathname === '/predictor' ? 'predictor' : location.pathname === '/college' ? 'college' : location.pathname === '/finalyear' ? 'finalyear' : location.pathname === '/workingpro' ? 'workingpro' : location.pathname === '/programs' ? 'programs' : location.pathname === '/roadmap' ? 'roadmap' : 'after12th';
+  const activeTab =
+    location.pathname === '/mentors'
+      ? 'mentors'
+      : location.pathname === '/predictor'
+        ? 'predictor'
+        : location.pathname === '/college'
+          ? 'college'
+          : location.pathname === '/finalyear'
+            ? 'finalyear'
+            : location.pathname === '/workingpro'
+              ? 'workingpro'
+              : location.pathname === '/programs'
+                ? 'programs'
+                : location.pathname === '/roadmap'
+                  ? 'roadmap'
+                  : 'after12th';
 
   const handleTabChange = (tab) => {
     if (tab === 'after12th') navigate('/');
@@ -205,8 +228,8 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen ${bgClass} font-sans antialiased`} style={{ overflowX: 'clip' }}>
-      <Navbar 
-        onLeadClick={() => setShowLeadModal(true)} 
+      <Navbar
+        onLeadClick={() => setShowLeadModal(true)}
         activeTab={activeTab}
         onTabChange={handleTabChange}
         user={user}
@@ -216,87 +239,219 @@ function AppContent() {
         <AnimatePresence mode="wait">
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <LaunchpadPage activeTab={activeTab} onTabChange={handleTabChange} user={user} />
-                </motion.div>
-              } />
-              <Route path="/college" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <CollegePage activeTab={activeTab} onTabChange={handleTabChange} />
-                </motion.div>
-              } />
-              <Route path="/finalyear" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <FinalYearPage activeTab={activeTab} onTabChange={handleTabChange} />
-                </motion.div>
-              } />
-              <Route path="/workingpro" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <WorkingProPage activeTab={activeTab} onTabChange={handleTabChange} />
-                </motion.div>
-              } />
-              <Route path="/predictor" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <RankRadarPage />
-                </motion.div>
-              } />
-              <Route path="/mentors" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <MentorsPage />
-                </motion.div>
-              } />
-              <Route path="/atyantlogin" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <AtyantLoginPage />
-                </motion.div>
-              } />
-              <Route path="/login" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <AuthPage setUser={setUser} />
-                </motion.div>
-              } />
-              <Route path="/profile" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <ProfilePage user={user} setUser={setUser} />
-                </motion.div>
-              } />
-              <Route path="/programs" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <ProgramsPage user={user} />
-                </motion.div>
-              } />
-              <Route path="/roadmap" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <RoadmapPage user={user} />
-                </motion.div>
-              } />
-              <Route path="/quiz" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <QuizPage />
-                </motion.div>
-              } />
-              <Route path="/career-path/:slug" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <CareerPathDetailPage user={user} />
-                </motion.div>
-              } />
+              <Route
+                path="/"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <LaunchpadPage
+                      activeTab={activeTab}
+                      onTabChange={handleTabChange}
+                      user={user}
+                    />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/college"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <CollegePage activeTab={activeTab} onTabChange={handleTabChange} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/finalyear"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <FinalYearPage activeTab={activeTab} onTabChange={handleTabChange} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/workingpro"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <WorkingProPage activeTab={activeTab} onTabChange={handleTabChange} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/predictor"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <RankRadarPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/mentors"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <MentorsPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/atyantlogin"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <AtyantLoginPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <AuthPage setUser={setUser} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ProfilePage user={user} setUser={setUser} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/programs"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ProgramsPage user={user} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/roadmap"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <RoadmapPage user={user} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/quiz"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <QuizPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/career-path/:slug"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <CareerPathDetailPage user={user} />
+                  </motion.div>
+                }
+              />
               {/* Alias: all in-app links use /careers/:slug */}
-              <Route path="/careers/:slug" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <CareerPathDetailPage user={user} />
-                </motion.div>
-              } />
-              <Route path="/courses/:slug" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <CourseDetailPage />
-                </motion.div>
-              } />
-              <Route path="/payment-status" element={
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.3 }}>
-                  <PaymentStatusPage />
-                </motion.div>
-              } />
+              <Route
+                path="/careers/:slug"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <CareerPathDetailPage user={user} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/courses/:slug"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <CourseDetailPage />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/payment-status"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <PaymentStatusPage />
+                  </motion.div>
+                }
+              />
             </Routes>
           </Suspense>
         </AnimatePresence>
