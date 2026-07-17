@@ -7,6 +7,8 @@ import ItemViewerModal from '../components/roadmap/ItemViewerModal';
 import CareerPathsSection from '../components/roadmap/CareerPathsSection';
 import ReferralCard from '../components/roadmap/ReferralCard';
 import FaqVideoSection from '../components/roadmap/FaqVideoSection';
+import { useNavigate } from 'react-router-dom';
+import { PaymentModal } from '../components/PricingCard';
 import {
   getRoadmapPillars,
   completeRoadmapItem,
@@ -15,7 +17,6 @@ import {
   getCareerPaths,
   getReferralStatus,
   getFaqVideos,
-  resolveAssetUrl,
 } from '../utils/api';
 
 const sectionVariants = {
@@ -26,6 +27,7 @@ const sectionVariants = {
 export default function RoadmapPage({ user }) {
   const isLoggedIn = !!user;
   const referralRef = useRef(null);
+  const navigate = useNavigate();
 
   const [pillars, setPillars] = useState([]);
   const [overallProgress, setOverallProgress] = useState(0);
@@ -34,6 +36,7 @@ export default function RoadmapPage({ user }) {
   const [memberCount, setMemberCount] = useState(0);
   const [openPillarKey, setOpenPillarKey] = useState(null); // which pillar's popup is open
   const [loading, setLoading] = useState(true);
+  const [purchasingItem, setPurchasingItem] = useState(null);
   const [openingItemId, setOpeningItemId] = useState(null);
   const [error, setError] = useState('');
   const [careerPaths, setCareerPaths] = useState({
@@ -103,7 +106,13 @@ export default function RoadmapPage({ user }) {
   // separate "mark complete" button. Task/quiz items (no file to open yet)
   // are completed the same way, by tapping the row.
   const handleOpenItem = async (item) => {
-    if (!isLoggedIn || openingItemId) return;
+    if (!isLoggedIn) {
+      navigate('/login?redirect=/roadmap', {
+        state: { message: 'Please log in to access this resource.', redirect: '/roadmap' },
+      });
+      return;
+    }
+    if (openingItemId) return;
 
     // Open the item in the viewer modal (type-specific: video player, PDF iframe, etc.)
     setViewingItem(item);
@@ -132,14 +141,23 @@ export default function RoadmapPage({ user }) {
     }
   };
 
-  // Referral-gated item tapped: close the popup and scroll to the referral
-  // card so the student can see exactly how many more friends they need.
-  const handleLockedClick = () => {
-    setOpenPillarKey(null);
-    setTimeout(
-      () => referralRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
-      200
-    );
+  // Locked item tapped
+  const handleLockedClick = (item) => {
+    if (!isLoggedIn) {
+      navigate('/login?redirect=/roadmap', {
+        state: { message: 'Please log in to unlock this content.', redirect: '/roadmap' },
+      });
+      return;
+    }
+    if (item && item.price) {
+      setPurchasingItem(item);
+    } else {
+      setOpenPillarKey(null);
+      setTimeout(
+        () => referralRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+        200
+      );
+    }
   };
 
   return (
@@ -228,6 +246,17 @@ export default function RoadmapPage({ user }) {
 
       {/* Per-item viewer modal: video player / PDF iframe / article link / task / quiz */}
       <ItemViewerModal item={viewingItem} onClose={() => setViewingItem(null)} />
+
+      {purchasingItem && (
+        <PaymentModal
+          open={!!purchasingItem}
+          onClose={() => setPurchasingItem(null)}
+          planTitle={purchasingItem.title}
+          planPrice={purchasingItem.price}
+          roadmapItemId={purchasingItem.id}
+          onSuccessRedirectUrl="/roadmap"
+        />
+      )}
     </main>
   );
 }

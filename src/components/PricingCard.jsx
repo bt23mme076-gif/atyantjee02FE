@@ -36,6 +36,7 @@ export function PaymentModal({
   planPrice,
   mentorId,
   onSuccessRedirectUrl,
+  roadmapItemId,
 }) {
   const [profile, setProfile] = React.useState(null);
   const [phone, setPhone] = React.useState('');
@@ -90,6 +91,7 @@ export function PaymentModal({
     try {
       const payload = { planId, name: profile.name, email: profile.email, phone };
       if (mentorId) payload.mentorId = mentorId;
+      if (roadmapItemId) payload.roadmapItemId = roadmapItemId;
       const orderData = await createPaymentOrder(payload);
       const loaded = await loadCashfree();
       if (!loaded) throw new Error('Could not load Cashfree SDK. Check your internet connection.');

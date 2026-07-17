@@ -29,27 +29,28 @@ const typeIconMap = {
 // their referral progress instead of trying to open/complete anything.
 export default function RoadmapItemRow({
   item,
-  isLoggedIn,
   isCompleted,
   isOpening,
   onOpen,
   onLockedClick,
 }) {
   const TypeIcon = typeIconMap[item.type] || FileText;
-  const isLocked = isLoggedIn && item.locked;
+  const isLocked = item.locked;
 
   return (
     <button
       type="button"
-      disabled={(!isLoggedIn && !isLocked) || isOpening}
+      disabled={isOpening}
       onClick={() => (isLocked ? onLockedClick?.(item) : onOpen(item))}
       className={`flex w-full items-center justify-between gap-4 rounded-2xl border px-5 py-4 text-left transition ${
         isCompleted
           ? 'border-emerald-400/30 bg-emerald-500/5'
           : isLocked
-            ? 'border-[#8B5CF6]/25 bg-[#8B5CF6]/5 hover:border-[#8B5CF6]/40'
+            ? item.price
+              ? 'border-amber-500/20 bg-amber-500/[0.03] hover:border-amber-500/35'
+              : 'border-[#8B5CF6]/25 bg-[#8B5CF6]/5 hover:border-[#8B5CF6]/40'
             : 'border-white/10 bg-white/[0.03] hover:border-white/20'
-      } ${!isLoggedIn ? 'cursor-not-allowed opacity-70' : ''}`}
+      }`}
     >
       <div className="flex min-w-0 items-center gap-3">
         <div
@@ -57,7 +58,9 @@ export default function RoadmapItemRow({
             isCompleted
               ? 'bg-emerald-500/15 text-emerald-400'
               : isLocked
-                ? 'bg-[#8B5CF6]/15 text-[#C4B5FD]'
+                ? item.price
+                  ? 'bg-amber-500/15 text-amber-400'
+                  : 'bg-[#8B5CF6]/15 text-[#C4B5FD]'
                 : 'bg-white/5 text-[#FF9E6B]'
           }`}
         >
@@ -68,7 +71,7 @@ export default function RoadmapItemRow({
           <p className="text-xs text-white/45">
             {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
             {item.durationLabel ? ` · ${item.durationLabel}` : ''}
-            {isLocked ? ' · Refer friends to unlock' : ''}
+            {isLocked ? (item.price ? ` · Unlock for ₹${item.price}` : ' · Refer friends to unlock') : ''}
           </p>
         </div>
       </div>
@@ -79,9 +82,11 @@ export default function RoadmapItemRow({
         ) : isCompleted ? (
           <CheckCircle2 className="h-5 w-5 text-emerald-400" />
         ) : isLocked ? (
-          <Gift className="h-4 w-4 text-[#C4B5FD]" />
-        ) : !isLoggedIn ? (
-          <Lock className="h-4 w-4 text-white/30" />
+          item.price ? (
+            <Lock className="h-4 w-4 text-amber-500/80" />
+          ) : (
+            <Gift className="h-4 w-4 text-[#C4B5FD]" />
+          )
         ) : (
           <ExternalLink className="h-4 w-4 text-white/40" />
         )}
