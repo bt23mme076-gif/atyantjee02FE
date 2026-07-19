@@ -36,7 +36,7 @@ export default function CoursePricingCards() {
   }
 
   return (
-    <div className="py-12 lg:py-16">
+    <div className="pt-2 pb-12 lg:pt-4 lg:pb-16">
       <div className="flex items-center justify-center gap-4 mb-12">
         <span className="h-[1px] w-12 sm:w-20 bg-gradient-to-r from-transparent to-[#FF6B2B]" />
         <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-[#FFB38E] text-center">

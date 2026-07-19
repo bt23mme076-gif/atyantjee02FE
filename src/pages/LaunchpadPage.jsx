@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
-  Sparkles,
   GraduationCap,
   Compass,
   Building2,
@@ -21,7 +20,6 @@ import {
   UserCheck,
   RefreshCw,
   HelpCircle,
-  Bell,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -162,54 +160,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
   const navigate = useNavigate();
   const [faqOpenId, setFaqOpenId] = useState('0-0');
 
-  // Exam pills config
-  const examPills = [
-    {
-      label: 'JoSAA',
-      icon: <GraduationCap className="h-3.5 w-3.5" />,
-      active: true,
-      glowClass:
-        'border-[#FF6B2B] bg-[#FF6B2B]/10 text-white shadow-[0_0_15px_rgba(255,107,43,0.25)]',
-    },
-    {
-      label: 'CSAB',
-      icon: <Sparkles className="h-3.5 w-3.5" />,
-      active: true,
-      glowClass:
-        'border-purple-500/50 bg-purple-500/10 text-white/95 shadow-[0_0_12px_rgba(139,92,246,0.15)]',
-    },
-    {
-      label: 'MHT-CET',
-      icon: <Building2 className="h-3.5 w-3.5" />,
-      active: true,
-      glowClass:
-        'border-emerald-500/50 bg-emerald-500/10 text-white/95 shadow-[0_0_12px_rgba(16,185,129,0.15)]',
-    },
-    {
-      label: 'COMEDK',
-      icon: <FileText className="h-3.5 w-3.5" />,
-      active: false,
-      labelSuffix: 'Coming Soon',
-    },
-    {
-      label: 'State CETs',
-      icon: <Globe className="h-3.5 w-3.5" />,
-      active: false,
-      labelSuffix: 'Coming Soon',
-    },
-    {
-      label: 'All India',
-      icon: <Building2 className="h-3.5 w-3.5" />,
-      active: false,
-      labelSuffix: 'Coming Soon',
-    },
-    {
-      label: 'Govt + Private',
-      icon: <Building2 className="h-3.5 w-3.5" />,
-      active: false,
-      labelSuffix: 'Coming Soon',
-    },
-  ];
+
 
   return (
     <main className="bg-[#0B0F2E] text-white min-h-screen relative font-sans overflow-x-hidden">
@@ -218,32 +169,10 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
       <div className="absolute top-[350px] right-[-100px] w-[500px] h-[500px] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* 1. Exam Pills Row */}
-        <div className="w-full border-b border-white/5 py-4 overflow-x-auto scrollbar-none">
-          <div className="flex gap-3 min-w-max pb-1">
-            {examPills.map((pill, idx) => (
-              <div
-                key={idx}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold border transition ${
-                  pill.active
-                    ? pill.glowClass
-                    : 'border-white/5 bg-white/2 text-white/40 cursor-default'
-                }`}
-              >
-                <span className={pill.active ? 'text-inherit' : 'opacity-50'}>{pill.icon}</span>
-                <span>{pill.label}</span>
-                {pill.labelSuffix && (
-                  <span className="text-[8px] font-black uppercase tracking-wider text-white/30 bg-white/5 px-1 py-0.5 rounded ml-1">
-                    {pill.labelSuffix}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+
 
         {/* 2. Hero Section */}
-        <div className="grid items-center gap-8 lg:gap-16 lg:grid-cols-2 py-10 lg:py-16">
+        <div className="grid items-center gap-8 lg:gap-16 lg:grid-cols-2 pt-2 pb-8 lg:pt-4 lg:pb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -471,55 +400,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
             </div>
           </div>
 
-          {/* 4. Atyant Career Accelerator Card (Green/Coming Soon) */}
-          <div className="mt-8 relative overflow-hidden rounded-lg border border-white/10 bg-white/3 p-8 shadow-sm hover:border-[#FF6B2B]/40 transition duration-300">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-              <div className="flex-1">
-                <span className="inline-flex rounded-full bg-green-500/10 border border-green-500/30 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-green-400 mb-4">
-                  Coming Soon
-                </span>
 
-                <h3 className="text-2xl sm:text-3xl font-black text-white">
-                  Atyant <span className="text-[#FF6B2B]">Career Accelerator</span>
-                </h3>
-                <p className="mt-1.5 text-sm font-semibold text-slate-300">
-                  Become Job Ready. Increase your ROI. Land Better Placements.
-                </p>
-
-                <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
-                  {[
-                    'Industry Relevant Skills',
-                    'High Impact Projects',
-                    'Internship Acceleration',
-                    'Placement Preparation',
-                    'Mentorship from Seniors',
-                  ].map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs text-slate-300">
-                      <div className="h-4 w-4 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center font-bold text-[9px]">
-                        ✓
-                      </div>
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="shrink-0 flex items-center">
-                <button
-                  onClick={() => {
-                    window.open(
-                      'https://wa.me/919579040183?text=Hi%2C%20I%20want%20to%20get%20notified%20about%20the%20Atyant%20Career%20Accelerator.%20Please%20register%20my%20number.',
-                      '_blank'
-                    );
-                  }}
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-[#FF6B2B] hover:bg-[#e05a1f] text-white font-bold text-sm tracking-wide shadow-lg active:scale-95 transition"
-                >
-                  <Bell className="h-4 w-4 animate-bounce" />
-                  Notify Me
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* 5. Stats Bar Section */}

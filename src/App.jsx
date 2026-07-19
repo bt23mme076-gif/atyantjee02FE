@@ -235,7 +235,7 @@ function AppContent() {
         user={user}
       />
 
-      <div className="pt-20 lg:pt-24">
+      <div className="pt-14 lg:pt-16">
         <AnimatePresence mode="wait">
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes location={location} key={location.pathname}>
