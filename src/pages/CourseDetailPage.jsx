@@ -69,7 +69,7 @@ export default function CourseDetailPage() {
   const handleItemClick = (mod, item) => {
     if (!hasPurchased && !mod.isFreePreview) {
       if (!user) {
-        navigate('/auth'); // force login
+        navigate('/login', { state: { message: 'Please log in to enroll in this course.' } });
       } else {
         setShowPayment(true);
       }
@@ -88,7 +88,11 @@ export default function CourseDetailPage() {
 
           {!hasPurchased && (
             <button
-              onClick={() => (user ? setShowPayment(true) : navigate('/auth'))}
+              onClick={() =>
+                user
+                  ? setShowPayment(true)
+                  : navigate('/login', { state: { message: 'Please log in to enroll in this course.' } })
+              }
               className="bg-[#FF6B2B] hover:bg-[#e05a1f] text-white font-bold py-4 px-10 rounded-xl shadow-lg transition transform hover:scale-105 active:scale-95"
             >
               Enroll Now for ₹{course.price}
