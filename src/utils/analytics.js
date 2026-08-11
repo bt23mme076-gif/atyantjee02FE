@@ -4,7 +4,9 @@ export default function initAnalytics() {
     if (!id) return;
     // Basic GA4 snippet loader if VITE_GA_ID is set
     if (!window.dataLayer) window.dataLayer = [];
-    function gtag(){window.dataLayer.push(arguments);} 
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
     window.gtag = window.gtag || gtag;
 
     const script = document.createElement('script');

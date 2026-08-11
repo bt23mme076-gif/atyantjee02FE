@@ -15,13 +15,13 @@ A performant, reusable React component that adds subtle animated circular mesh p
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | ReactNode | required | Content to render on top of background |
-| `variant` | 'dark' \| 'light' \| 'tinted' | 'dark' | Background color variant: light circles on dark bg, dark circles on light bg, or colored gradient |
-| `intensity` | 'subtle' \| 'medium' \| 'bold' | 'subtle' | Opacity level: 5%, 8%, or 12% |
-| `animated` | boolean | true | Enable slow pulse animation (20s duration) |
-| `blur` | boolean | true | Apply subtle blur effect to background |
+| Prop        | Type                           | Default  | Description                                                                                       |
+| ----------- | ------------------------------ | -------- | ------------------------------------------------------------------------------------------------- |
+| `children`  | ReactNode                      | required | Content to render on top of background                                                            |
+| `variant`   | 'dark' \| 'light' \| 'tinted'  | 'dark'   | Background color variant: light circles on dark bg, dark circles on light bg, or colored gradient |
+| `intensity` | 'subtle' \| 'medium' \| 'bold' | 'subtle' | Opacity level: 5%, 8%, or 12%                                                                     |
+| `animated`  | boolean                        | true     | Enable slow pulse animation (20s duration)                                                        |
+| `blur`      | boolean                        | true     | Apply subtle blur effect to background                                                            |
 
 ## Usage Examples
 
@@ -33,9 +33,7 @@ import CircleMeshBackground from './components/CircleMeshBackground';
 export default function Hero() {
   return (
     <CircleMeshBackground variant="dark" intensity="subtle" animated blur>
-      <section className="bg-[#0B0F2E] text-white">
-        {/* Your hero content */}
-      </section>
+      <section className="bg-[#0B0F2E] text-white">{/* Your hero content */}</section>
     </CircleMeshBackground>
   );
 }
@@ -58,9 +56,7 @@ export default function Hero() {
 
 ```jsx
 <CircleMeshBackground variant="light" intensity="subtle">
-  <section className="bg-white">
-    {/* Light background content */}
-  </section>
+  <section className="bg-white">{/* Light background content */}</section>
 </CircleMeshBackground>
 ```
 
@@ -78,9 +74,7 @@ export default function Hero() {
 
 ```jsx
 <CircleMeshBackground variant="dark" animated={false} blur>
-  <section className="bg-[#0B0F2E]">
-    {/* Static mesh background */}
-  </section>
+  <section className="bg-[#0B0F2E]">{/* Static mesh background */}</section>
 </CircleMeshBackground>
 ```
 
@@ -103,7 +97,7 @@ export default function Hero() {
    - Modulates opacity slightly over 20 seconds
    - Respects user's motion preferences
 
-4. **Performance:** 
+4. **Performance:**
    - Pure CSS (no JavaScript computation)
    - No canvas rendering
    - Minimal reflow/repaint

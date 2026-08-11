@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import AdmissionProgramsSection from '../components/AdmissionProgramsSection';
 import FAQItem from '../components/FAQItem';
 import { faqCategories } from '../data/siteContent';
@@ -23,33 +24,21 @@ const programGuideCards = [
     accent: 'from-emerald-500/20 to-emerald-500/5',
     border: 'hover:border-emerald-400/40',
     dot: 'bg-emerald-500',
-    points: [
-      'You only need counselling',
-      'Small budget',
-      'Want quick clarity',
-    ],
+    points: ['You only need counselling', 'Small budget', 'Want quick clarity'],
   },
   {
     title: 'Complete Admission',
     accent: 'from-orange-500/20 to-orange-500/5',
     border: 'hover:border-orange-400/40',
     dot: 'bg-[#FF6B2B]',
-    points: [
-      'Need end-to-end support',
-      'College selection',
-      'Choice filling',
-    ],
+    points: ['Need end-to-end support', 'College selection', 'Choice filling'],
   },
   {
     title: 'Premium Mentorship',
     accent: 'from-purple-500/20 to-purple-500/5',
     border: 'hover:border-purple-400/40',
     dot: 'bg-purple-500',
-    points: [
-      'Need continuous support',
-      'Career planning',
-      'Long-term guidance',
-    ],
+    points: ['Need continuous support', 'Career planning', 'Long-term guidance'],
   },
 ];
 
@@ -57,6 +46,7 @@ const whyChoosePoints = [
   'Talk to seniors with ranks like yours',
   'Real CSAB & MHT-CET experience from recent seniors',
   'Honest advice, not sugarcoating',
+  'Affordable guidance starting at just ₹999',
   'Support from choice filling till final allotment',
   'Covers CSAB, MHT-CET, COMEDK & more',
   'No bots. Only real seniors.',
@@ -93,7 +83,8 @@ function ProgramsHero() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
-            Compare every counselling plan, understand the differences, and choose the one that best fits your college journey.
+            Compare every counselling plan, understand the differences, and choose the one that best
+            fits your college journey.
           </p>
         </motion.div>
       </section>
@@ -113,7 +104,9 @@ function WhyChooseSection() {
       <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#0B0F2E] p-8 text-white shadow-2xl shadow-[#0B0F2E]/20 sm:p-12">
         <div className="pointer-events-none absolute right-0 top-0 h-72 w-72 rounded-full bg-gradient-to-br from-orange-500/10 to-transparent blur-3xl" />
         <div className="relative z-10">
-          <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FFB38E]">Why Atyant</div>
+          <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FFB38E]">
+            Why Atyant
+          </div>
           <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
             Why Students Choose Atyant
           </h2>
@@ -148,7 +141,9 @@ function ProgramGuideSection() {
     >
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">Choose Wisely</div>
+          <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FF6B2B]">
+            Choose Wisely
+          </div>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-[#0B0F2E] sm:text-5xl">
             Which Program is Right For You?
           </h2>
@@ -162,13 +157,20 @@ function ProgramGuideSection() {
               transition={{ duration: 0.3 }}
               className={`group relative overflow-hidden rounded-[2rem] border border-[#0B0F2E]/10 bg-white p-8 shadow-[0_20px_60px_rgba(11,15,46,0.08)] backdrop-blur-xl ${card.border}`}
             >
-              <div className={`absolute right-0 top-0 h-32 w-32 rounded-full bg-gradient-to-br ${card.accent} blur-2xl transition-opacity group-hover:opacity-100`} />
+              <div
+                className={`absolute right-0 top-0 h-32 w-32 rounded-full bg-gradient-to-br ${card.accent} blur-2xl transition-opacity group-hover:opacity-100`}
+              />
               <div className="relative z-10">
                 <h3 className="text-2xl font-black text-[#0B0F2E]">{card.title}</h3>
-                <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-[#FF6B2B]">Perfect if</p>
+                <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-[#FF6B2B]">
+                  Perfect if
+                </p>
                 <ul className="mt-5 space-y-3">
                   {card.points.map((point) => (
-                    <li key={point} className="flex items-start gap-3 text-sm leading-relaxed text-slate-600">
+                    <li
+                      key={point}
+                      className="flex items-start gap-3 text-sm leading-relaxed text-slate-600"
+                    >
                       <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${card.dot}`} />
                       {point}
                     </li>
@@ -199,8 +201,12 @@ function ProgramsFAQSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FFB38E]">Got Questions?</div>
-          <h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-5xl">Frequently Asked Questions</h2>
+          <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#FFB38E]">
+            Got Questions?
+          </div>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-5xl">
+            Frequently Asked Questions
+          </h2>
         </div>
 
         <div className="mx-auto mt-14 max-w-3xl space-y-12">
@@ -263,6 +269,19 @@ function ProgramsFinalCTA() {
 }
 
 export default function ProgramsPage({ user }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.replace('#', '');
+    // Wait a tick for the page (and its animated sections) to mount/settle.
+    const timer = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [location.hash]);
+
   return (
     <main>
       <ProgramsHero />

@@ -3,13 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, X, Sparkles, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getWhatsAppLink } from '../utils/whatsapp';
-import { createPaymentOrder, getUserMe } from '../utils/api';
+import { createPaymentOrder, getUserMe, buildReturnUrl, isUserLoggedIn } from '../utils/api';
 
 // Map frontend plan titles → backend planId
 export const PLAN_ID_MAP = {
-  // Legacy JEE plans (kept for existing orders)
-  'Starter Clarity': 'starter-clarity',
-  'Complete Guidance': 'complete-guidance',
+  // JEE Counselling Plans
   'Complete Round Support': 'complete-round',
   'Ultimate Peace of Mind': 'ultimate-peace',
   // CSAB Special Rounds
@@ -34,74 +32,92 @@ function loadCashfree() {
 
 // ─── Payment Modal ─────────────────────────────────────────────────────────────
 
-export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, onSuccessRedirectUrl }) {
-  const [name, setName] = React.useState('');
-  const [email, setEmail] = React.useState('');
+export function PaymentModal({
+  open,
+  onClose,
+  planTitle,
+  planPrice,
+  mentorId,
+  onSuccessRedirectUrl,
+  roadmapItemId,
+}) {
+  const [profile, setProfile] = React.useState(null);
   const [phone, setPhone] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [fetchingProfile, setFetchingProfile] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState(false);
 
   React.useEffect(() => {
     if (!open) {
-      setLoading(false); setError(''); setSuccess(false);
-    } else {
-      const token = localStorage.getItem('user_token');
-      if (token) {
-        getUserMe()
-          .then((res) => {
-            if (res?.user) {
-              if (!name) setName(res.user.name || '');
-              if (!email) setEmail(res.user.email || '');
-              if (!phone) setPhone(res.user.phone || '');
-            }
-          })
-          .catch(() => {});
-      }
+      setLoading(false);
+      setError('');
+      setSuccess(false);
+      setProfile(null);
+      setPhone('');
+      setEmail('');
+      return;
     }
+    if (!isUserLoggedIn()) {
+      setError('Please log in to continue with payment.');
+      return;
+    }
+    setFetchingProfile(true);
+    getUserMe()
+      .then((res) => {
+        if (res?.user) {
+          setProfile(res.user);
+          // Pre-fill phone stripping any country code/spaces
+          setPhone((res.user.phone || '').replace(/\D/g, '').slice(-10));
+          setEmail(res.user.email || '');
+        }
+      })
+      .catch(() => setError('Could not load your profile. Please try again.'))
+      .finally(() => setFetchingProfile(false));
   }, [open]);
 
   async function handlePay(e) {
     e.preventDefault();
     setError('');
 
-    // Extra validation for phone number
+    if (!profile) {
+      setError('Profile not loaded. Please close and try again.');
+      return;
+    }
     if (!/^[0-9]{10}$/.test(phone)) {
       setError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
     setLoading(true);
 
-    const planId = PLAN_ID_MAP[planTitle];
-    if (!planId) {
-      window.open(getWhatsAppLink(planTitle), '_blank');
-      onClose?.();
-      setLoading(false);
-      return;
-    }
+    const planId = PLAN_ID_MAP[planTitle] || planTitle;
 
     try {
-      const payload = { planId, name, email, phone };
+      const payload = { planId, name: profile.name, email, phone };
       if (mentorId) payload.mentorId = mentorId;
+      if (roadmapItemId) payload.roadmapItemId = roadmapItemId;
       const orderData = await createPaymentOrder(payload);
       const loaded = await loadCashfree();
       if (!loaded) throw new Error('Could not load Cashfree SDK. Check your internet connection.');
 
       const cashfree = window.Cashfree({
-        mode: orderData.cashfreeEnvironment === 'production' ? 'production' : 'sandbox'
+        mode: orderData.cashfreeEnvironment === 'production' ? 'production' : 'sandbox',
       });
 
-      // Save pending WhatsApp redirection URL for verification hook
       if (onSuccessRedirectUrl) {
         localStorage.setItem('atyant_pending_redirect', onSuccessRedirectUrl);
       }
-
+      // const base = import.meta.env.VITE_APP_URL || window.location.origin;
       await cashfree.checkout({
         paymentSessionId: orderData.paymentSessionId,
-        returnUrl: `${window.location.origin}/profile?order_id=${orderData.orderId}`
+        returnUrl: buildReturnUrl('/payment-status', orderData.orderId),
       });
-
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
       setLoading(false);
@@ -110,97 +126,174 @@ export function PaymentModal({ open, onClose, planTitle, planPrice, mentorId, on
 
   if (!open) return null;
 
+  // Human-readable plan title
+  const displayTitle = PLAN_ID_MAP[planTitle]
+    ? planTitle
+    : planTitle.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
   return (
-    <div className="fixed inset-0 z-[200000] flex items-center justify-center bg-black/50 px-4">
+    <div className="fixed inset-0 z-[200000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
       <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden"
         >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#0B0F2E] to-[#12183f] px-6 pt-6 pb-5">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 rounded-full p-1.5 text-white/40 hover:bg-white/10 hover:text-white transition"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#FF6B2B] mb-1">
+              Secure Checkout
+            </p>
+            <h3 className="text-xl font-black text-white">{displayTitle}</h3>
+            <p className="text-sm text-white/60 mt-0.5">₹{planPrice} · via Cashfree</p>
+          </div>
 
-          {success ? (
-            <div className="py-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle2 className="h-8 w-8 text-green-600" />
+          <div className="p-6">
+            {success ? (
+              <div className="py-6 text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                  <CheckCircle2 className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Payment Successful!</h3>
+                <p className="mt-2 text-sm text-gray-500">
+                  We'll reach out within 24 hours to schedule your session.
+                </p>
+                <button
+                  onClick={onClose}
+                  className="mt-6 rounded-full bg-[#FF6B2B] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#e05a1f] transition"
+                >
+                  Done
+                </button>
               </div>
-              <h3 className="text-xl font-bold text-gray-900">Payment Successful!</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                We'll reach out within 24 hours to schedule your session.
-              </p>
-              <button
-                onClick={onClose}
-                className="mt-6 rounded-full bg-[#FF6B2B] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#ff7a42] transition"
-              >
-                Done
-              </button>
-              {onSuccessRedirectUrl && (
-                <p className="mt-2 text-xs text-gray-400">Redirecting to WhatsApp...</p>
-              )}
-            </div>
-          ) : (
-            <form onSubmit={handlePay} className="space-y-4">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">Pay for {planTitle}</h3>
-                <p className="text-sm text-gray-500">₹{planPrice} — secure payment via Cashfree</p>
+            ) : fetchingProfile ? (
+              <div className="py-10 flex flex-col items-center gap-3 text-gray-400">
+                <div className="w-8 h-8 border-2 border-slate-200 border-t-[#FF6B2B] rounded-full animate-spin" />
+                <p className="text-sm">Loading your profile…</p>
               </div>
+            ) : (
+              <form onSubmit={handlePay} className="space-y-4">
+                {error && (
+                  <p className="rounded-lg bg-red-50 border border-red-100 px-3 py-2.5 text-xs text-red-600">
+                    {error}
+                  </p>
+                )}
 
-              {error && (
-                <p className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
-              )}
+                {/* Profile info — read-only */}
+                {profile && (
+                  <div className="space-y-3">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      Paying as
+                    </p>
 
-              {/* Form Inputs ... */}
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Full Name *</label>
-                <input
-                  required value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Email *</label>
-                <input
-                  required type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Phone *</label>
-                <input
-                  required
-                  type="tel"
-                  pattern="[0-9]{10}"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="9876543210"
-                  title="Please enter a valid 10-digit mobile number"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
-                />
-              </div>
+                    {/* Name — locked */}
+                    <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FF6B2B]/10 text-[#FF6B2B] text-sm font-black">
+                        {(profile.name || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] text-gray-400">Full Name</p>
+                        <p className="text-sm font-semibold text-gray-800 truncate">
+                          {profile.name || '—'}
+                        </p>
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">
+                        Locked
+                      </span>
+                    </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-full bg-[#FF6B2B] py-3 text-sm font-bold text-white hover:bg-[#e05a1f] transition disabled:opacity-60 shadow-lg shadow-[#FF6B2B]/20"
-              >
-                {loading ? 'Processing…' : `Pay ₹${planPrice} Securely`}
-              </button>
+                    {/* Email — editable only if missing */}
+                    {profile.email ? (
+                      <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-400">
+                          <span className="text-sm">@</span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[11px] text-gray-400">Email</p>
+                          <p className="text-sm font-semibold text-gray-800 truncate">
+                            {profile.email}
+                          </p>
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">
+                          Locked
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                          Email *{' '}
+                          <span className="text-gray-400 font-normal">
+                            (not in profile — enter below)
+                          </span>
+                        </label>
+                        <input
+                          required
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="you@example.com"
+                          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
+                        />
+                      </div>
+                    )}
 
-              <p className="text-center text-[11px] text-gray-400">
-                🔒 Secured by Cashfree · 100% safe checkout
-              </p>
-            </form>
-          )}
+                    {/* Phone — editable only if missing */}
+                    {profile.phone ? (
+                      <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 px-4 py-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-50 text-green-500 text-sm font-bold">
+                          #
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[11px] text-gray-400">Phone</p>
+                          <p className="text-sm font-semibold text-gray-800">{phone}</p>
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">
+                          Locked
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                          Phone Number *{' '}
+                          <span className="text-gray-400 font-normal">
+                            (not in profile — enter below)
+                          </span>
+                        </label>
+                        <input
+                          required
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                          placeholder="9876543210"
+                          maxLength={10}
+                          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !profile}
+                  className="w-full rounded-xl bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] py-3.5 text-sm font-bold text-white hover:from-[#e05a1f] hover:to-[#ff6b2b] transition disabled:opacity-50 shadow-lg shadow-[#FF6B2B]/20 mt-2"
+                >
+                  {loading ? 'Processing…' : `Pay ₹${planPrice} Securely`}
+                </button>
+
+                <p className="text-center text-[11px] text-gray-400">
+                  🔒 Secured by Cashfree · 100% safe checkout
+                </p>
+              </form>
+            )}
+          </div>
         </motion.div>
       </AnimatePresence>
     </div>
@@ -239,8 +332,7 @@ export default function PricingCard({
       try {
         const { bundleId } = JSON.parse(pending);
         if (bundleId === planId) {
-          const token = localStorage.getItem('user_token');
-          if (token) {
+          if (isUserLoggedIn()) {
             setShowPayment(true);
             localStorage.removeItem('atyant_pending_booking');
           }
@@ -262,12 +354,16 @@ export default function PricingCard({
     }
 
     // Require login before payment
-    const token = localStorage.getItem('user_token');
-    if (!token) {
-      localStorage.setItem('atyant_pending_booking', JSON.stringify({
-        bundleId: planId,
-      }));
-      navigate('/login', { state: { message: 'Please sign up or log in as a Student to buy this mentorship plan.' } });
+    if (!isUserLoggedIn()) {
+      localStorage.setItem(
+        'atyant_pending_booking',
+        JSON.stringify({
+          bundleId: planId,
+        })
+      );
+      navigate('/login', {
+        state: { message: 'Please sign up or log in as a Student to buy this mentorship plan.' },
+      });
       return;
     }
 
@@ -283,19 +379,24 @@ export default function PricingCard({
   let btnClass = 'bg-[#0B0F2E] text-white hover:bg-[#12183f] shadow-lg';
 
   if (colorTheme === 'green') {
-    cardClass = 'border-emerald-100 bg-white text-[#0B0F2E] hover:border-emerald-500 hover:ring-4 hover:ring-emerald-500/10 shadow-[0_15px_50px_rgba(16,185,129,0.04)]';
+    cardClass =
+      'border-emerald-100 bg-white text-[#0B0F2E] hover:border-emerald-500 hover:ring-4 hover:ring-emerald-500/10 shadow-[0_15px_50px_rgba(16,185,129,0.04)]';
     checkColor = 'text-emerald-500';
     btnClass = 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-600/20';
   } else if (colorTheme === 'orange') {
-    cardClass = 'border-orange-100 bg-white text-[#0B0F2E] hover:border-orange-500 hover:ring-4 hover:ring-orange-500/10 shadow-[0_15px_50px_rgba(249,115,22,0.04)]';
+    cardClass =
+      'border-orange-100 bg-white text-[#0B0F2E] hover:border-orange-500 hover:ring-4 hover:ring-orange-500/10 shadow-[0_15px_50px_rgba(249,115,22,0.04)]';
     checkColor = 'text-orange-500';
     btnClass = 'bg-orange-500 text-white hover:bg-orange-600 shadow-md shadow-orange-500/20';
   } else if (colorTheme === 'navy-glow') {
-    cardClass = 'border-2 border-orange-500 bg-[#0B0F2E] text-white shadow-[0_20px_80px_rgba(255,107,43,0.3)] ring-4 ring-orange-500/25 z-10 hover:shadow-[0_0_60px_rgba(255,107,43,0.55)]';
+    cardClass =
+      'border-2 border-orange-500 bg-[#0B0F2E] text-white shadow-[0_20px_80px_rgba(255,107,43,0.3)] ring-4 ring-orange-500/25 z-10 hover:shadow-[0_0_60px_rgba(255,107,43,0.55)]';
     checkColor = 'text-orange-400';
-    btnClass = 'bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/40';
+    btnClass =
+      'bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/40';
   } else if (colorTheme === 'purple') {
-    cardClass = 'border-indigo-100 bg-white text-[#0B0F2E] hover:border-indigo-500 hover:ring-4 hover:ring-indigo-500/10 shadow-[0_15px_50px_rgba(99,102,241,0.04)]';
+    cardClass =
+      'border-indigo-100 bg-white text-[#0B0F2E] hover:border-indigo-500 hover:ring-4 hover:ring-indigo-500/10 shadow-[0_15px_50px_rgba(99,102,241,0.04)]';
     checkColor = 'text-indigo-500';
     btnClass = 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-600/20';
   }
@@ -315,17 +416,22 @@ export default function PricingCard({
         )}
 
         <div className="p-5 sm:p-8 flex flex-col flex-1">
-
           {/* Discount pill */}
           {discount && (
             <div className="flex items-center gap-2 mb-4">
-              <span className={`text-[10px] font-black px-3 py-1 rounded-full ${
-                colorTheme === 'navy-glow' ? 'bg-orange-500 text-white' : 'bg-orange-500/10 text-orange-600'
-              }`}>
+              <span
+                className={`text-[10px] font-black px-3 py-1 rounded-full ${
+                  colorTheme === 'navy-glow'
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-orange-500/10 text-orange-600'
+                }`}
+              >
                 {discount}
               </span>
               {discountLabel && (
-                <span className={`text-[11px] font-bold uppercase tracking-wider ${colorTheme === 'navy-glow' ? 'text-white/60' : 'text-slate-500'}`}>
+                <span
+                  className={`text-[11px] font-bold uppercase tracking-wider ${colorTheme === 'navy-glow' ? 'text-white/60' : 'text-slate-500'}`}
+                >
                   • {discountLabel}
                 </span>
               )}
@@ -333,17 +439,23 @@ export default function PricingCard({
           )}
 
           {/* Title */}
-          <h3 className={`text-2xl font-black leading-tight tracking-tight ${colorTheme === 'navy-glow' ? 'text-white' : 'text-[#0B0F2E]'}`}>
+          <h3
+            className={`text-2xl font-black leading-tight tracking-tight ${colorTheme === 'navy-glow' ? 'text-white' : 'text-[#0B0F2E]'}`}
+          >
             {title}
           </h3>
 
           {/* Pricing */}
           <div className="mt-3 flex items-baseline gap-2">
-            <span className={`text-4xl font-black ${colorTheme === 'navy-glow' ? 'text-white' : 'text-[#0B0F2E]'}`}>
+            <span
+              className={`text-4xl font-black ${colorTheme === 'navy-glow' ? 'text-white' : 'text-[#0B0F2E]'}`}
+            >
               ₹{price}
             </span>
             {originalPrice && (
-              <span className={`text-lg font-bold line-through ${colorTheme === 'navy-glow' ? 'text-white/40' : 'text-slate-400'}`}>
+              <span
+                className={`text-lg font-bold line-through ${colorTheme === 'navy-glow' ? 'text-white/40' : 'text-slate-400'}`}
+              >
                 ₹{originalPrice}
               </span>
             )}
@@ -358,12 +470,16 @@ export default function PricingCard({
 
           {/* Best for */}
           {bestFor && (
-            <div className={`mt-4 rounded-xl px-4 py-3.5 text-xs leading-relaxed font-medium border ${
-              colorTheme === 'navy-glow'
-                ? 'bg-white/5 border-white/10 text-white/80'
-                : 'bg-slate-50 border-slate-100 text-slate-700'
-            }`}>
-              <span className={`block text-[10px] font-black uppercase tracking-wider mb-1 ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-orange-600'}`}>
+            <div
+              className={`mt-4 rounded-xl px-4 py-3.5 text-xs leading-relaxed font-medium border ${
+                colorTheme === 'navy-glow'
+                  ? 'bg-white/5 border-white/10 text-white/80'
+                  : 'bg-slate-50 border-slate-100 text-slate-700'
+              }`}
+            >
+              <span
+                className={`block text-[10px] font-black uppercase tracking-wider mb-1 ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-orange-600'}`}
+              >
                 Best for
               </span>
               {bestFor}
@@ -371,15 +487,22 @@ export default function PricingCard({
           )}
 
           {/* Divider */}
-          <div className={`mt-5 mb-4 h-px ${colorTheme === 'navy-glow' ? 'bg-white/10' : 'bg-slate-100'}`} />
+          <div
+            className={`mt-5 mb-4 h-px ${colorTheme === 'navy-glow' ? 'bg-white/10' : 'bg-slate-100'}`}
+          />
 
           {/* Features */}
           <div className="space-y-3 flex-1">
-            <p className={`text-[10px] font-black uppercase tracking-wider mb-3 ${colorTheme === 'navy-glow' ? 'text-white/50' : 'text-slate-400'}`}>
+            <p
+              className={`text-[10px] font-black uppercase tracking-wider mb-3 ${colorTheme === 'navy-glow' ? 'text-white/50' : 'text-slate-400'}`}
+            >
               What's included
             </p>
             {features.map((feature) => (
-              <div key={feature} className={`flex items-start gap-2.5 text-sm ${colorTheme === 'navy-glow' ? 'text-white/85' : 'text-slate-700 font-medium'}`}>
+              <div
+                key={feature}
+                className={`flex items-start gap-2.5 text-sm ${colorTheme === 'navy-glow' ? 'text-white/85' : 'text-slate-700 font-medium'}`}
+              >
                 <CheckCircle2 className={`h-4.5 w-4.5 shrink-0 mt-0.5 ${checkColor}`} />
                 <span className="leading-snug">{feature}</span>
               </div>
@@ -388,25 +511,38 @@ export default function PricingCard({
 
           {/* Bonus guides */}
           {bonus && bonus.length > 0 && (
-            <div className={`mt-5 rounded-2xl p-4 border ${
-              colorTheme === 'navy-glow' ? 'bg-white/5 border-white/10' : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100'
-            }`}>
+            <div
+              className={`mt-5 rounded-2xl p-4 border ${
+                colorTheme === 'navy-glow'
+                  ? 'bg-white/5 border-white/10'
+                  : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-100'
+              }`}
+            >
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className={`h-3.5 w-3.5 ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-amber-500'}`} />
-                <p className={`text-[10px] font-black uppercase tracking-wider ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-amber-700'}`}>
+                <Sparkles
+                  className={`h-3.5 w-3.5 ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-amber-500'}`}
+                />
+                <p
+                  className={`text-[10px] font-black uppercase tracking-wider ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-amber-700'}`}
+                >
                   {bonusLabel || 'Bonus Guides'}
                 </p>
               </div>
               <div className="space-y-1.5">
                 {visibleBonus.map((item) => (
-                  <div key={item} className={`flex items-center gap-2 text-xs ${colorTheme === 'navy-glow' ? 'text-white/75 font-medium' : 'text-slate-600 font-medium'}`}>
-                    <Star className={`h-3 w-3 shrink-0 ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-amber-400'} fill-current`} />
+                  <div
+                    key={item}
+                    className={`flex items-center gap-2 text-xs ${colorTheme === 'navy-glow' ? 'text-white/75 font-medium' : 'text-slate-600 font-medium'}`}
+                  >
+                    <Star
+                      className={`h-3 w-3 shrink-0 ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-amber-400'} fill-current`}
+                    />
                     {item}
                   </div>
                 ))}
                 {bonus.length > 3 && (
                   <button
-                    onClick={() => setShowAllBonus(v => !v)}
+                    onClick={() => setShowAllBonus((v) => !v)}
                     className={`mt-1 text-[11px] font-bold underline underline-offset-2 ${colorTheme === 'navy-glow' ? 'text-orange-400' : 'text-amber-600'}`}
                   >
                     {showAllBonus ? 'Show less ↑' : `+${bonus.length - 3} more guides ↓`}
@@ -424,7 +560,9 @@ export default function PricingCard({
             {cta}
           </button>
 
-          <p className={`mt-3.5 text-center text-xs font-bold ${colorTheme === 'navy-glow' ? 'text-white/50' : 'text-slate-500'}`}>
+          <p
+            className={`mt-3.5 text-center text-xs font-bold ${colorTheme === 'navy-glow' ? 'text-white/50' : 'text-slate-500'}`}
+          >
             {bottomText || 'No confusion. Just clarity.'}
           </p>
         </div>

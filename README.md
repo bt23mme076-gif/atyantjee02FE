@@ -165,7 +165,17 @@ Specifies which files and folders should be ignored by Git (node_modules, dist, 
 
 ## Environment Setup
 
-No `.env` file is required for basic development. The application works out of the box after installing dependencies.
+To set up the application environment:
+
+1. Copy the `.env.example` file to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Fill in the values for the environment variables:
+   - `VITE_API_URL`: Points to your backend API server (e.g., `http://localhost:5000` for local development or a remote API URL).
+   - `VITE_APP_URL`: Specifies the public HTTPS origin of your frontend application (required for Cashfree callback return URLs).
+   - `VITE_GOOGLE_CLIENT_ID`: Your Google OAuth client ID, used to authenticate users via Google Sign-In.
+   - `VITE_GA_ID`: (Optional) Your Google Analytics tracking ID.
 
 ## Deployment
 

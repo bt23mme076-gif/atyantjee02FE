@@ -47,7 +47,11 @@ export default function CircleMeshBackground({
               {particles.map((particle, index) => (
                 <span
                   key={index}
-                  className={animated ? `circle-particle group-${particle.group} animate-group` : 'circle-particle'}
+                  className={
+                    animated
+                      ? `circle-particle group-${particle.group} animate-group`
+                      : 'circle-particle'
+                  }
                   style={{
                     left: particle.left,
                     top: particle.top,
@@ -60,9 +64,7 @@ export default function CircleMeshBackground({
                 />
               ))}
             </div>
-            <div className="relative z-10">
-              {child.props.children}
-            </div>
+            <div className="relative z-10">{child.props.children}</div>
           </>
         ),
       })

@@ -8,11 +8,13 @@ export default function ParticleClusterBackground({
 }) {
   const [particles, setParticles] = useState([]);
 
-  const palette = useMemo(() => (
-    variant === 'dark'
-      ? ['#FF6B2B', '#8B5CF6', '#60A5FA', '#FFFFFF']
-      : ['#1E293B', '#7C3AED', '#F97316', '#0F172A']
-  ), [variant]);
+  const palette = useMemo(
+    () =>
+      variant === 'dark'
+        ? ['#FF6B2B', '#8B5CF6', '#60A5FA', '#FFFFFF']
+        : ['#1E293B', '#7C3AED', '#F97316', '#0F172A'],
+    [variant]
+  );
 
   const opacityMap = {
     subtle: 0.5,
@@ -46,11 +48,7 @@ export default function ParticleClusterBackground({
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {particles.map((particle) => (
-        <ParticleMotion
-          key={particle.id}
-          particle={particle}
-          opacity={particleOpacity}
-        />
+        <ParticleMotion key={particle.id} particle={particle} opacity={particleOpacity} />
       ))}
     </div>
   );
