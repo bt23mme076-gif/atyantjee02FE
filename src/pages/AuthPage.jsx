@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Gift, AlertTriangle } from 'lucide-react';
 import { userLogin, userSignup, googleLogin, googleSignup } from '../utils/api';
 
 export default function AuthPage({ setUser }) {
@@ -313,8 +314,9 @@ export default function AuthPage({ setUser }) {
         </div>
 
         {!isLogin && referralCode && (
-          <div className="mb-6 p-3 rounded-lg bg-orange-500/10 border border-[#FF6B2B]/20 text-xs font-semibold text-[#FFB38E] text-center">
-            🎁 You were invited by a friend — signing up counts toward their referral rewards.
+          <div className="mb-6 p-3 rounded-lg bg-orange-500/10 border border-[#FF6B2B]/20 text-xs font-semibold text-[#FFB38E] text-center flex items-center justify-center gap-2">
+            <Gift className="w-4 h-4 text-[#FF6B2B] shrink-0" />
+            <span>You were invited by a friend — signing up counts toward their referral rewards.</span>
           </div>
         )}
 
@@ -519,12 +521,15 @@ export default function AuthPage({ setUser }) {
           </div>
 
           {!import.meta.env.VITE_GOOGLE_CLIENT_ID && (
-            <div className="text-[10px] text-slate-400 bg-white/5 p-2.5 rounded-lg border border-white/10 text-center w-full mt-2">
-              ⚠️ Google Client ID not configured. Please add{' '}
-              <code className="font-mono text-orange-400 font-bold bg-white/5 px-1 rounded">
-                VITE_GOOGLE_CLIENT_ID
-              </code>{' '}
-              to your frontend <code className="font-mono bg-white/5 px-1 rounded">.env</code> file.
+            <div className="text-[10px] text-slate-400 bg-white/5 p-2.5 rounded-lg border border-white/10 text-center w-full mt-2 flex items-center justify-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>
+                Google Client ID not configured. Please add{' '}
+                <code className="font-mono text-orange-400 font-bold bg-white/5 px-1 rounded">
+                  VITE_GOOGLE_CLIENT_ID
+                </code>{' '}
+                to your frontend <code className="font-mono bg-white/5 px-1 rounded">.env</code> file.
+              </span>
             </div>
           )}
         </div>

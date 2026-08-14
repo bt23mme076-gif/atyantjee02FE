@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { BarChart2, Search, Target, CheckCircle2 } from 'lucide-react';
 
 const steps = [
-  { num: 1, title: 'Understand your rank reality', icon: '📊' },
-  { num: 2, title: 'Compare real outcomes', icon: '🔍' },
-  { num: 3, title: 'Choose best path', icon: '🎯' },
-  { num: 4, title: 'Validate with seniors', icon: '✅' },
+  { num: 1, title: 'Understand your rank reality', icon: BarChart2 },
+  { num: 2, title: 'Compare real outcomes', icon: Search },
+  { num: 3, title: 'Choose best path', icon: Target },
+  { num: 4, title: 'Validate with seniors', icon: CheckCircle2 },
 ];
 
 const stepVariants = {
@@ -38,67 +39,73 @@ export default function AtyantFramework() {
           <div className="w-full max-w-6xl">
             {/* Desktop Flowchart */}
             <div className="hidden md:flex items-center gap-2 justify-between px-4">
-              {steps.map((step, i) => (
-                <React.Fragment key={step.num}>
-                  <motion.div
-                    custom={i}
-                    variants={stepVariants}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    whileHover={{ y: -8, scale: 1.05 }}
-                    className="flex flex-col items-center flex-1"
-                  >
-                    <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B2B] to-[#ff8a57] shadow-xl">
-                      <div className="flex flex-col items-center">
-                        <div className="text-2xl">{step.icon}</div>
-                        <div className="text-xs font-bold mt-1">Step {step.num}</div>
-                      </div>
-                    </div>
-                    <div className="mt-4 text-center text-sm font-semibold text-white">
-                      {step.title}
-                    </div>
-                  </motion.div>
-
-                  {i < steps.length - 1 && (
+              {steps.map((step, i) => {
+                const Icon = step.icon;
+                return (
+                  <React.Fragment key={step.num}>
                     <motion.div
-                      initial={{ scaleX: 0 }}
-                      whileInView={{ scaleX: 1 }}
+                      custom={i}
+                      variants={stepVariants}
+                      initial="hidden"
+                      whileInView="show"
                       viewport={{ once: true }}
-                      transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                      className="flex-1 h-1 bg-gradient-to-r from-[#FF6B2B] to-white/20 origin-left"
-                    />
-                  )}
-                </React.Fragment>
-              ))}
+                      whileHover={{ y: -8, scale: 1.05 }}
+                      className="flex flex-col items-center flex-1"
+                    >
+                      <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B2B] to-[#ff8a57] shadow-xl">
+                        <div className="flex flex-col items-center">
+                          <Icon className="w-6 h-6 text-white" />
+                          <div className="text-[10px] font-bold mt-1 uppercase tracking-wider">Step {step.num}</div>
+                        </div>
+                      </div>
+                      <div className="mt-4 text-center text-sm font-semibold text-white">
+                        {step.title}
+                      </div>
+                    </motion.div>
+
+                    {i < steps.length - 1 && (
+                      <motion.div
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
+                        className="flex-1 h-1 bg-gradient-to-r from-[#FF6B2B] to-white/20 origin-left"
+                      />
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
 
             {/* Mobile Flowchart (Vertical) */}
             <div className="md:hidden space-y-4 px-4">
-              {steps.map((step, i) => (
-                <div key={step.num}>
-                  <motion.div
-                    custom={i}
-                    variants={stepVariants}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    whileHover={{ x: 8 }}
-                    className="flex items-start gap-4"
-                  >
-                    <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B2B] to-[#ff8a57] shadow-lg">
-                      <div className="flex flex-col items-center">
-                        <div className="text-xl">{step.icon}</div>
-                        <div className="text-xs font-bold">Step {step.num}</div>
+              {steps.map((step, i) => {
+                const Icon = step.icon;
+                return (
+                  <div key={step.num}>
+                    <motion.div
+                      custom={i}
+                      variants={stepVariants}
+                      initial="hidden"
+                      whileInView="show"
+                      viewport={{ once: true }}
+                      whileHover={{ x: 8 }}
+                      className="flex items-start gap-4"
+                    >
+                      <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B2B] to-[#ff8a57] shadow-lg">
+                        <div className="flex flex-col items-center">
+                          <Icon className="w-5 h-5 text-white" />
+                          <div className="text-[9px] font-bold mt-0.5 uppercase tracking-wider">Step {step.num}</div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="pt-2">
-                      <div className="font-semibold text-white">{step.title}</div>
-                    </div>
-                  </motion.div>
-                  {i < steps.length - 1 && <div className="ml-8 h-6 border-l-2 border-white/20" />}
-                </div>
-              ))}
+                      <div className="pt-2">
+                        <div className="font-semibold text-white">{step.title}</div>
+                      </div>
+                    </motion.div>
+                    {i < steps.length - 1 && <div className="ml-8 h-6 border-l-2 border-white/20" />}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </motion.div>

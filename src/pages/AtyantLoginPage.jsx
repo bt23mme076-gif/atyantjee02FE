@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FileText, Check, X, AlertTriangle } from 'lucide-react';
 import {
   adminLogin,
   adminLogout,
@@ -452,7 +453,7 @@ function MentorsTab() {
   async function handleDelete(id, name) {
     if (
       !window.confirm(
-        `⚠️ WARNING: Are you absolutely sure you want to permanently delete the mentor account for "${name}"?\nThis action cannot be undone and will delete their active profile!`
+        `WARNING: Are you absolutely sure you want to permanently delete the mentor account for "${name}"?\nThis action cannot be undone and will delete their active profile!`
       )
     ) {
       return;
@@ -649,9 +650,10 @@ function MentorsTab() {
                       <div className="flex flex-col gap-1.5 max-w-[150px]">
                         <button
                           onClick={() => handleViewDoc(m._id || m.id)}
-                          className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-200 transition-all text-center w-full justify-center"
+                          className="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-200 transition-all text-center w-full justify-center"
                         >
-                          📄 View ID Doc
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>View ID Doc</span>
                         </button>
 
                         <div className="flex items-center justify-between gap-1">
@@ -674,16 +676,16 @@ function MentorsTab() {
                               <button
                                 onClick={() => handleVerifyDoc(m._id || m.id, m.name || m.username)}
                                 title="Approve Verification"
-                                className="p-1 text-[10px] bg-emerald-500 hover:bg-emerald-600 text-white rounded transition font-bold leading-none shrink-0"
+                                className="p-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded transition font-bold leading-none shrink-0 flex items-center justify-center"
                               >
-                                ✓
+                                <Check className="w-3 h-3" />
                               </button>
                               <button
                                 onClick={() => handleRejectDoc(m._id || m.id, m.name || m.username)}
                                 title="Reject Verification"
-                                className="p-1 text-[10px] bg-red-500 hover:bg-red-600 text-white rounded transition font-bold leading-none shrink-0"
+                                className="p-1 bg-red-500 hover:bg-red-600 text-white rounded transition font-bold leading-none shrink-0 flex items-center justify-center"
                               >
-                                ✕
+                                <X className="w-3 h-3" />
                               </button>
                             </div>
                           )}

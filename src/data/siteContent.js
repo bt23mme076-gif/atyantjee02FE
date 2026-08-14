@@ -363,7 +363,7 @@ export const pricingPlans = _override?.pricingPlans ?? [
       'Priority WhatsApp Support',
       'Support Till Final Allotment',
     ],
-    bonusLabel: '🎁 Bonus Included:',
+    bonusLabel: 'Bonus Included:',
     bonus: [
       'Resume Templates',
       'First Year Career Roadmap',
@@ -373,7 +373,7 @@ export const pricingPlans = _override?.pricingPlans ?? [
     ],
     cta: 'Get Full Support →',
     highlighted: true,
-    badge: '⭐ MOST POPULAR',
+    badge: 'MOST POPULAR',
     colorTheme: 'csab-popular',
     bottomText: 'Best for students who want maximum chances during CSAB.',
   },
@@ -394,7 +394,7 @@ export const pricingPlans = _override?.pricingPlans ?? [
       'Extra Mentor Sessions',
       'Post-allotment Transition Guidance',
     ],
-    bonusLabel: '🎁 Premium Bonus:',
+    bonusLabel: 'Premium Bonus:',
     bonus: [
       'Personal Branding Roadmap',
       'Resume Review',
@@ -404,7 +404,7 @@ export const pricingPlans = _override?.pricingPlans ?? [
     ],
     cta: 'Go Premium →',
     highlighted: false,
-    badge: '👑 PREMIUM',
+    badge: 'PREMIUM',
     colorTheme: 'purple',
     bottomText: 'Perfect for students who want complete peace of mind.',
   },
@@ -443,7 +443,7 @@ export const admissionPrograms = _override?.admissionPrograms ?? [
   {
     id: 'admission-success',
     title: 'Admission Success',
-    badge: '⭐ MOST POPULAR',
+    badge: 'MOST POPULAR',
     badgeFloating: true,
     subtitle: 'Chosen by Students & Parents',
     shortDesc: 'Complete support from CAP rounds till final admission.',
@@ -451,7 +451,7 @@ export const admissionPrograms = _override?.admissionPrograms ?? [
     price: '1,999',
     oldPrice: '3,500',
     bestFor: 'Students who want support till final admission.',
-    valueCallout: '🏆 Best Value',
+    valueCallout: 'Best Value',
     comparisonHint: 'Everything in College Clarity + Complete Admission Support',
     features: [
       'Everything in College Clarity',
@@ -478,7 +478,7 @@ export const admissionPrograms = _override?.admissionPrograms ?? [
   {
     id: 'admission-career-growth',
     title: 'Admission + Career Growth',
-    badge: '👑 PREMIUM',
+    badge: 'PREMIUM',
     badgeFloating: true,
     shortDesc: 'Full handholding from admission to career success.',
     discount: '20% OFF',

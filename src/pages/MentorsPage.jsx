@@ -97,12 +97,12 @@ function getInitials(name) {
 function matchesCollegeType(mentor, filterCollegeType) {
   if (!filterCollegeType) return true;
 
-  // ✅ Primary path: use the stored field (requires backend field)
+  // Primary path: use the stored field (requires backend field)
   if (mentor.collegeType) {
     return mentor.collegeType.toUpperCase() === filterCollegeType.toUpperCase();
   }
 
-  // ⚠️ Fallback heuristic for legacy records without collegeType field
+  // Fallback heuristic for legacy records without collegeType field
   const col = (mentor.college || '').toLowerCase();
   switch (filterCollegeType) {
     case 'IIT':

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, X, Sparkles, Star, Tag, Check, Loader2 } from 'lucide-react';
+import { CheckCircle2, X, Sparkles, Star, Tag, Check, Loader2, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getWhatsAppLink } from '../utils/whatsapp';
 import { createPaymentOrder, validateCoupon, getUserMe, buildReturnUrl, isUserLoggedIn } from '../utils/api';
@@ -459,8 +459,9 @@ export function PaymentModal({
                   {loading ? 'Processing…' : `Pay ₹${currentFinalAmount.toLocaleString('en-IN')} Securely`}
                 </button>
 
-                <p className="text-center text-[11px] text-gray-400">
-                  🔒 Secured by Cashfree · 100% safe checkout
+                <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-gray-400">
+                  <Lock className="w-3.5 h-3.5 text-gray-400" />
+                  <span>Secured by Cashfree · 100% safe checkout</span>
                 </p>
               </form>
             )}
@@ -634,8 +635,9 @@ export default function PricingCard({
 
           {/* Highlight Strip */}
           {colorTheme === 'navy-glow' && (
-            <div className="mt-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-extrabold uppercase tracking-widest text-[9px] px-3.5 py-2 rounded-xl text-center shadow-md animate-pulse">
-              ✨ BEST CHOICE FOR MOST STUDENTS & PARENTS
+            <div className="mt-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-extrabold uppercase tracking-widest text-[9px] px-3.5 py-2 rounded-xl text-center shadow-md animate-pulse flex items-center justify-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-white shrink-0" />
+              <span>BEST CHOICE FOR MOST STUDENTS & PARENTS</span>
             </div>
           )}
 

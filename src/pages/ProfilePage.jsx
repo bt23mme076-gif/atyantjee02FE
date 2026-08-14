@@ -44,6 +44,14 @@ import {
   Coins,
   Sparkles,
   TrendingUp,
+  BookOpen,
+  CheckCircle2,
+  MapPin,
+  AlertTriangle,
+  Save,
+  MessageCircle,
+  Clock,
+  Info,
 } from 'lucide-react';
 
 const AVAILABLE_BUNDLES = [
@@ -53,8 +61,7 @@ const AVAILABLE_BUNDLES = [
     price: 999,
     originalPrice: 1999,
     discount: '50% OFF – Most Popular Package',
-    badge: '⭐ Most Popular',
-    icon: '🛡️',
+    badge: 'Most Popular',
     desc: 'Full JoSAA + CSAB support till final allotment. Peace of mind during every counselling round.',
     includes: [
       'Round-by-round JoSAA + CSAB support',
@@ -62,7 +69,7 @@ const AVAILABLE_BUNDLES = [
       'Priority WhatsApp support',
       'Backup planning if allotment changes',
       'Support till final rounds',
-      '🎁 Premium Advantage Pack included',
+      'Premium Advantage Pack included',
     ],
     mentorNote:
       'You commit to being their dedicated personal mentor through all rounds of JoSAA + CSAB till final seat allotment.',
@@ -73,7 +80,6 @@ const AVAILABLE_BUNDLES = [
     price: 1999,
     originalPrice: 2999,
     discount: '33% OFF – 1-on-1 Premium',
-    icon: '👑',
     desc: 'Highest level of personal support. 1-on-1 premium guidance from start to finish.',
     includes: [
       'Everything in ₹999 package, plus:',
@@ -82,7 +88,7 @@ const AVAILABLE_BUNDLES = [
       'Final decision support calls',
       'Unlimited WhatsApp access',
       'Post-allotment transition guidance',
-      '🎁 Bonus Guides Included',
+      'Bonus Guides Included',
     ],
     mentorNote:
       'You commit to ultimate handholding, unlimited WhatsApp, preference reviews, and college transition guidance.',
@@ -452,7 +458,7 @@ export default function ProfilePage({ user, setUser }) {
           const data = await googleLogin(response.credential);
           if (data?.user) {
             setUser({ ...user, ...data.user });
-            setSuccess('Google account linked! Your profile picture has been synced. ✅');
+            setSuccess('Google account linked! Your profile picture has been synced.');
             setTimeout(() => setSuccess(''), 4000);
           } else {
             setError('Could not retrieve Google account info. Please try again.');
@@ -692,17 +698,25 @@ export default function ProfilePage({ user, setUser }) {
                     {name || 'Your Name'}
                   </h1>
                   <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                       user.role === 'mentor'
                         ? 'bg-[#FF6B2B]/20 text-[#FF6B2B]'
                         : 'bg-purple-500/20 text-purple-300'
                     }`}
                   >
-                    {user.role === 'mentor' ? '🎓 Mentor' : '📚 Student'}
+                    {user.role === 'mentor' ? (
+                      <>
+                        <GraduationCap className="w-3.5 h-3.5" /> Mentor
+                      </>
+                    ) : (
+                      <>
+                        <BookOpen className="w-3.5 h-3.5" /> Student
+                      </>
+                    )}
                   </span>
                   {user.role === 'mentor' && verificationStatus === 'verified' && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-green-500/20 text-green-400">
-                      ✓ Verified
+                      <CheckCircle2 className="w-3 h-3" /> Verified
                     </span>
                   )}
                 </div>
@@ -710,9 +724,12 @@ export default function ProfilePage({ user, setUser }) {
                   {user.phone ? `+91 ${user.phone}` : user.email || '—'}
                 </p>
                 {user.role === 'mentor' && user.college && (
-                  <p className="text-white/60 text-sm mt-0.5">
-                    📍 {user.college}
-                    {user.branch ? ` · ${user.branch}` : ''}
+                  <p className="text-white/60 text-sm mt-0.5 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-white/40" />
+                    <span>
+                      {user.college}
+                      {user.branch ? ` · ${user.branch}` : ''}
+                    </span>
                   </p>
                 )}
 
@@ -789,7 +806,7 @@ export default function ProfilePage({ user, setUser }) {
               >
                 <Coins className="w-6 h-6 text-[#FF6B2B]" strokeWidth={2} />
                 <span className="text-base font-black text-white leading-tight mt-1">
-                  🪙 {(walletData?.walletCoins ?? user.walletCoins ?? 0).toLocaleString('en-IN')}
+                  {(walletData?.walletCoins ?? user.walletCoins ?? 0).toLocaleString('en-IN')} Coins
                 </span>
                 <span className="text-[10px] font-semibold text-[#FF6B2B]/80 uppercase tracking-wider group-hover:text-[#FF6B2B]">
                   Wallet Coins
@@ -807,13 +824,13 @@ export default function ProfilePage({ user, setUser }) {
       <div className="max-w-3xl mx-auto space-y-3 mb-4">
         {error && (
           <div className="flex items-start gap-3 p-4 bg-red-50 text-red-700 rounded-2xl text-sm font-medium border border-red-100">
-            <span className="text-lg shrink-0">⚠️</span>
+            <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
         {success && (
           <div className="flex items-center gap-3 p-4 bg-green-50 text-green-700 rounded-2xl text-sm font-medium border border-green-100">
-            <span className="text-lg shrink-0">✅</span>
+            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
             <span>{success}</span>
           </div>
         )}
@@ -852,7 +869,7 @@ export default function ProfilePage({ user, setUser }) {
         <div className="max-w-3xl mx-auto space-y-5">
           <form onSubmit={handleSave} className="space-y-5">
             {/* Basic Info */}
-            <Section title="Basic Information" icon="🪪">
+            <Section title="Basic Information" icon={<User className="w-4 h-4 text-[#FF6B2B]" />}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Field label="Full Name" required>
                   <input
@@ -909,7 +926,7 @@ export default function ProfilePage({ user, setUser }) {
             {user.role === 'mentor' && (
               <>
                 {/* Academic Details */}
-                <Section title="Academic Details" icon="🎓">
+                <Section title="Academic Details" icon={<GraduationCap className="w-4 h-4 text-[#FF6B2B]" />}>
                   <div className="space-y-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <Field label="College Type" required>
@@ -1033,7 +1050,7 @@ export default function ProfilePage({ user, setUser }) {
                 </Section>
 
                 {/* JEE Details */}
-                <Section title="JEE Counselling Profile" icon="📈">
+                <Section title="JEE Counselling Profile" icon={<TrendingUp className="w-4 h-4 text-[#FF6B2B]" />}>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                     <Field label="JEE Rank (CRL)" required>
                       <input
@@ -1117,7 +1134,7 @@ export default function ProfilePage({ user, setUser }) {
                 </Section>
 
                 {/* Bio */}
-                <Section title="Your Mentor Pitch" icon="✍️">
+                <Section title="Your Mentor Pitch" icon={<FileText className="w-4 h-4 text-[#FF6B2B]" />}>
                   <Field
                     label="Bio / One-Liner"
                     hint="Students come to you for one big decision — which college and branch to pick. Write a short pitch telling them why you're the right mentor."
@@ -1169,19 +1186,7 @@ export default function ProfilePage({ user, setUser }) {
                             className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 mt-0.5 ${isSelected ? 'bg-[#FF6B2B] border-[#FF6B2B]' : 'border-white/20'}`}
                           >
                             {isSelected && (
-                              <svg
-                                className="w-3 h-3 text-white"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={3}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
+                              <CheckCircle2 className="w-3 h-3 text-white" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -1214,7 +1219,10 @@ export default function ProfilePage({ user, setUser }) {
                     Saving Changes…
                   </span>
                 ) : (
-                  '💾 Save Profile Changes'
+                  <span className="flex items-center justify-center gap-2">
+                    <Save className="w-5 h-5" />
+                    Save Profile Changes
+                  </span>
                 )}
               </button>
             </div>
@@ -1287,8 +1295,9 @@ export default function ProfilePage({ user, setUser }) {
                   )}
 
                   <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
-                    <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
-                      ℹ️ Connect on WhatsApp after payment
+                    <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
+                      <Info className="w-3.5 h-3.5 text-slate-400" />
+                      Connect on WhatsApp after payment
                     </span>
                     <a
                       href={getDetailedWhatsAppLink(booking)}
@@ -1296,7 +1305,8 @@ export default function ProfilePage({ user, setUser }) {
                       rel="noopener noreferrer"
                       className="px-4 py-2 rounded-lg bg-[#25D366] text-white text-xs font-bold hover:bg-[#20ba56] transition-all flex items-center gap-1.5 shadow-sm"
                     >
-                      💬 Connect on WhatsApp
+                      <MessageCircle className="w-4 h-4" />
+                      Connect on WhatsApp
                     </a>
                   </div>
                 </div>
@@ -1448,9 +1458,10 @@ export default function ProfilePage({ user, setUser }) {
                 </div>
                 
                 <div className="flex items-baseline gap-3">
-                  <h2 className="text-3xl sm:text-4xl font-black text-white">
-                    🪙 {(walletData?.walletCoins ?? user.walletCoins ?? 0).toLocaleString('en-IN')}
-                  </h2>
+                  <div className="flex items-center gap-2 text-3xl sm:text-4xl font-black text-white">
+                    <Coins className="h-8 w-8 text-[#FF6B2B]" />
+                    <span>{(walletData?.walletCoins ?? user.walletCoins ?? 0).toLocaleString('en-IN')}</span>
+                  </div>
                   <span className="text-base font-bold text-emerald-400">
                     ≈ ₹{(((walletData?.walletCoins ?? user.walletCoins ?? 0) / 10)).toFixed(2)} INR
                   </span>
@@ -1466,11 +1477,17 @@ export default function ProfilePage({ user, setUser }) {
                 <div className="flex gap-4 text-xs bg-white/5 px-4 py-2.5 rounded-xl border border-white/10">
                   <div>
                     <span className="text-white/40 block text-[10px] uppercase font-semibold">Total Earned</span>
-                    <span className="font-bold text-white">🪙 {(walletData?.totalCoinsEarned ?? user.totalCoinsEarned ?? 0).toLocaleString('en-IN')}</span>
+                    <span className="font-bold text-white flex items-center gap-1 mt-0.5">
+                      <Coins className="w-3.5 h-3.5 text-amber-400" />
+                      {(walletData?.totalCoinsEarned ?? user.totalCoinsEarned ?? 0).toLocaleString('en-IN')}
+                    </span>
                   </div>
                   <div className="border-l border-white/10 pl-4">
                     <span className="text-white/40 block text-[10px] uppercase font-semibold">Redeemed</span>
-                    <span className="font-bold text-white/70">🪙 {(walletData?.totalCoinsRedeemed ?? user.totalCoinsRedeemed ?? 0).toLocaleString('en-IN')}</span>
+                    <span className="font-bold text-white/70 flex items-center gap-1 mt-0.5">
+                      <Coins className="w-3.5 h-3.5 text-white/40" />
+                      {(walletData?.totalCoinsRedeemed ?? user.totalCoinsRedeemed ?? 0).toLocaleString('en-IN')}
+                    </span>
                   </div>
                 </div>
 
@@ -1489,7 +1506,7 @@ export default function ProfilePage({ user, setUser }) {
           </div>
 
           {/* 2. Unique Referral Link & Share Card */}
-          <Section title="Your Unique Referral Link" icon="🎁">
+          <Section title="Your Unique Referral Link" icon={<Gift className="w-4 h-4 text-[#FF6B2B]" />}>
             <div className="space-y-5">
               <p className="text-xs text-slate-300 leading-relaxed">
                 Invite friends and fellow students to Atyant. When they use your referral link, they get an instant{' '}
@@ -1514,7 +1531,7 @@ export default function ProfilePage({ user, setUser }) {
                         const link = `${window.location.origin}/courses?ref=${user.referralCode || ''}`;
                         navigator.clipboard.writeText(link);
                         setCopiedLink(true);
-                        setSuccess('Referral link copied to clipboard! 🚀');
+                        setSuccess('Referral link copied to clipboard!');
                         setTimeout(() => {
                           setCopiedLink(false);
                           setSuccess('');
@@ -1581,7 +1598,7 @@ export default function ProfilePage({ user, setUser }) {
           </Section>
 
           {/* 3. Transaction History Ledger */}
-          <Section title="Wallet Activity & History" icon="📜">
+          <Section title="Wallet Activity & History" icon={<Clock className="w-4 h-4 text-[#FF6B2B]" />}>
             {loadingWallet ? (
               <p className="text-xs text-white/40 py-4 text-center">Loading transactions…</p>
             ) : !walletData?.transactions || walletData.transactions.length === 0 ? (

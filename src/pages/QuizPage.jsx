@@ -348,8 +348,9 @@ export default function QuizPage() {
                   animate={{ opacity: 1 }}
                   className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-center lg:text-left"
                 >
-                  <p className="text-sm font-semibold text-emerald-400">
-                    ✓ We've saved your email address!
+                  <p className="text-sm font-semibold text-emerald-400 flex items-center justify-center lg:justify-start gap-1.5">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>We've saved your email address!</span>
                   </p>
                   <p className="mt-1 text-xs text-white/50">Your results will be sent to {email}</p>
                 </motion.div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function ParentTrustSection() {
   const points = [
@@ -21,13 +22,13 @@ export default function ParentTrustSection() {
         </div>
 
         <div className="mt-8 grid gap-6 md:grid-cols-4">
-          {points.map((p, i) => (
+          {points.map((p) => (
             <motion.div
               whileHover={{ y: -8 }}
               key={p}
-              className="rounded-xl border p-6 text-center bg-gradient-to-br from-white to-white/80"
+              className="rounded-xl border p-6 text-center bg-gradient-to-br from-white to-white/80 flex flex-col items-center justify-center"
             >
-              <div className="text-2xl font-bold text-[#FF6B2B]">{i === 0 ? '✓' : ''}</div>
+              <CheckCircle2 className="w-6 h-6 text-[#FF6B2B]" />
               <div className="mt-3 font-semibold text-[#0B0F2E]">{p}</div>
             </motion.div>
           ))}

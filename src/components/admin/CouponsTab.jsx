@@ -7,7 +7,7 @@ import {
   adminListCommissions,
   adminUpdateCommission,
 } from '../../utils/api';
-import { Tag, Plus, Trash2, CheckCircle, XCircle, Clock, DollarSign, Percent, AlertCircle } from 'lucide-react';
+import { Tag, Plus, Trash2, CheckCircle, XCircle, Clock, DollarSign, Percent, AlertCircle, X } from 'lucide-react';
 
 export default function CouponsTab() {
   const [activeSubTab, setActiveSubTab] = useState('coupons'); // 'coupons' | 'commissions'
@@ -443,9 +443,9 @@ export default function CouponsTab() {
               <h3 className="text-lg font-black text-[#0B0F2E]">Create New Coupon</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-700 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 

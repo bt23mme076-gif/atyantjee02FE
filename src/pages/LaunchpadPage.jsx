@@ -20,6 +20,7 @@ import {
   UserCheck,
   RefreshCw,
   HelpCircle,
+  Lightbulb,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -199,7 +200,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                   className="flex flex-col items-center justify-between p-3 rounded-lg bg-white/3 border border-white/10 shadow-sm active:scale-95 transition text-center"
                 >
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">
-                    🎓
+                    <GraduationCap className="w-4 h-4 text-[#FF6B2B]" />
                   </div>
                   <span className="text-[11px] font-bold text-white mt-2 leading-tight">
                     JoSAA / CSAB
@@ -214,7 +215,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                   className="flex flex-col items-center justify-between p-3 rounded-lg bg-white/3 border border-white/10 shadow-sm active:scale-95 transition text-center"
                 >
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">
-                    🏛️
+                    <Building2 className="w-4 h-4 text-[#FF6B2B]" />
                   </div>
                   <span className="text-[11px] font-bold text-white mt-2 leading-tight">
                     MHT-CET
@@ -229,7 +230,7 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
                   className="flex flex-col items-center justify-between p-3 rounded-lg bg-white/3 border border-white/10 shadow-sm active:scale-95 transition text-center"
                 >
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white border border-white/10">
-                    🌐
+                    <Globe className="w-4 h-4 text-[#FF6B2B]" />
                   </div>
                   <span className="text-[11px] font-bold text-white mt-2 leading-tight">
                     All India
@@ -611,8 +612,9 @@ export default function LaunchpadPage({ activeTab, onTabChange, user }) {
         <div className="py-16 border-t border-white/5">
           <div className="w-full flex flex-col items-center text-center mb-16">
             <div className="inline-flex items-center gap-3 rounded-full bg-white/5 border border-white/10 px-2 py-1.5 pr-5 mb-5 shadow-sm">
-              <div className="flex items-center justify-center bg-[#FF6B2B] rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md">
-                <span className="mr-1.5 animate-pulse">💡</span> Answers
+              <div className="flex items-center justify-center bg-[#FF6B2B] rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md gap-1">
+                <Lightbulb className="w-3.5 h-3.5 text-white" />
+                <span>Answers</span>
               </div>
               <span className="text-xs font-bold text-slate-300">Clear Your Doubts</span>
             </div>

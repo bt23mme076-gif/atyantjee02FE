@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send } from 'lucide-react';
 
 const botResponses = {
-  greeting: "Hi! 👋 I'm the Atyant Assistant. What would you like help with today?",
+  greeting: "Hi! I'm the Atyant Assistant. What would you like help with today?",
   confused:
     "Feeling confused about college choice? Tell me your stream and rank, and I'll suggest the best path for you!",
   rank: "Got it! Based on your profile, I'm preparing personalized recommendations. Check your email shortly!",
   default:
-    "Thanks for that! 📌 We're preparing a detailed analysis for you. You'll get an email soon with college, branch, and career suggestions.",
+    "Thanks for that! We're preparing a detailed analysis for you. You'll get an email soon with college, branch, and career suggestions.",
 };
 
 export default function WhatsAppFloatingButton() {

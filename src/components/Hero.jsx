@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, GraduationCap, Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Hero({ activeTab, onTabChange }) {
@@ -65,8 +65,8 @@ export default function Hero({ activeTab, onTabChange }) {
                 className="group flex w-full items-center justify-between gap-4 rounded-3xl bg-gradient-to-r from-[#FF6B2B] to-[#ff7f3f] px-6 py-5 text-left shadow-[0_18px_45px_rgba(255,107,43,0.35)] transition duration-300 hover:shadow-[0_22px_55px_rgba(255,107,43,0.5)]"
               >
                 <div className="flex items-center gap-4">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl">
-                    🎓
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white">
+                    <GraduationCap className="h-6 w-6" />
                   </span>
                   <span>
                     <span className="block text-lg font-black text-white leading-tight">CSAB</span>
@@ -88,8 +88,8 @@ export default function Hero({ activeTab, onTabChange }) {
                 className="group flex w-full items-center justify-between gap-4 rounded-3xl bg-gradient-to-r from-[#1d4ed8] to-[#3b82f6] px-6 py-5 text-left shadow-[0_18px_45px_rgba(59,130,246,0.3)] transition duration-300 hover:shadow-[0_22px_55px_rgba(59,130,246,0.45)]"
               >
                 <div className="flex items-center gap-4">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl">
-                    🏛️
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-white">
+                    <Building2 className="h-6 w-6" />
                   </span>
                   <span>
                     <span className="block text-lg font-black text-white leading-tight">
@@ -173,7 +173,7 @@ export default function Hero({ activeTab, onTabChange }) {
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF6B2B]/20 text-[#FF6B2B]">
-                    ✨
+                    <Sparkles className="h-5 w-5" />
                   </div>
                   <div>
                     <h4 className="font-semibold">Real Mentors</h4>

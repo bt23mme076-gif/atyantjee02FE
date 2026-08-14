@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Star, Sparkles } from 'lucide-react';
+import { CheckCircle2, Star, Sparkles, MessageCircle, ArrowRight, Flame, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { isUserLoggedIn } from '../utils/api';
 import { PaymentModal, PLAN_ID_MAP } from './PricingCard';
 import { pricingPlans, admissionPrograms } from '../data/siteContent';
 import { getWhatsAppLink } from '../utils/whatsapp';
-import { MessageCircle, ArrowRight } from 'lucide-react';
 
 const COLLEGES = [
   'COEP Pune',
@@ -57,11 +56,11 @@ function pricingPlanToFlipCard(plan) {
     oldPrice: plan.originalPrice,
     shortDesc: plan.bestFor,
     valueCallout:
-      plan.valueCallout || (plan.colorTheme === 'navy-glow' ? '🏆 Best Choice' : undefined),
+      plan.valueCallout || (plan.colorTheme === 'navy-glow' ? 'Best Choice' : undefined),
     comparisonHint:
       plan.colorTheme === 'navy-glow' ? 'Most chosen by students & parents' : undefined,
     features: plan.features,
-    bonusLabel: plan.bonusLabel?.replace(/^🎁\s*/, '') || 'Bonus Guides',
+    bonusLabel: plan.bonusLabel || 'Bonus Guides',
     bonusItems: plan.bonus || [],
     cta: plan.cta,
     footerNote: plan.bottomText,
@@ -205,8 +204,9 @@ function FlipCard({ card, index }) {
         <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">{card.shortDesc}</p>
 
         {card.comparisonHint && (
-          <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
-            ✦ {card.comparisonHint}
+          <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700 flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-amber-600 shrink-0" />
+            <span>{card.comparisonHint}</span>
           </p>
         )}
 
@@ -320,8 +320,9 @@ function TrustStrip() {
           <p className="mb-2 text-xs font-black uppercase tracking-[0.22em] text-[#FF6B2B]">
             Our Coverage
           </p>
-          <h3 className="mb-8 text-xl font-black text-white sm:text-2xl">
-            🎯 Colleges We Help Students Evaluate
+          <h3 className="mb-8 text-xl font-black text-white sm:text-2xl flex items-center justify-center gap-2">
+            <Target className="w-5 h-5 text-[#FF6B2B]" />
+            <span>Colleges We Help Students Evaluate</span>
           </h3>
           <div className="flex flex-wrap justify-center gap-3">
             {COLLEGES.map((name, i) => (
@@ -356,8 +357,8 @@ function InfoBanner() {
         <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-[#FF6B2B] to-[#ff8a57]" />
         <div className="flex flex-wrap items-center justify-center gap-3 pl-2">
           <span className="flex items-center gap-2 text-sm font-black text-[#0B0F2E]">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#FF6B2B] text-xs text-white">
-              ✦
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#FF6B2B] text-white">
+              <Sparkles className="w-3.5 h-3.5" />
             </span>
             Guidance available for:
           </span>
@@ -399,8 +400,9 @@ export default function AdmissionProgramsSection({ user }) {
             whileHover={{ scale: 1.05 }}
             className="mb-5 inline-flex cursor-pointer items-center gap-3 rounded-full border border-slate-200 bg-white px-2 py-1.5 pr-5 shadow-sm"
           >
-            <div className="flex items-center justify-center rounded-full bg-[#0B0F2E] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md">
-              <span className="mr-1.5 animate-pulse">🔥</span> Early Bird
+            <div className="flex items-center justify-center rounded-full bg-[#0B0F2E] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-md gap-1">
+              <Flame className="w-3.5 h-3.5 text-[#FF6B2B]" />
+              <span>Early Bird</span>
             </div>
             <span className="text-xs font-bold text-slate-700">
               Join now for personalized college matching
@@ -567,8 +569,9 @@ export default function AdmissionProgramsSection({ user }) {
 
               {/* Footer */}
 
-              <p className="mt-6 text-center text-sm text-slate-500">
-                💬 Get one-to-one guidance from experienced mentors for admissions not listed above.
+              <p className="mt-6 text-center text-sm text-slate-500 flex items-center justify-center gap-2">
+                <MessageCircle className="w-4 h-4 text-emerald-500" />
+                <span>Get one-to-one guidance from experienced mentors for admissions not listed above.</span>
               </p>
             </div>
           </div>
@@ -577,8 +580,9 @@ export default function AdmissionProgramsSection({ user }) {
       <TrustStrip />
       <InfoBanner />
       <div className="mt-16 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
-          🔥 Limited Time Early Launch Offer
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 flex items-center justify-center gap-1.5">
+          <Flame className="w-3.5 h-3.5 text-[#FF6B2B]" />
+          <span>Limited Time Early Launch Offer</span>
         </p>
         <p className="mt-2 text-base font-semibold text-slate-600">
           Trusted Seniors. Real Insights. Better Decisions.

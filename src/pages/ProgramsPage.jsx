@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Check } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import AdmissionProgramsSection from '../components/AdmissionProgramsSection';
 import FAQItem from '../components/FAQItem';
@@ -117,8 +117,8 @@ function WhyChooseSection() {
                 whileHover={{ scale: 1.02 }}
                 className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/5 p-4 transition-all hover:border-white/10"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/25 text-sm font-black text-emerald-400">
-                  ✓
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/25 text-emerald-400">
+                  <Check className="w-4 h-4" />
                 </div>
                 <span className="text-sm font-bold text-white/90 sm:text-base">{point}</span>
               </motion.div>

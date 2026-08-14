@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertCircle, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react';
+import { AlertCircle, ArrowRight, ShieldCheck, UserCheck, Check } from 'lucide-react';
 import { getWhatsAppLink } from '../utils/whatsapp';
 
 export default function ClarityResult({ data }) {
@@ -114,13 +114,16 @@ export default function ClarityResult({ data }) {
 
           <ul className="space-y-3 mb-8 text-sm text-slate-700">
             <li className="flex items-start gap-2">
-              ✓ <span>Resolves: {data.mainConfusion}</span>
+              <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+              <span>Resolves: {data.mainConfusion}</span>
             </li>
             <li className="flex items-start gap-2">
-              ✓ <span>Focuses on: {data.priority}</span>
+              <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+              <span>Focuses on: {data.priority}</span>
             </li>
             <li className="flex items-start gap-2">
-              ✓ <span>Senior verification included</span>
+              <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+              <span>Senior verification included</span>
             </li>
           </ul>
 

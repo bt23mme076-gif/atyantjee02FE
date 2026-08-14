@@ -47,6 +47,8 @@ import {
   Code,
   BookOpen,
   Lock,
+  Lightbulb,
+  Video,
 } from 'lucide-react';
 import {
   getCareerDetail,
@@ -1040,8 +1042,9 @@ export default function CareerPathDetailPage({ user }) {
                 )}
                 {career.entryPoints.referralTips && (
                   <div className="rounded-2xl border border-[#FF6B2B]/20 bg-[#FF6B2B]/[0.04] p-5">
-                    <p className="text-xs font-bold text-[#FF9E6B] uppercase tracking-wider mb-2">
-                      💡 Referral Tips
+                    <p className="text-xs font-bold text-[#FF9E6B] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Lightbulb className="w-3.5 h-3.5 text-[#FF9E6B]" />
+                      <span>Referral Tips</span>
                     </p>
                     <p className="text-sm text-white/65 leading-relaxed">
                       {career.entryPoints.referralTips}
@@ -1082,7 +1085,7 @@ export default function CareerPathDetailPage({ user }) {
             <div className="grid sm:grid-cols-2 gap-4">
               {career.resources.course?.title && (
                 <ResourceCard
-                  icon="🎥"
+                  icon={<Video className="h-4 w-4 text-[#FF6B2B]" />}
                   label="Course"
                   title={career.resources.course.title}
                   url={career.resources.course.url}
@@ -1090,7 +1093,7 @@ export default function CareerPathDetailPage({ user }) {
               )}
               {career.resources.book?.title && (
                 <ResourceCard
-                  icon="📗"
+                  icon={<BookOpen className="h-4 w-4 text-[#FF6B2B]" />}
                   label="Book"
                   title={career.resources.book.title}
                   url={career.resources.book.url}
@@ -1098,14 +1101,14 @@ export default function CareerPathDetailPage({ user }) {
               )}
               {career.resources.projectIdea && (
                 <ResourceCard
-                  icon="🛠️"
+                  icon={<Wrench className="h-4 w-4 text-[#FF6B2B]" />}
                   label="Project Idea"
                   description={career.resources.projectIdea}
                 />
               )}
               {career.resources.community?.name && (
                 <ResourceCard
-                  icon="💬"
+                  icon={<MessageSquare className="h-4 w-4 text-[#FF6B2B]" />}
                   label="Community"
                   title={career.resources.community.name}
                   url={career.resources.community.url}
@@ -1137,11 +1140,11 @@ export default function CareerPathDetailPage({ user }) {
 
                 const typeLabel =
                   {
-                    video: '🎬 Video',
-                    document: '📄 Document',
-                    article: '🔗 Article',
-                    task: '📋 Task',
-                    quiz: '🧩 Quiz',
+                    video: 'Video',
+                    document: 'Document',
+                    article: 'Article',
+                    task: 'Task',
+                    quiz: 'Quiz',
                   }[item.type] || item.type;
 
                 return (

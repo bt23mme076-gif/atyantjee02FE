@@ -244,7 +244,7 @@ function TaskViewer({ item }) {
         </a>
       )}
       <p className="text-xs text-white/40 text-center">
-        Closing this marks the task as complete. ✓
+        Closing this marks the task as complete.
       </p>
     </div>
   );
@@ -281,11 +281,11 @@ export default function ItemViewerModal({ item, onClose, onComplete }) {
   }, [item, onClose]);
 
   const typeLabels = {
-    video: '🎬 Video',
-    document: '📄 Document',
-    article: '🔗 Article',
-    task: '📋 Task',
-    quiz: '🧩 Quiz',
+    video: 'Video',
+    document: 'Document',
+    article: 'Article',
+    task: 'Task',
+    quiz: 'Quiz',
   };
 
   return (

@@ -8,6 +8,11 @@ import {
   Trophy,
   ClipboardList,
   User,
+  BarChart2,
+  Info,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react';
 import { STATES_INDIA, INST_STATE, DB } from '../data/rankRadarData';
 
@@ -42,11 +47,11 @@ const STEPS = [
 ];
 
 const CATEGORIES = [
-  { v: 'OPEN', icon: '⚪', label: 'General (OPEN)', desc: 'No reservation category' },
-  { v: 'EWS', icon: '🟡', label: 'EWS', desc: 'Economically Weaker Section' },
-  { v: 'OBC-NCL', icon: '🟠', label: 'OBC-NCL', desc: 'Other Backward Class (Non-Creamy Layer)' },
-  { v: 'SC', icon: '🔵', label: 'SC', desc: 'Scheduled Caste' },
-  { v: 'ST', icon: '🟢', label: 'ST', desc: 'Scheduled Tribe' },
+  { v: 'OPEN', label: 'General (OPEN)', desc: 'No reservation category' },
+  { v: 'EWS', label: 'EWS', desc: 'Economically Weaker Section' },
+  { v: 'OBC-NCL', label: 'OBC-NCL', desc: 'Other Backward Class (Non-Creamy Layer)' },
+  { v: 'SC', label: 'SC', desc: 'Scheduled Caste' },
+  { v: 'ST', label: 'ST', desc: 'Scheduled Tribe' },
 ];
 
 const R_PAGE_SIZE = 15;
@@ -641,7 +646,10 @@ function Results({ state, results, onReset }) {
 
       <div className="rr-data-docs">
         <div className="rr-data-docs-header" onClick={() => setDocsOpen((o) => !o)}>
-          <h3>📊 How predictions work</h3>
+          <h3 className="flex items-center gap-2">
+            <BarChart2 size={16} className="text-[#FF6B2B]" />
+            <span>How predictions work</span>
+          </h3>
           {docsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </div>
         {docsOpen && (
@@ -657,13 +665,29 @@ function Results({ state, results, onReset }) {
             <br />
             <strong>Prediction confidence bands:</strong>
             <br />
-            🟢 <strong>Safe:</strong> Your rank is ≥20% below closing rank (high confidence)
+            <span className="inline-flex items-center gap-1 text-emerald-400">
+              <CheckCircle2 size={13} />
+              <strong>Safe:</strong>
+            </span>{' '}
+            Your rank is ≥20% below closing rank (high confidence)
             <br />
-            🔵 <strong>Moderate:</strong> Your rank is 10–20% below closing rank
+            <span className="inline-flex items-center gap-1 text-blue-400">
+              <Info size={13} />
+              <strong>Moderate:</strong>
+            </span>{' '}
+            Your rank is 10–20% below closing rank
             <br />
-            🟠 <strong>Borderline:</strong> Your rank is within 10% of closing rank
+            <span className="inline-flex items-center gap-1 text-amber-400">
+              <AlertTriangle size={13} />
+              <strong>Borderline:</strong>
+            </span>{' '}
+            Your rank is within 10% of closing rank
             <br />
-            🔴 <strong>Unlikely:</strong> Your rank exceeds the closing rank
+            <span className="inline-flex items-center gap-1 text-rose-400">
+              <XCircle size={13} />
+              <strong>Unlikely:</strong>
+            </span>{' '}
+            Your rank exceeds the closing rank
             <br />
             <br />
             Cutoffs are based on 2024 JoSAA/CSAB closing ranks and used as estimates for 2025. Treat

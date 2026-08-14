@@ -130,7 +130,8 @@ export default function ReferralCard({ referral }) {
               }`}
             >
               <Sparkles className="h-3.5 w-3.5" />
-              Bonus at {bonusThreshold} {bonusUnlocked && '✓'}
+              <span>Bonus at {bonusThreshold}</span>
+              {bonusUnlocked && <Check className="h-3 w-3 text-emerald-400" />}
             </div>
             <div
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${
@@ -140,7 +141,8 @@ export default function ReferralCard({ referral }) {
               }`}
             >
               <PartyPopper className="h-3.5 w-3.5" />
-              Free at {freeThreshold} {freeUnlocked && '✓'}
+              <span>Free at {freeThreshold}</span>
+              {freeUnlocked && <Check className="h-3 w-3 text-emerald-400" />}
             </div>
           </div>
         </div>

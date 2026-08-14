@@ -240,7 +240,7 @@ function PillarsPanel() {
 function VideoFields({ form, setForm, uploading, handleFile }) {
   return (
     <>
-      <Field label="🎬 YouTube / Drive / Vimeo URL">
+      <Field label="YouTube / Drive / Vimeo URL">
         <input
           value={form.url}
           onChange={(e) => setForm({ ...form, url: e.target.value })}
@@ -252,7 +252,7 @@ function VideoFields({ form, setForm, uploading, handleFile }) {
         <input type="file" accept="video/*" onChange={handleFile} className="w-full text-xs" />
         {uploading && <p className="mt-1 text-xs text-blue-500">Uploading video…</p>}
         {form.url && form.url.startsWith('/api/') && (
-          <p className="mt-1 truncate text-xs text-green-600">✓ Uploaded: {form.url}</p>
+          <p className="mt-1 truncate text-xs text-green-600">Uploaded: {form.url}</p>
         )}
       </Field>
       <Field label="Duration label (e.g. 12 min watch)">
@@ -270,7 +270,7 @@ function VideoFields({ form, setForm, uploading, handleFile }) {
 function DocumentFields({ form, setForm, uploading, handleFile }) {
   return (
     <>
-      <Field label="📄 Upload a PDF / PPT / DOC / DOCX">
+      <Field label="Upload a PDF / PPT / DOC / DOCX">
         <input
           type="file"
           accept=".pdf,.ppt,.pptx,.doc,.docx"
@@ -280,24 +280,24 @@ function DocumentFields({ form, setForm, uploading, handleFile }) {
         {uploading && <p className="mt-1 text-xs text-blue-500">Uploading document…</p>}
         {form.url && (
           <p className="mt-1 truncate text-xs text-green-600">
-            ✓ {form.url.startsWith('/api/') ? `Uploaded: ${form.url}` : `Linked: ${form.url}`}
+            {form.url.startsWith('/api/') ? `Uploaded: ${form.url}` : `Linked: ${form.url}`}
           </p>
         )}
       </Field>
-      <Field label="— OR — Paste a Google Drive / SharePoint link">
+      <Field label="— OR — External document / Notion / Drive link">
         <input
           value={form.url}
           onChange={(e) => setForm({ ...form, url: e.target.value })}
           className={inputCls}
-          placeholder="https://drive.google.com/file/..."
+          placeholder="https://..."
         />
       </Field>
-      <Field label="Duration label (e.g. 5 min read)">
+      <Field label="Pages / duration label (e.g. 8 pages or 15 min read)">
         <input
           value={form.durationLabel}
           onChange={(e) => setForm({ ...form, durationLabel: e.target.value })}
           className={inputCls}
-          placeholder="5 min read"
+          placeholder="8 pages"
         />
       </Field>
     </>
@@ -307,20 +307,20 @@ function DocumentFields({ form, setForm, uploading, handleFile }) {
 function ArticleFields({ form, setForm }) {
   return (
     <>
-      <Field label="🔗 Article / Blog URL">
+      <Field label="Article / Blog URL" required>
         <input
           value={form.url}
           onChange={(e) => setForm({ ...form, url: e.target.value })}
           className={inputCls}
-          placeholder="https://..."
+          placeholder="https://medium.com/... or https://..."
         />
       </Field>
-      <Field label="Read time (e.g. 8 min read)">
+      <Field label="Read time label (e.g. 7 min read)">
         <input
           value={form.durationLabel}
           onChange={(e) => setForm({ ...form, durationLabel: e.target.value })}
           className={inputCls}
-          placeholder="8 min read"
+          placeholder="7 min read"
         />
       </Field>
     </>
@@ -330,21 +330,29 @@ function ArticleFields({ form, setForm }) {
 function TaskFields({ form, setForm }) {
   return (
     <>
-      <Field label="📋 Task description / what to do">
+      <Field label="Task description / what to do" required>
         <textarea
-          value={form.durationLabel}
-          onChange={(e) => setForm({ ...form, durationLabel: e.target.value })}
-          className={inputCls + ' resize-y'}
           rows={3}
-          placeholder="e.g. Download your offer letter from the university portal and save it to Google Drive."
+          value={form.taskDetails}
+          onChange={(e) => setForm({ ...form, taskDetails: e.target.value })}
+          className={inputCls}
+          placeholder="Detailed task instructions..."
         />
       </Field>
-      <Field label="Reference URL (optional)">
+      <Field label="Optional reference link (GitHub, repo, sheet, etc.)">
         <input
           value={form.url}
           onChange={(e) => setForm({ ...form, url: e.target.value })}
           className={inputCls}
-          placeholder="https://... (link to portal, form, etc.)"
+          placeholder="https://github.com/..."
+        />
+      </Field>
+      <Field label="Est. time to complete (e.g. 30 mins)">
+        <input
+          value={form.durationLabel}
+          onChange={(e) => setForm({ ...form, durationLabel: e.target.value })}
+          className={inputCls}
+          placeholder="30 mins"
         />
       </Field>
     </>
@@ -354,7 +362,7 @@ function TaskFields({ form, setForm }) {
 function QuizFields({ form, setForm }) {
   return (
     <>
-      <Field label="🧩 Quiz URL or internal quiz path">
+      <Field label="Quiz URL or internal quiz path">
         <input
           value={form.url}
           onChange={(e) => setForm({ ...form, url: e.target.value })}
@@ -518,11 +526,11 @@ function ItemsPanel() {
               onChange={(e) => handleTypeChange(e.target.value)}
               className={inputCls}
             >
-              <option value="video">🎬 Video</option>
-              <option value="document">📄 Document</option>
-              <option value="article">🔗 Article</option>
-              <option value="task">📋 Task</option>
-              <option value="quiz">🧩 Quiz</option>
+              <option value="video">Video</option>
+              <option value="document">Document</option>
+              <option value="article">Article</option>
+              <option value="task">Task</option>
+              <option value="quiz">Quiz</option>
             </select>
           </Field>
           <Field label="Order (lower = first)">
@@ -786,11 +794,11 @@ function CareerPathItemsPanel() {
               onChange={(e) => handleTypeChange(e.target.value)}
               className={inputCls}
             >
-              <option value="video">🎬 Video</option>
-              <option value="document">📄 Document</option>
-              <option value="article">🔗 Article</option>
-              <option value="task">📋 Task</option>
-              <option value="quiz">🧩 Quiz</option>
+              <option value="video">Video</option>
+              <option value="document">Document</option>
+              <option value="article">Article</option>
+              <option value="task">Task</option>
+              <option value="quiz">Quiz</option>
             </select>
           </Field>
           <Field label="Order (lower = first)">
@@ -1403,7 +1411,7 @@ function CareerPathContentPanel() {
         relatedPaths: splitComma(form.relatedPaths),
       };
       await adminUpdateCareerDetail(selectedId, payload);
-      setSuccess('✓ Saved successfully! Changes are live on the career detail page.');
+      setSuccess('Saved successfully! Changes are live on the career detail page.');
     } catch (err) {
       setError(err.message);
     } finally {
