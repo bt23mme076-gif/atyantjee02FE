@@ -8,6 +8,7 @@ import {
 } from '../data/siteContent';
 import {
   getUserMe,
+  getUserWallet,
   updateUser,
   uploadProfilePhoto,
   uploadIdDoc,
@@ -36,6 +37,13 @@ import {
   Award,
   FileText,
   GraduationCap,
+  Copy,
+  Check,
+  Share2,
+  ExternalLink,
+  Coins,
+  Sparkles,
+  TrendingUp,
 } from 'lucide-react';
 
 const AVAILABLE_BUNDLES = [
@@ -194,6 +202,11 @@ export default function ProfilePage({ user, setUser }) {
   const [bookings, setBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
 
+  // Wallet and Referral State
+  const [walletData, setWalletData] = useState(null);
+  const [loadingWallet, setLoadingWallet] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
   const photoInputRef = useRef(null);
   const idDocInputRef = useRef(null);
 
@@ -201,8 +214,21 @@ export default function ProfilePage({ user, setUser }) {
 
   const completion = calcCompletion(user, name, profilePhotoFilename, verificationStatus);
 
+  const fetchWallet = React.useCallback(async () => {
+    setLoadingWallet(true);
+    try {
+      const data = await getUserWallet();
+      setWalletData(data);
+    } catch (err) {
+      console.error('Failed to load wallet data:', err);
+    } finally {
+      setLoadingWallet(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
+      fetchWallet();
       setLoadingBookings(true);
       getMyBookings()
         .then((res) => {
@@ -211,7 +237,7 @@ export default function ProfilePage({ user, setUser }) {
         .catch((err) => console.error('Failed to fetch bookings:', err))
         .finally(() => setLoadingBookings(false));
     }
-  }, [user]);
+  }, [user, fetchWallet]);
 
   // Cashfree Redirect Payment Verification Hook
   useEffect(() => {
@@ -504,6 +530,11 @@ export default function ProfilePage({ user, setUser }) {
       icon: <ShoppingBag className="w-4 h-4" />,
       count: bookings.length,
     },
+    {
+      id: 'wallet',
+      label: 'Refer & Wallet',
+      icon: <Coins className="w-4 h-4" />,
+    },
     ...(user.role === 'mentor'
       ? [{ id: 'verification', label: 'Verification', icon: <Lock className="w-4 h-4" /> }]
       : []),
@@ -750,38 +781,23 @@ export default function ProfilePage({ user, setUser }) {
                 value={`${Math.round(user.overallProgress || 0)}%`}
                 nudge={!user.overallProgress ? 'Start exploring college guide!' : null}
               />
-              {user.referralCode ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(user.referralCode);
-                    setSuccess('Referral code copied!');
-                    setTimeout(() => setSuccess(''), 2000);
-                  }}
-                  className="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 text-center gap-1 transition-all duration-200 group min-h-[130px]"
-                  title="Click to copy referral code"
-                >
-                  <Gift className="w-6 h-6 text-[#FF6B2B]" strokeWidth={2} />
-                  <span className="text-sm font-black text-white leading-tight font-mono tracking-wider mt-1">
-                    {user.referralCode}
-                  </span>
-                  <span className="text-[10px] font-semibold text-[#FF6B2B]/80 uppercase tracking-wider group-hover:text-[#FF6B2B]">
-                    Copy Referral
-                  </span>
-                  {!user.referralCount && (
-                    <span className="text-[9px] text-[#FFB38E] mt-1 leading-tight font-medium max-w-[130px]">
-                      Share with friends to get rewards!
-                    </span>
-                  )}
-                </button>
-              ) : (
-                <StatCard
-                  icon={Users}
-                  label="Referrals"
-                  value={user.referralCount || 0}
-                  nudge={!user.referralCount ? 'Invite friends to earn rewards' : null}
-                />
-              )}
+              <button
+                type="button"
+                onClick={() => setActiveTab('wallet')}
+                className="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 text-center gap-1 transition-all duration-200 group min-h-[130px]"
+                title="Click to view your wallet and referral rewards"
+              >
+                <Coins className="w-6 h-6 text-[#FF6B2B]" strokeWidth={2} />
+                <span className="text-base font-black text-white leading-tight mt-1">
+                  🪙 {(walletData?.walletCoins ?? user.walletCoins ?? 0).toLocaleString('en-IN')}
+                </span>
+                <span className="text-[10px] font-semibold text-[#FF6B2B]/80 uppercase tracking-wider group-hover:text-[#FF6B2B]">
+                  Wallet Coins
+                </span>
+                <span className="text-[9px] text-[#FFB38E] mt-1 leading-tight font-medium max-w-[130px]">
+                  ≈ ₹{(((walletData?.walletCoins ?? user.walletCoins ?? 0) / 10)).toFixed(1)} (10 Coins = ₹1)
+                </span>
+              </button>
             </div>
           </div>
         </div>
@@ -1407,6 +1423,211 @@ export default function ProfilePage({ user, setUser }) {
                     Delete
                   </button>
                 </div>
+              </div>
+            )}
+          </Section>
+        </div>
+      )}
+
+      {/* ──────────────────── TAB: REFER & WALLET ──────────────────── */}
+      {activeTab === 'wallet' && (
+        <div className="max-w-3xl mx-auto space-y-6">
+          {/* 1. Wallet Balance Hero Card */}
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#161c42] via-[#0e1333] to-[#070a1e] border border-[#FF6B2B]/20 p-6 sm:p-8 shadow-2xl">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6B2B]/15 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF6B2B]/20 text-[#FF6B2B]">
+                    <Coins className="h-4 w-4" />
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#FFB38E]">
+                    Atyant Rewards Wallet
+                  </span>
+                </div>
+                
+                <div className="flex items-baseline gap-3">
+                  <h2 className="text-3xl sm:text-4xl font-black text-white">
+                    🪙 {(walletData?.walletCoins ?? user.walletCoins ?? 0).toLocaleString('en-IN')}
+                  </h2>
+                  <span className="text-base font-bold text-emerald-400">
+                    ≈ ₹{(((walletData?.walletCoins ?? user.walletCoins ?? 0) / 10)).toFixed(2)} INR
+                  </span>
+                </div>
+                
+                <p className="text-xs text-white/50 mt-1.5 flex items-center gap-2">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  Standard Conversion: <strong className="text-white/80">10 Coins = ₹1 INR</strong>
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:items-end gap-3 shrink-0">
+                <div className="flex gap-4 text-xs bg-white/5 px-4 py-2.5 rounded-xl border border-white/10">
+                  <div>
+                    <span className="text-white/40 block text-[10px] uppercase font-semibold">Total Earned</span>
+                    <span className="font-bold text-white">🪙 {(walletData?.totalCoinsEarned ?? user.totalCoinsEarned ?? 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="border-l border-white/10 pl-4">
+                    <span className="text-white/40 block text-[10px] uppercase font-semibold">Redeemed</span>
+                    <span className="font-bold text-white/70">🪙 {(walletData?.totalCoinsRedeemed ?? user.totalCoinsRedeemed ?? 0).toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    alert('You can redeem your Atyant Coins towards courses, mentorship packages, or request direct UPI cashout when you have 1,000+ coins! Reach out to support to redeem.');
+                  }}
+                  className="rounded-xl bg-[#FF6B2B] px-5 py-2.5 text-xs font-black text-white hover:bg-[#e05a1f] transition shadow-lg shadow-[#FF6B2B]/20 flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Redeem Coins
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Unique Referral Link & Share Card */}
+          <Section title="Your Unique Referral Link" icon="🎁">
+            <div className="space-y-5">
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Invite friends and fellow students to Atyant. When they use your referral link, they get an instant{' '}
+                <strong className="text-[#FF6B2B]">₹1,000 discount</strong> on courses, and you earn{' '}
+                <strong className="text-emerald-400">10% commission in Atyant Coins</strong> credited straight to your wallet!
+              </p>
+
+              {/* Referral Code & Link Box */}
+              <div className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 block">Your Referral Code</span>
+                    <span className="text-xl font-mono font-black text-white tracking-widest text-[#FF6B2B]">
+                      {user.referralCode || 'ATYANT'}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const link = `${window.location.origin}/courses?ref=${user.referralCode || ''}`;
+                        navigator.clipboard.writeText(link);
+                        setCopiedLink(true);
+                        setSuccess('Referral link copied to clipboard! 🚀');
+                        setTimeout(() => {
+                          setCopiedLink(false);
+                          setSuccess('');
+                        }, 2500);
+                      }}
+                      className="flex-1 sm:flex-initial rounded-xl bg-white/10 hover:bg-white/20 px-4 py-2.5 text-xs font-bold text-white transition flex items-center justify-center gap-1.5 border border-white/10"
+                    >
+                      {copiedLink ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                      {copiedLink ? 'Copied Link!' : 'Copy Link'}
+                    </button>
+
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                        `Hey! Get ₹1,000 OFF on all Atyant JEE Mentorship & Courses using my referral link: ${window.location.origin}/courses?ref=${user.referralCode || ''}`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-xl bg-[#25D366] hover:bg-[#20ba5a] px-4 py-2.5 text-xs font-bold text-white transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20"
+                    >
+                      <Share2 className="h-4 w-4" />
+                      WhatsApp
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 rounded-xl bg-black/40 border border-white/5 px-3 py-2 text-xs font-mono text-white/70 overflow-x-auto select-all">
+                  <span className="truncate">{`${typeof window !== 'undefined' ? window.location.origin : 'https://jee.atyant.in'}/courses?ref=${user.referralCode || ''}`}</span>
+                </div>
+              </div>
+
+              {/* 3 Step Guide */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3.5 space-y-1.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400 text-xs font-black">
+                    1
+                  </div>
+                  <h4 className="text-xs font-bold text-white">Share Your Link</h4>
+                  <p className="text-[11px] text-white/50 leading-relaxed">
+                    Share your unique link with classmates and friends preparing for JEE & engineering admissions.
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3.5 space-y-1.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-black">
+                    2
+                  </div>
+                  <h4 className="text-xs font-bold text-white">Friend Gets ₹1,000 OFF</h4>
+                  <p className="text-[11px] text-white/50 leading-relaxed">
+                    When your friend clicks your link, your referral coupon is automatically applied at checkout.
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3.5 space-y-1.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/20 text-orange-400 text-xs font-black">
+                    3
+                  </div>
+                  <h4 className="text-xs font-bold text-white">Earn 10% in Coins</h4>
+                  <p className="text-[11px] text-white/50 leading-relaxed">
+                    You instantly receive 10% commission in Atyant Coins (10 Coins = ₹1) upon successful payment.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* 3. Transaction History Ledger */}
+          <Section title="Wallet Activity & History" icon="📜">
+            {loadingWallet ? (
+              <p className="text-xs text-white/40 py-4 text-center">Loading transactions…</p>
+            ) : !walletData?.transactions || walletData.transactions.length === 0 ? (
+              <div className="text-center py-8 bg-white/5 rounded-xl border border-dashed border-white/10 space-y-2">
+                <Coins className="h-8 w-8 text-white/20 mx-auto" />
+                <p className="text-xs text-white/60 font-medium">No coin transactions yet.</p>
+                <p className="text-[11px] text-white/40">
+                  Share your referral link above with friends to earn your first Atyant Coins!
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-white/5 text-[10px] font-bold text-white/40 uppercase tracking-wider border-b border-white/10">
+                    <tr>
+                      <th className="px-4 py-2.5">Date</th>
+                      <th className="px-4 py-2.5">Description</th>
+                      <th className="px-4 py-2.5">Amount (Coins)</th>
+                      <th className="px-4 py-2.5">INR Value</th>
+                      <th className="px-4 py-2.5 text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-slate-300">
+                    {walletData.transactions.map((tx) => (
+                      <tr key={tx.id || tx._id} className="hover:bg-white/5 transition">
+                        <td className="px-4 py-3 whitespace-nowrap text-white/50">
+                          {new Date(tx.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3 font-medium text-white">
+                          {tx.description || 'Referral Commission'}
+                        </td>
+                        <td className="px-4 py-3 font-bold text-emerald-400">
+                          +{tx.amountCoins?.toLocaleString('en-IN')} Coins
+                        </td>
+                        <td className="px-4 py-3 text-white/70 font-semibold">
+                          ₹{tx.amountInr ? tx.amountInr.toFixed(2) : (tx.amountCoins / 10).toFixed(2)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            {tx.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </Section>

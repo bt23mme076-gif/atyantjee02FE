@@ -374,6 +374,14 @@ export const getUserMe = () => {
   });
 };
 
+/** User: fetch wallet coins and transaction ledger */
+export const getUserWallet = () => {
+  const token = localStorage.getItem('user_token');
+  return request('/api/users/wallet', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+};
+
 export const updateUser = (payload) => {
   const token = localStorage.getItem('user_token');
   return request('/api/users/me', {

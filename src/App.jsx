@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LeadCaptureModal from './components/LeadCaptureModal';
@@ -41,11 +41,36 @@ function RouteLoadingFallback() {
   );
 }
 
+function ReferralRedirect() {
+  const { code } = useParams();
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    if (code) {
+      const clean = code.trim().toUpperCase();
+      localStorage.setItem('atyant_referral_code', clean);
+      navigate(`/programs?ref=${clean}`, { replace: true });
+    } else {
+      navigate('/programs', { replace: true });
+    }
+  }, [code, navigate]);
+  return <RouteLoadingFallback />;
+}
+
 function AppContent() {
   const [showLeadModal, setShowLeadModal] = React.useState(false);
   const [user, setUser] = React.useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    // Capture referral / coupon code from URL and persist in localStorage
+    const params = new URLSearchParams(location.search);
+    const refCode = params.get('ref') || params.get('referral') || params.get('coupon');
+    if (refCode) {
+      const cleanCode = refCode.trim().toUpperCase();
+      localStorage.setItem('atyant_referral_code', cleanCode);
+    }
+  }, [location.search]);
 
   React.useEffect(() => {
     // Try to fetch logged in user on mount
@@ -439,6 +464,21 @@ function AppContent() {
                   </motion.div>
                 }
               />
+              <Route
+                path="/courses"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ProgramsPage user={user} />
+                  </motion.div>
+                }
+              />
+              <Route path="/refer/:code" element={<ReferralRedirect />} />
+              <Route path="/refer" element={<ReferralRedirect />} />
               <Route
                 path="/payment-status"
                 element={

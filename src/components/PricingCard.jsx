@@ -85,11 +85,34 @@ export function PaymentModal({
           // Pre-fill phone stripping any country code/spaces
           setPhone((res.user.phone || '').replace(/\D/g, '').slice(-10));
           setEmail(res.user.email || '');
+
+          // Check for auto-applicable referral / coupon code
+          const storedRef =
+            localStorage.getItem('atyant_referral_code') ||
+            (typeof window !== 'undefined'
+              ? new URLSearchParams(window.location.search).get('ref') ||
+                new URLSearchParams(window.location.search).get('coupon')
+              : '');
+
+          if (storedRef) {
+            const cleanCode = storedRef.trim().toUpperCase();
+            setCouponInput(cleanCode);
+            const planId = PLAN_ID_MAP[planTitle] || planTitle;
+            validateCoupon({ code: cleanCode, planId, roadmapItemId: roadmapItemId || undefined })
+              .then((couponRes) => {
+                if (couponRes?.ok) {
+                  setAppliedCoupon(couponRes);
+                }
+              })
+              .catch(() => {
+                // Silently ignore auto-apply failure (e.g. self referral or inapplicable)
+              });
+          }
         }
       })
       .catch(() => setError('Could not load your profile. Please try again.'))
       .finally(() => setFetchingProfile(false));
-  }, [open]);
+  }, [open, planTitle, roadmapItemId]);
 
   async function handleApplyCoupon(e) {
     if (e) e.preventDefault();
