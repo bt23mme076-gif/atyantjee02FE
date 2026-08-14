@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, X, Sparkles, Star } from 'lucide-react';
+import { CheckCircle2, X, Sparkles, Star, Tag, Check, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getWhatsAppLink } from '../utils/whatsapp';
-import { createPaymentOrder, getUserMe, buildReturnUrl, isUserLoggedIn } from '../utils/api';
+import { createPaymentOrder, validateCoupon, getUserMe, buildReturnUrl, isUserLoggedIn } from '../utils/api';
 
 // Map frontend plan titles → backend planId
 export const PLAN_ID_MAP = {
@@ -49,6 +49,16 @@ export function PaymentModal({
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState(false);
 
+  // Coupon state
+  const [couponInput, setCouponInput] = React.useState('');
+  const [appliedCoupon, setAppliedCoupon] = React.useState(null);
+  const [validatingCoupon, setValidatingCoupon] = React.useState(false);
+  const [couponError, setCouponError] = React.useState('');
+
+  const numericOriginalPrice = Number(String(planPrice).replace(/[^\d]/g, '')) || 0;
+  const currentFinalAmount = appliedCoupon?.pricing?.finalAmount ?? numericOriginalPrice;
+  const currentDiscountAmount = appliedCoupon?.pricing?.discountAmount ?? 0;
+
   React.useEffect(() => {
     if (!open) {
       setLoading(false);
@@ -57,6 +67,10 @@ export function PaymentModal({
       setProfile(null);
       setPhone('');
       setEmail('');
+      setCouponInput('');
+      setAppliedCoupon(null);
+      setValidatingCoupon(false);
+      setCouponError('');
       return;
     }
     if (!isUserLoggedIn()) {
@@ -76,6 +90,47 @@ export function PaymentModal({
       .catch(() => setError('Could not load your profile. Please try again.'))
       .finally(() => setFetchingProfile(false));
   }, [open]);
+
+  async function handleApplyCoupon(e) {
+    if (e) e.preventDefault();
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      setCouponError('Please enter a coupon code.');
+      return;
+    }
+
+    setValidatingCoupon(true);
+    setCouponError('');
+
+    const planId = PLAN_ID_MAP[planTitle] || planTitle;
+
+    try {
+      const res = await validateCoupon({
+        code,
+        planId,
+        roadmapItemId: roadmapItemId || undefined,
+      });
+
+      if (res?.ok) {
+        setAppliedCoupon(res);
+        setCouponError('');
+      } else {
+        setCouponError(res?.message || 'Invalid coupon code');
+        setAppliedCoupon(null);
+      }
+    } catch (err) {
+      setCouponError(err.message || 'Invalid coupon code');
+      setAppliedCoupon(null);
+    } finally {
+      setValidatingCoupon(false);
+    }
+  }
+
+  function handleRemoveCoupon() {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    setCouponError('');
+  }
 
   async function handlePay(e) {
     e.preventDefault();
@@ -102,6 +157,10 @@ export function PaymentModal({
       const payload = { planId, name: profile.name, email, phone };
       if (mentorId) payload.mentorId = mentorId;
       if (roadmapItemId) payload.roadmapItemId = roadmapItemId;
+      if (appliedCoupon?.coupon?.code) {
+        payload.couponCode = appliedCoupon.coupon.code;
+      }
+
       const orderData = await createPaymentOrder(payload);
       const loaded = await loadCashfree();
       if (!loaded) throw new Error('Could not load Cashfree SDK. Check your internet connection.');
@@ -113,7 +172,7 @@ export function PaymentModal({
       if (onSuccessRedirectUrl) {
         localStorage.setItem('atyant_pending_redirect', onSuccessRedirectUrl);
       }
-      // const base = import.meta.env.VITE_APP_URL || window.location.origin;
+
       await cashfree.checkout({
         paymentSessionId: orderData.paymentSessionId,
         returnUrl: buildReturnUrl('/payment-status', orderData.orderId),
@@ -138,10 +197,10 @@ export function PaymentModal({
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#0B0F2E] to-[#12183f] px-6 pt-6 pb-5">
+          <div className="bg-gradient-to-r from-[#0B0F2E] to-[#12183f] px-6 pt-6 pb-5 shrink-0">
             <button
               onClick={onClose}
               className="absolute top-4 right-4 rounded-full p-1.5 text-white/40 hover:bg-white/10 hover:text-white transition"
@@ -153,10 +212,20 @@ export function PaymentModal({
               Secure Checkout
             </p>
             <h3 className="text-xl font-black text-white">{displayTitle}</h3>
-            <p className="text-sm text-white/60 mt-0.5">₹{planPrice} · via Cashfree</p>
+            <div className="flex items-baseline gap-2 mt-0.5">
+              <span className="text-sm font-semibold text-white/90">
+                ₹{currentFinalAmount.toLocaleString('en-IN')}
+              </span>
+              {appliedCoupon && (
+                <span className="text-xs text-white/50 line-through">
+                  ₹{numericOriginalPrice.toLocaleString('en-IN')}
+                </span>
+              )}
+              <span className="text-xs text-white/60">· via Cashfree</span>
+            </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-6 overflow-y-auto">
             {success ? (
               <div className="py-6 text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
@@ -280,12 +349,91 @@ export function PaymentModal({
                   </div>
                 )}
 
+                {/* ─── Coupon Code Section ──────────────────────────────── */}
+                <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+                      <Tag className="h-3.5 w-3.5 text-[#FF6B2B]" />
+                      Have a coupon?
+                    </span>
+                    {appliedCoupon && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-[11px] font-bold text-red-500 hover:text-red-700 hover:underline transition"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  {appliedCoupon ? (
+                    <div className="space-y-2 pt-1">
+                      <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs text-emerald-800 font-medium">
+                        <Check className="h-4 w-4 text-emerald-600 shrink-0" />
+                        <span>
+                          Coupon <strong className="font-mono font-bold tracking-wider">{appliedCoupon.coupon.code}</strong> applied!
+                        </span>
+                      </div>
+
+                      {/* Pricing Breakdown */}
+                      <div className="rounded-lg bg-white border border-slate-100 p-2.5 space-y-1.5 text-xs">
+                        <div className="flex justify-between text-gray-500">
+                          <span>Original Price</span>
+                          <span>₹{numericOriginalPrice.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="flex justify-between font-semibold text-emerald-600">
+                          <span>Coupon Discount</span>
+                          <span>-₹{currentDiscountAmount.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div className="border-t border-slate-100 pt-1.5 flex justify-between font-bold text-gray-900 text-sm">
+                          <span>Final Price</span>
+                          <span className="text-[#0B0F2E]">₹{currentFinalAmount.toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={couponInput}
+                          onChange={(e) => {
+                            setCouponInput(e.target.value.toUpperCase());
+                            setCouponError('');
+                          }}
+                          placeholder="Enter coupon code (e.g. OLeXVNIT)"
+                          className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs uppercase tracking-wider font-mono focus:outline-none focus:ring-2 focus:ring-[#FF6B2B]/40 placeholder:normal-case placeholder:font-sans"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleApplyCoupon}
+                          disabled={validatingCoupon || !couponInput.trim()}
+                          className="rounded-lg bg-[#0B0F2E] px-4 py-2 text-xs font-bold text-white hover:bg-[#1a2254] transition disabled:opacity-50 flex items-center gap-1.5"
+                        >
+                          {validatingCoupon ? (
+                            <>
+                              <Loader2 className="h-3 w-3 animate-spin" /> Applying…
+                            </>
+                          ) : (
+                            'Apply'
+                          )}
+                        </button>
+                      </div>
+
+                      {couponError && (
+                        <p className="text-[11px] text-red-500 font-medium pl-1">{couponError}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <button
                   type="submit"
                   disabled={loading || !profile}
                   className="w-full rounded-xl bg-gradient-to-r from-[#FF6B2B] to-[#ff8a57] py-3.5 text-sm font-bold text-white hover:from-[#e05a1f] hover:to-[#ff6b2b] transition disabled:opacity-50 shadow-lg shadow-[#FF6B2B]/20 mt-2"
                 >
-                  {loading ? 'Processing…' : `Pay ₹${planPrice} Securely`}
+                  {loading ? 'Processing…' : `Pay ₹${currentFinalAmount.toLocaleString('en-IN')} Securely`}
                 </button>
 
                 <p className="text-center text-[11px] text-gray-400">

@@ -33,6 +33,7 @@ const ADMIN_BUNDLE_OPTIONS = [
 ];
 import RoadmapContentTab from '../components/admin/RoadmapContentTab';
 import CourseContentTab from '../components/admin/CourseContentTab';
+import CouponsTab from '../components/admin/CouponsTab';
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -716,7 +717,7 @@ function MentorsTab() {
 
 // ─── Main AdminPanel Page ─────────────────────────────────────────────────────────
 
-const TABS = ['leads', 'payments', 'chat', 'mentors', 'roadmap', 'courses'];
+const TABS = ['leads', 'payments', 'coupons', 'chat', 'mentors', 'roadmap', 'courses'];
 
 export default function AtyantLoginPage() {
   const [authed, setAuthed] = React.useState(false);
@@ -848,6 +849,7 @@ export default function AtyantLoginPage() {
             <div className="mt-6">
               {tab === 'leads' && <LeadsTab />}
               {tab === 'payments' && <PaymentsTab />}
+              {tab === 'coupons' && <CouponsTab />}
               {tab === 'chat' && <ChatSessionsTab />}
               {tab === 'mentors' && <MentorsTab />}
               {tab === 'roadmap' && <RoadmapContentTab />}

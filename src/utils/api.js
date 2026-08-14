@@ -27,21 +27,21 @@ export const resolveAssetUrl = (url) => {
   return url;
 };
 export const getReturnUrlBase = () => {
+  // If running in browser on localhost or 127.0.0.1, always return the local origin
+  if (typeof window !== 'undefined' && window.location.origin) {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return window.location.origin;
+    }
+  }
+
   const configured = import.meta.env.VITE_APP_URL;
   if (configured) return configured.replace(/\/$/, '');
 
-  if (typeof window !== 'undefined' && window.location.origin.startsWith('https://')) {
+  if (typeof window !== 'undefined' && window.location.origin) {
     return window.location.origin;
   }
 
-  if (import.meta.env.DEV) {
-    console.warn(
-      '[Cashfree] No VITE_APP_URL set and window.location.origin is not https — ' +
-        'set VITE_APP_URL in your .env to test payments locally.'
-    );
-  }
-
-  return typeof window !== 'undefined' ? window.location.origin : '';
+  return '';
 };
 
 export const buildReturnUrl = (path, orderId) => {
@@ -205,18 +205,30 @@ export const getChatSession = (sessionId) =>
 export const getDecision = (payload) =>
   request('/api/decision', { method: 'POST', body: JSON.stringify(payload) });
 
-// ─── Payments ─────────────────────────────────────────────────────────────────
+// ─── Payments & Coupons ────────────────────────────────────────────────────────
 
 /** Fetch available plans + Cashfree configuration */
 export const getPaymentPlans = () => request('/api/payments/plans');
 
 /**
- * Create a Cashfree order (public).
- * @param {{ planId, name, email, phone, mentorId? }} payload
+ * Validate a coupon code for a specific plan/course (public/user).
+ * @param {{ code: string, planId: string, roadmapItemId?: string }} payload
+ */
+export const validateCoupon = (payload) =>
+  request('/api/payments/coupons/validate', {
+    method: 'POST',
+    headers: userAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+
+/**
+ * Create a Cashfree order (public/user).
+ * @param {{ planId, name, email, phone, mentorId?, roadmapItemId?, pathSlug?, couponCode?, returnUrl? }} payload
  */
 export const createPaymentOrder = (payload) =>
   request('/api/payments/orders', {
     method: 'POST',
+    headers: userAuthHeader(),
     body: JSON.stringify(payload),
   });
 
@@ -227,6 +239,7 @@ export const createPaymentOrder = (payload) =>
 export const verifyPayment = (payload) =>
   request('/api/payments/verify', {
     method: 'POST',
+    headers: userAuthHeader(),
     body: JSON.stringify(payload),
   });
 
@@ -243,6 +256,49 @@ export const getMyBookings = () => {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 };
+
+// ─── Admin: Coupons & Referral Commissions ───────────────────────────────────
+
+/** Admin: list all coupon codes */
+export const adminListCoupons = () =>
+  request('/api/admin/coupons', { headers: adminAuthHeader() });
+
+/** Admin: create a new coupon code */
+export const adminCreateCoupon = (payload) =>
+  request('/api/admin/coupons', {
+    method: 'POST',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+
+/** Admin: update an existing coupon code */
+export const adminUpdateCoupon = (id, payload) =>
+  request(`/api/admin/coupons/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
+
+/** Admin: delete a coupon code */
+export const adminDeleteCoupon = (id) =>
+  request(`/api/admin/coupons/${id}`, {
+    method: 'DELETE',
+    headers: adminAuthHeader(),
+  });
+
+/** Admin: list referral commissions */
+export const adminListCommissions = (params = {}) => {
+  const qs = new URLSearchParams(params).toString();
+  return request(`/api/admin/commissions${qs ? `?${qs}` : ''}`, { headers: adminAuthHeader() });
+};
+
+/** Admin: update referral commission status */
+export const adminUpdateCommission = (id, payload) =>
+  request(`/api/admin/commissions/${id}`, {
+    method: 'PATCH',
+    headers: adminAuthHeader(),
+    body: JSON.stringify(payload),
+  });
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
